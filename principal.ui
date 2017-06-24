@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Principal</class>
+ <widget class="QWidget" name="Principal">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>973</width>
+    <height>537</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Severino | Plano de Contas</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QFrame" name="framePanel">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item>
+       <widget class="QToolButton" name="toolButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/list.png</normaloff>:/images/list.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>28</width>
+          <height>28</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="botaoAtualizar">
+        <property name="minimumSize">
+         <size>
+          <width>112</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>28</width>
+          <height>28</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="botaoSair">
+        <property name="minimumSize">
+         <size>
+          <width>112</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/exit.png</normaloff>:/images/exit.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>28</width>
+          <height>28</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QFrame" name="framePanel_InfoSessao">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="tabPosition">
+         <enum>QTabWidget::West</enum>
+        </property>
+        <property name="tabShape">
+         <enum>QTabWidget::Rounded</enum>
+        </property>
+        <property name="documentMode">
+         <bool>false</bool>
+        </property>
+        <property name="tabsClosable">
+         <bool>true</bool>
+        </property>
+        <property name="movable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="tabHome">
+         <attribute name="title">
+          <string>Home :: Inicio</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QPlainTextEdit" name="plainTextEdit">
+            <property name="documentTitle">
+             <string/>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="plainText">
+             <string>COMO ELABORAR UM PLANO DE CONTAS CONTÁBIL
+Júlio César Zanluca
+
+Plano de Contas (ou Elenco de Contas) é o conjunto de contas, previamente estabelecido, que norteia os trabalhos contábeis de registro de fatos e atos inerentes à entidade, além de servir de parâmetro para a elaboração das demonstrações contábeis.
+ 
+A montagem de um Plano de Contas deve ser personalizada, por empresa, já que os usuários de informações podem necessitar detalhamentos específicos, que um modelo de Plano de Contas geral pode não compreender.
+ 
+OBJETIVOS DO PLANO DE CONTAS
+ 
+Seu principal objetivo é estabelecer normas de conduta para o registro das operações da organização e, na sua montagem, devem ser levados em conta três objetivos fundamentais:
+ 
+a) atender às necessidades de informação da administração da empresa;
+ 
+b) observar formato compatível com os princípios de contabilidade e com a norma legal de elaboração do balanço patrimonial e das demais de­monstrações contábeis (Lei 6.404/76, a chamada &quot;Lei das S/A”);
+ 
+c) adaptar-se tanto quanto possível às exigências dos agentes externos, principalmente às da legislação do Imposto de Renda.
+ 
+ELENCO DE CONTAS E CORRESPONDENTE CONJUNTO DE NORMAS
+ 
+O Plano de Contas, genericamente tido como um simples elenco de contas, constituí na verdade um conjunto de normas do qual deve fazer parte, ainda, a descrição do funcionamento de cada conta - o chamado &quot;Manual de Contas&quot;, que contém comentários e indicações gerais sobre a aplicação e o uso de cada uma das contas (para que serve, o que deve conter e outras informações sobre critérios gerais de contabilização).
+ 
+CONTAS DO BALANÇO PATRIMONIAL
+ 
+A empresa deve manter escrituração contábil com base na legislação comercial e com observância das Normas Brasileiras de Contabilidade.
+ 
+O balanço patrimonial é uma das demonstrações contábeis que visa a evidenciar, de forma sintética, a situação patrimonial da empresa e dos atos e fatos consignados na escrituração contábil.
+ 
+Essa demonstração deve ser estruturada de acordo com os preceitos da Lei 6.404/76 (chamada “Lei das S/A”) e segundo os Princípios Fundamentais de Contabilidade.
+ 
+Tal estrutura de contas, dentro do conceito legal da própria Lei 6.404/76 (artigos 176 a 182 e artigo 187), em síntese, se compõe de:
+
+Como exemplo, temos a conta &quot;Caixa&quot;, que registrará o dinheiro em espécie (papel-moeda) disponível na tesouraria da empresa. Trata-se de uma conta do Ativo Circulante, subgrupo Disponibilidades.
+ 
+Sugiro que o Plano de Contas contenha, no mínimo, 4 (quatro) níveis:
+
+Nível 1:
+ 
+Ativo, Passivo, Patrimônio Líquido, Receitas, Custos e Despesas.
+
+Nível 2:
+ 
+Ativo: Circulante, Não Circulante / Passivo e Patrimônio Líquido: Circulante, Não Circulante e Patrimônio Líquido. / Receitas: Receita Bruta, Deduções da Receita Bruta, Outras Receitas Operacionais / Custos e Despesas Operacionais.
+
+Nível 3: Contas que evidenciem os grupos a que se referem, como por exemplo:
+
+Nível 1 - Ativo
+Nível 2 - Ativo Circulante
+Nível 3 - Bancos Conta Movimento
+
+Nível 4: Sub-contas que evidenciem o tipo de registro contabilizado, como por exemplo:
+
+Nível 1 - Ativo
+Nível 2 - Ativo Circulante
+Nível 3 - Bancos Conta Movimento
+Nível 4 - Banco A
+ 
+Abaixo, segue um exemplo bem simples de uma estrutura de plano de contas em 4 níveis:
+ 
+1 ATIVO
+
+1.1 ATIVO CIRCULANTE
+1.1.1 Caixa
+1.1.1.01 Caixa Geral
+1.1.2 Bancos C/Movimento
+1.1.2.01 Banco Alfa
+1.1.3 Contas a Receber
+1.1.3.01 Clientes
+1.1.3.02 Outras Contas a Receber
+1.1.3.09(-) Duplicatas Descontadas
+1.1.4 Estoques
+1.1.4.01 Mercadorias
+1.1.4.02 Produtos Acabados
+1.1.4.03 Insumos
+1.1.4.04 Outros
+
+1.2 NÃO CIRCULANTE
+1.2.1 Contas a Receber
+1.2.1.01 Clientes
+1.2.1.02 Outras Contas
+1.2.2 INVESTIMENTOS
+1.2.2.01 Participações Societárias
+1.2.3 IMOBILIZADO
+1.2.3.01 Terrenos
+1.2.3.02 Construções e Benfeitorias
+1.2.3.03 Máquinas e Ferramentas
+1.2.3.04 Veículos
+1.2.3.05 Móveis
+1.2.3.98 (-) Depreciação Acumulada
+1.2.3.99 (-) Amortização Acumulada
+1.2.4 INTANGÍVEL
+1.2.4.01 Marcas
+1.2.4.02 Softwares
+1.2.4.99 (-) Amortização Acumulada
+
+2 PASSIVO
+
+2.1 CIRCULANTE
+2.1.1 Impostos e Contribuições a Recolher
+2.1.1.01 Simples a Recolher
+2.1.1.02 INSS
+2.1.1.03 FGTS
+2.1.2 Contas a Pagar
+2.1.2.01 Fornecedores
+2.1.2.02 Outras Contas
+2.1.3 Empréstimos Bancários
+2.1.3.01 Banco A - Operação X
+
+2.2 NÃO CIRCULANTE
+2.2.1 Empréstimos Bancários
+2.2.1.01 Banco A - Operação X
+
+2.3 PATRIMÔNIO LÍQUIDO
+2.3.1 Capital Social
+2.3.2.01 Capital Social Subscrito
+2.3.2.02 Capital Social a Realizar
+2.3.2. Reservas
+2.3.2.01 Reservas de Capital
+2.3.2.02 Reservas de Lucros
+2.3.3 Prejuízos Acumulados
+2.3.3.01 Prejuízos Acumulados de Exercícios Anteriores
+2.3.3.02 Prejuízos do Exercício Atual
+
+3 CUSTOS E DESPESAS
+
+3.1 Custos dos Produtos Vendidos
+3.1.1 Custos dos Materiais
+3.1.1.01 Custos dos Materiais Aplicados
+3.1.2 Custos da Mão-de-Obra
+3.1.2.01 Salários
+3.1.2.02 Encargos Sociais
+
+3.2 Custo das Mercadorias Vendidas
+3.2.1 Custo das Mercadorias
+3.2.1.01 Custo das Mercadorias Vendidas
+
+3.3 Custo dos Serviços Prestados
+3.3.1 Custo dos Serviços
+3.3.1.01 Materiais Aplicados
+3.3.1.02 Mão-de-Obra
+3.3.1.03 Encargos Sociais
+
+3.4 Despesas Operacionais
+3.4.1 Despesas Gerais
+3. 4.1.01 Mão-de-Obra
+3.4.1.02 Encargos Sociais
+3.4.1.03 Aluguéis
+
+3.5 Perdas de Capital
+3.5.1 Baixa de Bens do Ativo Não Circulante
+3.5.1.01 Custos de Alienação de Investimentos
+3.5.1.02 Custos de Alienação do Imobilizado
+
+4 RECEITAS
+
+4.1 Receita Líquida
+4.1.1 Receita Bruta de Vendas
+4.1.1.01 De Mercadorias
+4.1.1.02 De Produtos
+4.1.1.03 De Serviços Prestados
+4.1.2 Deduções da Receita Bruta
+4.1.2.01 Devoluções
+4.1.2.02 Serviços Cancelados
+
+4.2 Outras Receitas Operacionais
+4.2.1 Vendas de Ativos Não Circulantes
+4.2.1.01 Receitas de Alienação de Investimentos
+4.2.1.02 Receitas de Alienação do Imobilizado</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QFrame" name="framePanel_InfoUsuario">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBox_InfoUsuario">
+        <property name="title">
+         <string>Informações de logon:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_DescricaoUsuario">
+           <property name="text">
+            <string>Usuário:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="campoUsuario">
+           <property name="font">
+            <font/>
+           </property>
+           <property name="text">
+            <string>[]</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox_Sessao">
+        <property name="title">
+         <string>Sessão:</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="campoTime">
+           <property name="font">
+            <font/>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="campoTime_Descricao">
+           <property name="font">
+            <font/>
+           </property>
+           <property name="text">
+            <string>Decorrido: </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>toolButton</tabstop>
+  <tabstop>botaoAtualizar</tabstop>
+  <tabstop>botaoSair</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>plainTextEdit</tabstop>
+ </tabstops>
+ <resources>
+  <include location="thema.qrc"/>
+ </resources>
+ <connections/>
+</ui>
