@@ -23,6 +23,7 @@
 #include "cadastrofilial.h"
 #include "controledao.h"
 #include "pesquisar.h"
+#include "exportararquivo.h"
 
 
 namespace Ui {
@@ -55,6 +56,7 @@ private slots:
     void focusFinalPeriodo();
     void focusProcessar();
     void progressoRequisicao(bool);
+    void caixaMensagemUsuario(QString);
 
     QString pesquisarItem();
     void pesquisarEmpresa();

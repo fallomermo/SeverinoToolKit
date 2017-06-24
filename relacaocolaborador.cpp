@@ -349,50 +349,17 @@ void RelacaoColaborador::inserirLinhaTabela(int linha, int nrColunas, CadastroCo
 
 void RelacaoColaborador::exportarParaExcel()
 {
-    if(ui->tableWidget->rowCount() <= 0) {
-        QMessageBox::critical(this, tr("Exportar Dados da Tabela"), QString("Não existe informação para exportar!!!"), QMessageBox::Ok);
-        ui->campoID_Empresa->setFocus();
-    } else {
-        QProgressDialog progresso(this);
-        progresso.setLabelText(QString("Exportando dados, aguarde..."));
-        progresso.setWindowModality(Qt::WindowModal);
-        progresso.setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-        progresso.setVisible(true);
-        progresso.setAutoClose(true);
-        qApp->processEvents(QEventLoop::DialogExec);
+    QString tituloArquivo = "";
+    if(ui->campoDescricaoEmpresa->text().isEmpty() || ui->campoDescricaoFilial->text().isEmpty())
+        tituloArquivo = "FullData";
+    else
+        tituloArquivo = ui->campoDescricaoFilial->text().replace(' ','_');
 
-        QString nomeArquivoTitulo = "";
-        if(ui->campoDescricaoEmpresa->text().isEmpty() || ui->campoDescricaoFilial->text().isEmpty())
-            nomeArquivoTitulo = "FullData";
-        else
-            nomeArquivoTitulo = ui->campoDescricaoFilial->text().replace(' ','_');
+    QString __nomeArquivo = "/"+tituloArquivo+"_"+ui->dataReferencia->text().replace('/','-');
 
-        QString _nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->dataReferencia->text().replace('/','-');
-        QString filename = QFileDialog::getSaveFileName(this, tr("Exportação CSV"), QDir::homePath()+QString(_nomeArquivo), "CSV (*.csv)");
-        if(filename.isEmpty())
-            return;
-
-        QFile f( filename );
-        if (f.open(QFile::WriteOnly | QFile::Truncate))
-        {
-            QTextStream data( &f );
-            QStringList strList;
-            QTableWidget *nTable = ui->tableWidget;
-            progresso.setMaximum(ui->tableWidget->rowCount());
-            for( int r = 0; r < nTable->rowCount(); ++r )
-            {
-                progresso.setValue(r);
-                strList.clear();
-                for( int c = 0; c < nTable->columnCount(); ++c )
-                {
-                    strList << "\""+nTable->item( r, c )->text().trimmed()+"\"";
-                }
-                data << strList.join( ";" )+"\n";
-            }
-            f.close();
-            QMessageBox::information(this, tr("Exportação para Arquivo CSV"), QString("Arquivo salvo com Sucesso!"), QMessageBox::Ok);
-        }
-    }
+    ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
+    connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
+    exp->exportar(__nomeArquivo);
 }
 
 void RelacaoColaborador::exibirNumeroRegistros(QModelIndex i)
@@ -423,4 +390,9 @@ void RelacaoColaborador::exibirDataCompleta()
 void RelacaoColaborador::exibirDataCompleta(QDate d)
 {
     ui->campoDescricaoData->setText(d.toString("d' de 'MMMM' de 'yyyy"));
+}
+
+void RelacaoColaborador::caixaMensagemUsuario(QString msg)
+{
+    QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
 }

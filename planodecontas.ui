@@ -177,7 +177,7 @@
          <bool>true</bool>
         </property>
         <property name="displayFormat">
-         <string>dd/MM/yyyy</string>
+         <string>MM/yyyy</string>
         </property>
        </widget>
       </item>
@@ -196,7 +196,7 @@
          <bool>true</bool>
         </property>
         <property name="displayFormat">
-         <string>dd/MM/yyyy</string>
+         <string>MM/yyyy</string>
         </property>
        </widget>
       </item>

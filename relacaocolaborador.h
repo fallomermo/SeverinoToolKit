@@ -17,6 +17,7 @@
 #include "cadastroempresa.h"
 #include "cadastrofilial.h"
 #include "cadastrocolaborador.h"
+#include "exportararquivo.h"
 
 
 namespace Ui {
@@ -58,6 +59,7 @@ private slots:
     void exibirNumeroRegistros(QModelIndex);
     void exibirDataCompleta();
     void exibirDataCompleta(QDate);
+    void caixaMensagemUsuario(QString);
 
 private:
     Ui::RelacaoColaborador *ui;

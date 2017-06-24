@@ -93,7 +93,7 @@
        <widget class="QPushButton" name="botaoAtualizar">
         <property name="minimumSize">
          <size>
-          <width>112</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
@@ -122,7 +122,7 @@
        <widget class="QPushButton" name="botaoSair">
         <property name="minimumSize">
          <size>
-          <width>112</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
@@ -183,8 +183,8 @@
          <attribute name="title">
           <string>Home :: Inicio</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
            <widget class="QPlainTextEdit" name="plainTextEdit">
             <property name="documentTitle">
              <string/>
@@ -360,6 +360,9 @@ Abaixo, segue um exemplo bem simples de uma estrutura de plano de contas em 4 n�
 4.2.1 Vendas de Ativos Não Circulantes
 4.2.1.01 Receitas de Alienação de Investimentos
 4.2.1.02 Receitas de Alienação do Imobilizado</string>
+            </property>
+            <property name="centerOnScroll">
+             <bool>false</bool>
             </property>
            </widget>
           </item>

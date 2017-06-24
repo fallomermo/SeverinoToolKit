@@ -13,6 +13,7 @@
 // Inlcuindo clases manuais do projeto
 #include "ecoclinicrepasses.h"
 #include "controledao.h"
+#include "exportararquivo.h"
 
 
 namespace Ui {
@@ -36,6 +37,7 @@ private slots:
     void inserirItemTabela(int, int, QString);
     void inserirItemTabela(int, int, QDate);
     void filtroItemTabela(QString);
+    void caixaMensagemUsuario(QString);
 
 private:
     Ui::PlanoSaude *ui;

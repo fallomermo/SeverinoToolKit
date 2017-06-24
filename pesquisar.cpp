@@ -101,6 +101,7 @@ void Pesquisar::preencherTabela()
         }
     }
     ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->sortByColumn(0,Qt::AscendingOrder);
 }
 
 void Pesquisar::setData(int r, int c)

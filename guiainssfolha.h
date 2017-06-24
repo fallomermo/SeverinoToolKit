@@ -17,6 +17,7 @@
 #include "pesquisar.h"
 #include "eventos.h"
 #include "controledao.h"
+#include "exportararquivo.h"
 
 
 namespace Ui {
@@ -56,6 +57,7 @@ private slots:
     void inserirItemTabela(int,int,int);
     void inserirLinhaTabela(int, int, Eventos *);
     void exportarParaExcel();
+    void caixaMensagemUsuario(QString);
 
 private:
     Ui::GuiaINSSFolha *ui;

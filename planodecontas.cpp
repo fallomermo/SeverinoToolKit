@@ -59,8 +59,8 @@ void PlanoDeContas::atualizarTabela()
 {
     ui->campoIDEmpresa->setToolTip("Código da Empresa.");
     ui->campoIDFilial->setToolTip("Código da Filial.");
-//    ui->botaoPesquisaEmpresa->setToolTip("Lista de Empresas Disponíveis.");
-//    ui->botaoPesquisaFilial->setToolTip("Lista de Filiais Disponíveis.");
+    //    ui->botaoPesquisaEmpresa->setToolTip("Lista de Empresas Disponíveis.");
+    //    ui->botaoPesquisaFilial->setToolTip("Lista de Filiais Disponíveis.");
     ui->campoInicioPeriodo->setToolTip("Início da Competência de Cálculo.");
     ui->campoFinalPeriodo->setToolTip("Fim da Competência de Cálculo.");
     ui->botaoProcessar->setToolTip("Clique para processar a requisição das Informações.");
@@ -198,6 +198,11 @@ void PlanoDeContas::progressoRequisicao(bool)
     _progresso.setValue(0);
     _progresso.setRange(0, 0);
     _progresso.show();
+}
+
+void PlanoDeContas::caixaMensagemUsuario(QString msg)
+{
+    QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
 }
 
 QString PlanoDeContas::pesquisarItem()
@@ -398,59 +403,16 @@ void PlanoDeContas::inserirLinhaTabela(int linha, int nrColunas, Eventos *evento
 
 void PlanoDeContas::exportarParaExcel()
 {
-    if(ui->tableWidget->rowCount() <= 0) {
-        QMessageBox::critical(this, tr("Exportar Dados da Tabela"), QString("Não existe informação para exportar!!!"), QMessageBox::Ok);
-        ui->campoIDEmpresa->setFocus();
-    } else {
-        QProgressDialog progresso("Salvando dados para CSV...\n", "Cancelar", 70, 200, this);
-        progresso.setWindowModality(Qt::WindowModal);
-        progresso.setWindowFlag(Qt::Window);
-        progresso.setWindowFlag(Qt::FramelessWindowHint);
-        progresso.setMinimumDuration(0);
-        progresso.activateWindow();
-        progresso.setRange(0, 1);
-        progresso.setValue(0);
-        progresso.setRange(0, 0);
-        progresso.setVisible(true);
-        progresso.show();
-        QCoreApplication::processEvents();
-        progresso.setRange(0, 1);
-        progresso.setValue(0);
-        progresso.setRange(0, 0);
+    QString nomeArquivoTitulo = "";
+    if(ui->campoNomeEmpresa->text().isEmpty() || ui->campoNomeFilial->text().isEmpty())
+        nomeArquivoTitulo = "FullData";
+    else
+        nomeArquivoTitulo = ui->campoNomeFilial->text().replace(' ','_');
 
-        QString nomeArquivoTitulo = "";
-        if(ui->campoNomeEmpresa->text().isEmpty() || ui->campoNomeFilial->text().isEmpty())
-            nomeArquivoTitulo = "FullData";
-        else
-            nomeArquivoTitulo = ui->campoNomeFilial->text().replace(' ','_');
-
-        QString _nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->campoInicioPeriodo->text().replace('/','-')+"_"+ui->campoFinalPeriodo->text().replace('/','-');
-
-        QString filename = QFileDialog::getSaveFileName(this, tr("Exportação CSV"), QDir::homePath()+QString(_nomeArquivo), "CSV (*.csv)");
-        if(filename.isEmpty())
-            return;
-
-        QFile f( filename );
-        if (f.open(QFile::WriteOnly | QFile::Truncate))
-        {
-            QTextStream data( &f );
-            QStringList strList;
-            QTableWidget *nTable = ui->tableWidget;
-            progresso.setMaximum(ui->tableWidget->rowCount());
-            for( int r = 0; r < nTable->rowCount(); ++r )
-            {
-                progresso.setValue(r);
-                strList.clear();
-                for( int c = 0; c < nTable->columnCount(); ++c )
-                {
-                    strList << "\""+nTable->item( r, c )->text().trimmed()+"\"";
-                }
-                data << strList.join( ";" )+"\n";
-            }
-            f.close();
-            QMessageBox::information(this, tr("Exportação para Arquivo CSV"), QString("Arquivo salvo com Sucesso!"), QMessageBox::Ok);
-        }
-    }
+    QString __nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->campoInicioPeriodo->text().replace('/','-')+"_"+ui->campoFinalPeriodo->text().replace('/','-');
+    ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
+    connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
+    exp->exportar(__nomeArquivo);
 }
 
 void PlanoDeContas::atualizarResultados(QModelIndex i)

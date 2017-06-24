@@ -37,7 +37,8 @@ SOURCES += \
     planosaude.cpp \
     principal.cpp \
     relacaocolaborador.cpp \
-    main.cpp
+    main.cpp \
+    exportararquivo.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -52,7 +53,8 @@ HEADERS += \
     planodecontas.h \
     planosaude.h \
     principal.h \
-    relacaocolaborador.h
+    relacaocolaborador.h \
+    exportararquivo.h
 
 FORMS += \
     guiainssfolha.ui \

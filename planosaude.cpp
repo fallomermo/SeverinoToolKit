@@ -90,106 +90,63 @@ void PlanoSaude::getDatatable()
 
 void PlanoSaude::exportarParaExcel()
 {
-    if(ui->tableWidget->rowCount() <= 0) {
-        QMessageBox::critical(this, tr("Exportar Dados da Tabela"), QString("Não existe informação para exportar!!!"), QMessageBox::Ok);
-        ui->periodoInicial->setFocus();
-    } else {
-        QProgressDialog progresso("Salvando dados para CSV...\n", "Cancelar", 70, 200, this);
-        progresso.setWindowModality(Qt::WindowModal);
-        progresso.setWindowFlag(Qt::Window);
-        progresso.setWindowFlag(Qt::FramelessWindowHint);
-        progresso.setMinimumDuration(0);
-        progresso.activateWindow();
-        progresso.setRange(0, 1);
-        progresso.setValue(0);
-        progresso.setRange(0, 0);
-        progresso.setVisible(true);
-        progresso.show();
-        QCoreApplication::processEvents();
-        progresso.setRange(0, 1);
-        progresso.setValue(0);
-        progresso.setRange(0, 0);
-
-        QString _nomeArquivo = "/"+ui->comboBox->currentText()+"_"+ui->periodoInicial->text().replace('/','-')+"_"+ui->periodoFinal->text().replace('/','-');
-
-        QString filename = QFileDialog::getSaveFileName(this, tr("Exportação CSV"), QDir::homePath()+QString(_nomeArquivo), "CSV (*.csv)");
-        if(filename.isEmpty())
-            return;
-
-        QFile f( filename );
-        if (f.open(QFile::WriteOnly | QFile::Truncate))
-        {
-            QTextStream data( &f );
-            QStringList strList;
-            QTableWidget *nTable = ui->tableWidget;
-            progresso.setMaximum(ui->tableWidget->rowCount());
-            for( int r = 0; r < nTable->rowCount(); ++r )
-            {
-                progresso.setValue(r);
-                strList.clear();
-                for( int c = 0; c < nTable->columnCount(); ++c )
-                {
-                    strList << "\""+nTable->item( r, c )->text().trimmed()+"\"";
-                }
-                data << strList.join( ";" )+"\n";
-            }
-            f.close();
-            QMessageBox::information(this, tr("Exportação para Arquivo CSV"), QString("Arquivo salvo com Sucesso!"), QMessageBox::Ok);
-        }
-    }
+    QString __nomeArquivo = "/"+ui->comboBox->currentText()+"_"+ui->periodoInicial->text().replace('/','-')+"_"+ui->periodoFinal->text().replace('/','-');
+    ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
+    connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
+    exp->exportar(__nomeArquivo);
 }
 
 void PlanoSaude::inserirLinhaTabela(int linha, int nrColunas, EcoclinicRepasses * repasses)
 {
     for (int coluna = 0; coluna < nrColunas; ++coluna) {
         if(coluna == 0)
-        inserirItemTabela(linha, coluna, repasses->getID_Empresa());
+            inserirItemTabela(linha, coluna, repasses->getID_Empresa());
         if(coluna == 1)
-        inserirItemTabela(linha, coluna, repasses->getEmpresa());
+            inserirItemTabela(linha, coluna, repasses->getEmpresa());
         if(coluna == 2)
-        inserirItemTabela(linha, coluna, repasses->getID_Filial());
+            inserirItemTabela(linha, coluna, repasses->getID_Filial());
         if(coluna == 3)
-        inserirItemTabela(linha, coluna, repasses->getFilial());
+            inserirItemTabela(linha, coluna, repasses->getFilial());
         if(coluna == 4)
-        inserirItemTabela(linha, coluna, repasses->getMatricula());
+            inserirItemTabela(linha, coluna, repasses->getMatricula());
         if(coluna == 5)
-        inserirItemTabela(linha, coluna, repasses->getCPF());
+            inserirItemTabela(linha, coluna, repasses->getCPF());
         if(coluna == 6)
-        inserirItemTabela(linha, coluna, repasses->getNome());
+            inserirItemTabela(linha, coluna, repasses->getNome());
         if(coluna == 7)
-        inserirItemTabela(linha, coluna, repasses->getCargo());
+            inserirItemTabela(linha, coluna, repasses->getCargo());
         if(coluna == 8)
-        inserirItemTabela(linha, coluna, repasses->getID_Sindicato());
+            inserirItemTabela(linha, coluna, repasses->getID_Sindicato());
         if(coluna == 9)
-        inserirItemTabela(linha, coluna, repasses->getSetor());
+            inserirItemTabela(linha, coluna, repasses->getSetor());
         if(coluna == 10)
-        inserirItemTabela(linha, coluna, repasses->getSexo());
+            inserirItemTabela(linha, coluna, repasses->getSexo());
         if(coluna == 11)
-        inserirItemTabela(linha, coluna, repasses->getDdd1());
+            inserirItemTabela(linha, coluna, repasses->getDdd1());
         if(coluna == 12)
-        inserirItemTabela(linha, coluna, repasses->getNumero1());
+            inserirItemTabela(linha, coluna, repasses->getNumero1());
         if(coluna == 13)
-        inserirItemTabela(linha, coluna, repasses->getDdd2());
+            inserirItemTabela(linha, coluna, repasses->getDdd2());
         if(coluna == 14)
-        inserirItemTabela(linha, coluna, repasses->getNumero2());
+            inserirItemTabela(linha, coluna, repasses->getNumero2());
         if(coluna == 15)
-        inserirItemTabela(linha, coluna, repasses->getRegistroGeralIdentidade());
+            inserirItemTabela(linha, coluna, repasses->getRegistroGeralIdentidade());
         if(coluna == 16)
-        inserirItemTabela(linha, coluna, repasses->getOrgaoEmissor());
+            inserirItemTabela(linha, coluna, repasses->getOrgaoEmissor());
         if(coluna == 17)
-        inserirItemTabela(linha, coluna, repasses->getUF_Emissor());
+            inserirItemTabela(linha, coluna, repasses->getUF_Emissor());
         if(coluna == 18)
-        inserirItemTabela(linha, coluna, repasses->getDataEmissao());
+            inserirItemTabela(linha, coluna, repasses->getDataEmissao());
         if(coluna == 19)
-        inserirItemTabela(linha, coluna, repasses->getDataAdmissao());
+            inserirItemTabela(linha, coluna, repasses->getDataAdmissao());
         if(coluna == 20)
-        inserirItemTabela(linha, coluna, repasses->getCompetencia());
+            inserirItemTabela(linha, coluna, repasses->getCompetencia());
         if(coluna == 21)
-        inserirItemTabela(linha, coluna, repasses->getID_Evento());
+            inserirItemTabela(linha, coluna, repasses->getID_Evento());
         if(coluna == 22)
-        inserirItemTabela(linha, coluna, repasses->getEvento());
+            inserirItemTabela(linha, coluna, repasses->getEvento());
         if(coluna == 23)
-        inserirItemTabela(linha, coluna, repasses->getValor());
+            inserirItemTabela(linha, coluna, repasses->getValor());
     }
 }
 
@@ -230,4 +187,9 @@ void PlanoSaude::filtroItemTabela(QString filter)
         }
         ui->tableWidget->setRowHidden( i, !match );
     }
+}
+
+void PlanoSaude::caixaMensagemUsuario(QString msg)
+{
+    QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
 }
