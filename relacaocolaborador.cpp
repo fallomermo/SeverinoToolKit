@@ -62,7 +62,10 @@ RelacaoColaborador::RelacaoColaborador(QWidget *parent, QMap<int, CadastroEmpres
                                        << "Codigo do Cargo"
                                        << "Cargo"
                                        << "Tipo de Salário"
-                                       << "Salário";
+                                       << "Salário"
+                                       << "Portador de Deficiêcia"
+                                       << "Sindicato"
+                                       << "CNPJ Sindicato";
     ui->tableWidget->setColumnCount(labels.count());
     ui->tableWidget->setHorizontalHeaderLabels(labels);
     ui->tableWidget->resizeColumnsToContents();
@@ -232,38 +235,48 @@ void RelacaoColaborador::focusDataReferencia()
 
 void RelacaoColaborador::getDatatable()
 {
-    QProgressDialog progresso("Trabalhando em sua requisição, aguarde...", "Cancelar", 0, 100, this, Qt::Dialog);
-    progresso.setWindowModality(Qt::ApplicationModal);
-    progresso.setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
-    progresso.setModal( true );
-    progresso.setVisible( true );
-    progresso.setAutoClose( true );
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    CaixaMensagemProgresso * caixaDeMensagem = new CaixaMensagemProgresso(this);
+    caixaDeMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
+    caixaDeMensagem->setWindowFlag(Qt::Window);
+    caixaDeMensagem->setWindowFlag(Qt::FramelessWindowHint);
+    caixaDeMensagem->setWindowModality(Qt::ApplicationModal);
+    connect(this, SIGNAL(fecharCaixaMensagem()), caixaDeMensagem, SLOT(fecharJanela()));
+    caixaDeMensagem->setVisible(true);
+    caixaDeMensagem->show();
+    qApp->processEvents();
 
-    qApp->processEvents(QEventLoop::DialogExec);
-    progresso.setRange(0,1);
-    progresso.setValue(0);
-    progresso.setRange(0,0);
+    QThread* threadDAO = new QThread(nullptr);
+    controle = new ControleDAO(nullptr);
+    controle->moveToThread(threadDAO);
+    qRegisterMetaType<QMap<int,CadastroColaborador*>>("__tempMapColaboradores");
+    connect(this, SIGNAL(obterRelacaoColaboradores(QString,QString,QDate)), controle, SLOT(retornaRelacaoColaboradores(QString,QString,QDate)));
+    connect(controle, SIGNAL(enviarRelacaoColaboradores(QMap<int,CadastroColaborador*>)), this, SLOT(preencherTabela(QMap<int,CadastroColaborador*>)));
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
+    connect(caixaDeMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(terminate()));
+    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
+    threadDAO->start(QThread::NormalPriority);
+    emit obterRelacaoColaboradores(ui->campoID_Empresa->text(), ui->campoID_Filial->text(), ui->dataReferencia->date());
+}
 
-    controle = new ControleDAO(this);
-    QMap<int, CadastroColaborador*> __tempMap = controle->getColaboradoresAtivos(
-                ui->campoID_Empresa->text(),
-                ui->campoID_Filial->text(),
-                ui->dataReferencia->date());
-    progresso.setLabelText("Processando dados...");
-
+void RelacaoColaborador::preencherTabela(QMap<int, CadastroColaborador *> __tempMap)
+{
+    emit finishThread();
     if(__tempMap.isEmpty()) {
         QMessageBox::information(this, tr("Relação de Colaboradores"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
+        emit fecharCaixaMensagem();
         return;
     }
 
     QMapIterator<int, CadastroColaborador*> __mapIterator(__tempMap);
-    progresso.setMaximum(__tempMap.count());
-
     ui->tableWidget->setRowCount(__tempMap.count());
+    emit minimumProgressValue(0);
+    emit maximumProgressValue(__tempMap.count());
     int linha = 0;
     while (__mapIterator.hasNext()) {
         __mapIterator.next();
-        progresso.setValue(__mapIterator.key());
+        emit progressValue(linha);
         CadastroColaborador *cadastro = __mapIterator.value();
         inserirLinhaTabela(linha, ui->tableWidget->columnCount(), cadastro);
         linha++;
@@ -271,6 +284,7 @@ void RelacaoColaborador::getDatatable()
     ui->campoItemSelecionado->setText("Total de Registros");
     ui->campoTotalRegistros->setText(QString::number(__tempMap.count()));
     ui->tableWidget->resizeColumnsToContents();
+    emit fecharCaixaMensagem();
 }
 
 void RelacaoColaborador::inserirItemTabela(int r, int c, QString sValue)
@@ -344,6 +358,12 @@ void RelacaoColaborador::inserirLinhaTabela(int linha, int nrColunas, CadastroCo
             inserirItemTabela(linha, coluna, colaborador->getTipoDeSalario() );
         if(coluna == 21)
             inserirItemTabela(linha, coluna, colaborador->getSalario() );
+        if(coluna == 22)
+            inserirItemTabela(linha, coluna, colaborador->getPCD() );
+        if(coluna == 23)
+            inserirItemTabela(linha, coluna, colaborador->getSindicatoNome() );
+        if(coluna == 24)
+            inserirItemTabela(linha, coluna, colaborador->getSindicatoCNPJ() );
     }
 }
 
@@ -359,7 +379,7 @@ void RelacaoColaborador::exportarParaExcel()
 
     ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
     connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-    exp->exportar(__nomeArquivo);
+    exp->exportar(__nomeArquivo,0);
 }
 
 void RelacaoColaborador::exibirNumeroRegistros(QModelIndex i)

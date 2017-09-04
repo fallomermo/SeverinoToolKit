@@ -18,15 +18,17 @@ Pesquisar::Pesquisar(QWidget *parent, QMap<int, CadastroEmpresa *> ce, QMap<int,
 
     if(cf.isEmpty()) {
         QMessageBox::critical(this, tr("Cadatro de Empresa e Filial"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
-        close();
+        this->close();
     }
 
     if(getFlagTipoPesquisa() == 1) {
         connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(setEmpresa(int,int)));
         connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(setEmpresa(int,int)));
+        connect(ui->botaoOK, SIGNAL(clicked(bool)), this, SLOT(setEmpresa()));
     } else {
         connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(setFilial(int,int)));
         connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(setFilial(int,int)));
+        connect(ui->botaoOK, SIGNAL(clicked(bool)), this, SLOT(setFilial()));
     }
 
     connect(ui->botaoCancelar,SIGNAL(clicked(bool)), this, SLOT(close()));
@@ -127,11 +129,34 @@ void Pesquisar::setEmpresa(int r, int c)
     this->close();
 }
 
+void Pesquisar::setEmpresa()
+{
+    int c = 0;
+    int r = ui->tableWidget->currentRow();
+    QTableWidgetItem *item = ui->tableWidget->item(r,c);
+    emit getEmpresa(item->text());
+    this->close();
+}
+
 void Pesquisar::setFilial(int r, int c)
 {
     c = 0;
     QTableWidgetItem *item = ui->tableWidget->item(r,c);
     emit getFilial(item->text());
+    this->close();
+}
+
+void Pesquisar::setFilial()
+{
+    int c = 0;
+    int r = ui->tableWidget->currentRow();
+    QTableWidgetItem *item = ui->tableWidget->item(r,c);
+    emit getFilial(item->text());
+    this->close();
+}
+
+void Pesquisar::fecharPesquisa()
+{
     this->close();
 }
 

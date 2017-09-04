@@ -2,6 +2,9 @@
 #define TRUNCARARQUIVOSTEXTO_H
 
 #include <QWidget>
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
 
 namespace Ui {
 class TruncarArquivosTexto;
@@ -14,6 +17,11 @@ class TruncarArquivosTexto : public QWidget
 public:
     explicit TruncarArquivosTexto(QWidget *parent = 0);
     ~TruncarArquivosTexto();
+
+private slots:
+    void abrir();
+    void processar();
+    void salvar();
 
 private:
     Ui::TruncarArquivosTexto *ui;

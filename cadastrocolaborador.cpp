@@ -222,3 +222,33 @@ void CadastroColaborador::setSalario(double value)
 {
     Salario = value;
 }
+
+QString CadastroColaborador::getPCD() const
+{
+    return PCD;
+}
+
+void CadastroColaborador::setPCD(const QString &value)
+{
+    PCD = value;
+}
+
+QString CadastroColaborador::getSindicatoNome() const
+{
+    return SindicatoNome;
+}
+
+void CadastroColaborador::setSindicatoNome(const QString &value)
+{
+    SindicatoNome = value;
+}
+
+QString CadastroColaborador::getSindicatoCNPJ() const
+{
+    return SindicatoCNPJ;
+}
+
+void CadastroColaborador::setSindicatoCNPJ(const QString &value)
+{
+    SindicatoCNPJ = value;
+}

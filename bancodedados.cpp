@@ -67,7 +67,7 @@ QMap<int, CadastroFilial *> BancoDeDados::getFiliais()
     return m;
 }
 
-QMap<int, Eventos *> BancoDeDados::getPlanoContas(QString __idEmpresa, QString __idFilial, QString __IniComp, QString __FimComp)
+QMap<int, Eventos *> BancoDeDados::getPlanoContas(QString __idEmpresa, QString __idFilial, QString __IniComp, QString __FimComp, int __tipCal)
 {
     QMap<int, Eventos *> __tempMap;
     QString argumentos;
@@ -77,187 +77,33 @@ QMap<int, Eventos *> BancoDeDados::getPlanoContas(QString __idEmpresa, QString _
         argumentos.append(QString(" IN ( %0 ) ").arg(__idEmpresa));
 
         if(!__idFilial.isEmpty())
-            argumentos.append(QString(" AND hfi.codfil IN ( %0 ) ").arg(__idFilial));
+            argumentos.append(QString(" AND codfil IN ( %0 ) ").arg(__idFilial));
     }
+    argumentos.append(QString(" AND inicmp between ' %0 ' AND ' %1 ' AND tipcal = %2 ").arg(__IniComp).arg(__FimComp).arg(QString::number(__tipCal)));
 
-    argumentos.append(QString(" AND cal.inicmp between ' %0 ' AND ' %1 ' ").arg(__IniComp).arg(__FimComp));
-    QString comando = QString(" WITH planocontas (numemp, razsoc, codfil, nomfil, numcgc, nomcid, codcal, inicmp, nomloc, codeve, deseve, tipeve, valeve) "
-                              " AS "
-                              " (SELECT "
-                              "     ver.numemp "
-                              "    ,fil.razsoc "
-                              "    ,hfi.codfil "
-                              "    ,fil.nomfil "
-                              "    ,fil.numcgc "
-                              "    ,cid.nomcid "
-                              "    ,ver.codcal "
-                              "    ,cal.inicmp "
-                              "    ,orn.nomloc "
-                              "    ,ver.codeve "
-                              "    ,evc.deseve "
-                              "    ,evc.tipeve "
-                              "    ,SUM(ver.valeve) valeve "
-                              "   FROM r046ver ver "
-                              "   INNER JOIN r044cal cal "
-                              "     ON cal.numemp = ver.numemp "
-                              "     AND cal.codcal = ver.codcal "
-                              "   INNER JOIN r038hfi hfi "
-                              "     ON hfi.numemp = ver.numemp "
-                              "     AND hfi.tipcol = ver.tipcol "
-                              "     AND hfi.numcad = ver.numcad "
-                              "     AND hfi.datalt = (SELECT "
-                              "         MAX(tb0.datalt) "
-                              "       FROM r038hfi tb0 "
-                              "       WHERE tb0.numemp = hfi.numemp "
-                              "       AND tb0.tipcol = hfi.tipcol "
-                              "       AND tb0.numcad = hfi.numcad "
-                              "       AND tb0.numemp = tb0.empatu "
-                              "       AND tb0.numcad = tb0.cadatu "
-                              "       AND tb0.datalt <= DATEADD(DAY, -1, DATEADD(MONTH, 1, cal.perref))) "
-                              "   INNER JOIN r030fil fil "
-                              "     ON fil.numemp = ver.numemp "
-                              "     AND fil.codfil = hfi.codfil "
-                              "   INNER JOIN r074cid cid "
-                              "     ON cid.codest = fil.codest "
-                              "     AND cid.codcid = fil.codcid "
-                              "   INNER JOIN r038hlo hlo "
-                              "     ON hlo.numemp = ver.numemp "
-                              "     AND hlo.tipcol = ver.tipcol "
-                              "     AND hlo.numcad = ver.numcad "
-                              "     AND hlo.datalt = (SELECT "
-                              "         MAX(tb1.datalt) "
-                              "       FROM r038hlo tb1 "
-                              "       WHERE tb1.numemp = hlo.numemp "
-                              "       AND tb1.tipcol = hlo.tipcol "
-                              "       AND tb1.numcad = hlo.numcad "
-                              "       AND tb1.datalt <= DATEADD(DAY, -1, DATEADD(MONTH, 1, cal.perref))) "
-                              "   INNER JOIN r016orn orn "
-                              "     ON orn.taborg = hlo.taborg "
-                              "     AND orn.numloc = hlo.numloc "
-                              "   INNER JOIN r008evc evc "
-                              "     ON evc.codtab = ver.tabeve "
-                              "     AND evc.codeve = ver.codeve "
-                              "   WHERE ver.numemp %0 "
-                              "   AND cal.tipcal = 11 "
-                              "   GROUP BY ver.numemp "
-                              "           ,fil.razsoc "
-                              "           ,hfi.codfil "
-                              "           ,fil.nomfil "
-                              "           ,fil.numcgc "
-                              "           ,cid.nomcid "
-                              "           ,ver.codcal "
-                              "           ,cal.inicmp "
-                              "           ,orn.nomloc "
-                              "           ,ver.codeve "
-                              "           ,evc.deseve "
-                              "           ,evc.tipeve), "
-                              " liquidofolha (numemp, razsoc, codfil, nomfil, numcgc, nomcid, codcal, inicmp, nomloc, codeve, deseve, tipeve, valeve) "
-                              " AS "
-                              " (SELECT "
-                              "     ver.numemp "
-                              "    ,fil.razsoc "
-                              "    ,hfi.codfil "
-                              "    ,fil.nomfil "
-                              "    ,fil.numcgc "
-                              "    ,cid.nomcid "
-                              "    ,ver.codcal "
-                              "    ,cal.inicmp "
-                              "    ,orn.nomloc "
-                              "    ,9999 codeve "
-                              "    ,'Líquido Folha' deseve "
-                              "    ,1 tipeve "
-                              "    ,(SUM(CASE "
-                              "       WHEN evc.tipeve IN (1, 2) THEN ver.valeve "
-                              "       ELSE (ver.valeve * (-1)) "
-                              "     END)) valeve "
-                              "   FROM r046ver ver "
-                              "   INNER JOIN r044cal cal "
-                              "     ON cal.numemp = ver.numemp "
-                              "     AND cal.codcal = ver.codcal "
-                              "   INNER JOIN r038hfi hfi "
-                              "     ON hfi.numemp = ver.numemp "
-                              "     AND hfi.tipcol = ver.tipcol "
-                              "     AND hfi.numcad = ver.numcad "
-                              "     AND hfi.datalt = (SELECT "
-                              "         MAX(tb0.datalt) "
-                              "       FROM r038hfi tb0 "
-                              "       WHERE tb0.numemp = hfi.numemp "
-                              "       AND tb0.tipcol = hfi.tipcol "
-                              "       AND tb0.numcad = hfi.numcad "
-                              "       AND tb0.numemp = tb0.empatu "
-                              "       AND tb0.numcad = tb0.cadatu "
-                              "       AND tb0.datalt <= DATEADD(DAY, -1, DATEADD(MONTH, 1, cal.perref))) "
-                              "   INNER JOIN r030fil fil "
-                              "     ON fil.numemp = ver.numemp "
-                              "     AND fil.codfil = hfi.codfil "
-                              "   INNER JOIN r074cid cid "
-                              "     ON cid.codest = fil.codest "
-                              "     AND cid.codcid = fil.codcid "
-                              "   INNER JOIN r038hlo hlo "
-                              "     ON hlo.numemp = ver.numemp "
-                              "     AND hlo.tipcol = ver.tipcol "
-                              "     AND hlo.numcad = ver.numcad "
-                              "     AND hlo.datalt = (SELECT "
-                              "         MAX(tb1.datalt) "
-                              "       FROM r038hlo tb1 "
-                              "       WHERE tb1.numemp = hlo.numemp "
-                              "       AND tb1.tipcol = hlo.tipcol "
-                              "       AND tb1.numcad = hlo.numcad "
-                              "       AND tb1.datalt <= DATEADD(DAY, -1, DATEADD(MONTH, 1, cal.perref))) "
-                              "   INNER JOIN r016orn orn "
-                              "     ON orn.taborg = hlo.taborg "
-                              "     AND orn.numloc = hlo.numloc "
-                              "   INNER JOIN r008evc evc "
-                              "     ON evc.codtab = ver.tabeve "
-                              "     AND evc.codeve = ver.codeve "
-                              "   WHERE ver.numemp %0 "
-                              "   AND evc.tipeve IN (1, 2, 3) "
-                              "   AND cal.tipcal = 11 "
-                              "   GROUP BY ver.numemp "
-                              "           ,fil.razsoc "
-                              "           ,hfi.codfil "
-                              "           ,fil.nomfil "
-                              "           ,fil.numcgc "
-                              "           ,cid.nomcid "
-                              "           ,ver.codcal "
-                              "           ,cal.inicmp "
-                              "           ,orn.nomloc) "
-                              " SELECT "
-                              "   numemp "
-                              "  ,razsoc "
-                              "  ,codfil "
-                              "  ,nomfil "
-                              "  ,numcgc "
-                              "  ,nomcid "
-                              "  ,codcal "
-                              "  ,inicmp "
-                              "  ,nomloc "
-                              "  ,codeve "
-                              "  ,deseve "
-                              "  ,tipeve "
-                              "  ,valeve "
-                              " FROM planocontas UNION SELECT "
-                              "   numemp "
-                              "  ,razsoc "
-                              "  ,codfil "
-                              "  ,nomfil "
-                              "  ,numcgc "
-                              "  ,nomcid "
-                              "  ,codcal "
-                              "  ,inicmp "
-                              "  ,nomloc "
-                              "  ,codeve "
-                              "  ,deseve "
-                              "  ,tipeve "
-                              "  ,valeve "
-                              " FROM liquidofolha ")
-            .arg(argumentos);
+    QString comando = QString(" SELECT numemp, "
+                              "        razsoc, "
+                              "        codfil, "
+                              "        nomfil, "
+                              "        numcgc, "
+                              "        nomcid, "
+                              "        codcal, "
+                              "        inicmp, "
+                              "        tipcal, "
+                              "        nomloc, "
+                              "        codeve, "
+                              "        deseve, "
+                              "        tipeve, "
+                              "        valeve "
+                              " FROM   view_planocontas_agregado "
+                              " WHERE  numemp %0 ").arg(argumentos);
     QSqlQuery consulta;
+    consulta.setForwardOnly(true);
     consulta.prepare(comando);
+
     if(!consulta.exec()) {
         emit messagemRetorno(consulta.lastError().text());
     } else {
-        consulta.setForwardOnly(true);
         int pos = 0;
         while (consulta.next()) {
             pos++;
@@ -271,6 +117,7 @@ QMap<int, Eventos *> BancoDeDados::getPlanoContas(QString __idEmpresa, QString _
             evt->setCidadeRegiao(QVariant( consulta.value( "nomcid" ) ).toString());
             evt->setCalculo(QVariant( consulta.value( "codcal" ) ).toInt(0));
             evt->setCompetencia(QVariant( consulta.value( "inicmp" ) ).toDate());
+            evt->setTipoDeCalculo(QVariant( consulta.value( "tipcal" ) ).toInt(0));
             evt->setSetor(QVariant( consulta.value( "nomloc" ) ).toString());
             evt->setCodigoEvento(QVariant( consulta.value( "codeve" ) ).toInt(0));
             evt->setEvento(QVariant( consulta.value("deseve") ).toString());
@@ -399,9 +246,20 @@ QMap<int, EcoclinicRepasses *> BancoDeDados::getPlanoSaude(QString __dataInicial
     return __tempMap;
 }
 
-QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __idFilial, QString __IniComp, QString __FimComp)
+QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __idFilial, QString __IniComp, QString __FimComp, int __tipoCalculo)
 {
     setSaldoRateioNegativo(0.0);
+    if(__tipoCalculo == 14) {
+        __IniComp.replace('-','/');
+        __FimComp.replace('-','/');
+        QDate __nIni( QDate::fromString(__IniComp,"yyyy/MM/dd") );
+        QDate __nFim( QDate::fromString(__FimComp,"yyyy/MM/dd") );
+        QDate __n_ini(__nIni.year(), __nIni.month()-1, __nIni.day());
+        QDate __n_fim(__nFim.year(), __nFim.month()-1, __nFim.day());
+        __IniComp = __n_ini.toString(Qt::ISODate);
+        __FimComp = __n_fim.toString(Qt::ISODate);
+    }
+
     QMap<int, Eventos *> __tempMap;
     int pos = 0;
     QString argumentos;
@@ -413,7 +271,8 @@ QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __id
     if(!__idFilial.isEmpty())
         argumentos.append(QString(" AND gps.codfil IN ( %0 ) ").arg(__idFilial));
 
-    argumentos.append(QString(" AND gps.cmpref BETWEEN ' %0 ' AND ' %1 ' ").arg(__IniComp).arg(__FimComp));
+    argumentos.append(QString(" AND gps.cmpref BETWEEN ' %0 ' AND ' %1 ' AND gps.tipcal = %2 ")
+                      .arg(__IniComp).arg(__FimComp).arg(QString::number(__tipoCalculo)));
     QString comando = QString(" "
                               " SELECT gps.numemp, "
                               " fil.razsoc, "
@@ -423,6 +282,7 @@ QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __id
                               " cid.nomcid, "
                               " gps.codcal, "
                               " gps.cmpref, "
+                              " gps.tipcal, "
                               " orn.nomloc, "
                               " Sum( gps.valter ) valter, "
                               " Sum( ( gps.valseg + gps.acitra + gps.valemp ) ) valgps, "
@@ -438,7 +298,6 @@ QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __id
                               " ON cid.estcid = fil.codest "
                               " AND cid.codcid = fil.codcid "
                               " WHERE  gps.numemp %0 "
-                              " AND gps.tipcal = 11 "
                               " GROUP  BY gps.numemp, "
                               " fil.razsoc, "
                               " gps.codfil, "
@@ -447,6 +306,7 @@ QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __id
                               " cid.nomcid, "
                               " gps.codcal, "
                               " gps.cmpref, "
+                              " gps.tipcal, "
                               " orn.nomloc ")
             .arg(argumentos);
     QSqlQuery consulta;
@@ -470,6 +330,7 @@ QMap<int, Eventos *> BancoDeDados::getGuiaINSS(QString __idEmpresa, QString __id
             evt->setCidadeRegiao(QVariant( consulta.value( "nomcid" ) ).toString());
             evt->setCalculo(QVariant( consulta.value( "codcal" ) ).toInt(0));
             evt->setCompetencia(QVariant( consulta.value( "cmpref" ) ).toDate());
+            evt->setTipoDeCalculo( 14 );
             evt->setSetor(QVariant( consulta.value( "nomloc" ) ).toString());
             evt->setCodigoEvento(QVariant( 9998 ).toInt(0));
             evt->setEvento(QVariant( QString("Guia INSS Folha") ).toString());
@@ -639,6 +500,75 @@ QMap<int, Eventos *> BancoDeDados::processarSaldosRegistros(QMap<QString, QMap<i
     return __mapAgro;
 }
 
+QMap<int, ObjetoRetencao *> BancoDeDados::getMetaRetencao(QDate __dataInicio, QDate __dataFinal)
+{
+    QMap<int, ObjetoRetencao *> __tempMap;
+    QString comando = QString( "select a.numcad, "
+                               "a.nomfun, "
+                               "a.datafa, "
+                               "a.datadm, "
+                               "a.titcar, "
+                               "a.nomloc, "
+                               "a.caudem, "
+                               "a.desdem, "
+                               "a.numemp, "
+                               "a.codfil, "
+                               "a.nomfil, "
+                               "a.nomrsl, "
+                               "a.nroadm, "
+                               "a.nrodem  "
+                               "from view_meta_retencaoadm a  "
+                               "where a.numemp > 1000 and a.datadm between ' %0 ' AND ' %1 ' "
+                               "union "
+                               "select d.numcad, "
+                               "d.nomfun, "
+                               "d.datafa, "
+                               "d.datadm, "
+                               "d.titcar, "
+                               "d.nomloc, "
+                               "d.caudem, "
+                               "d.desdem, "
+                               "d.numemp, "
+                               "d.codfil, "
+                               "d.nomfil, "
+                               "d.nomrsl, "
+                               "d.nroadm, "
+                               "d.nrodem  "
+                               "from view_meta_retencaodem d  "
+                               "where d.numemp > 1000 and d.datafa between ' %0 ' AND ' %1 ' ")
+            .arg(__dataInicio.toString(Qt::ISODate))
+            .arg(__dataFinal.toString(Qt::ISODate));
+    QSqlQuery consulta;
+    consulta.setForwardOnly(true);
+    consulta.prepare(comando);
+    if(!consulta.exec()) {
+        emit messagemRetorno(consulta.lastError().text());
+        return __tempMap;
+    } else {
+        int pos = 0;
+        while (consulta.next()) {
+            pos++;
+            ObjetoRetencao *retencao = new ObjetoRetencao();
+            retencao->setCadastro( QVariant( consulta.value("numcad") ).toInt(nullptr) );
+            retencao->setNome( QVariant( consulta.value("nomfun") ).toString() );
+            retencao->setDemissao( QVariant( consulta.value("datafa") ).toDate() );
+            retencao->setAdmissao( QVariant( consulta.value("datadm") ).toDate() );
+            retencao->setCargo( QVariant( consulta.value("titcar") ).toString() );
+            retencao->setSetor( QVariant( consulta.value("nomloc") ).toString() );
+            retencao->setCodigoDaCausa( QVariant( consulta.value("caudem") ).toInt(nullptr) );
+            retencao->setCausa( QVariant( consulta.value("desdem") ).toString() );
+            retencao->setCodigoDaEmpresa( QVariant( consulta.value("numemp") ).toInt(nullptr) );
+            retencao->setCodigoDaFilial( QVariant( consulta.value("codfil") ).toInt(nullptr) );
+            retencao->setFilial( QVariant( consulta.value("nomfil") ).toString() );
+            retencao->setRecrutador( QVariant( consulta.value("nomrsl") ).toString() );
+            retencao->setAdmitidos( QVariant( consulta.value("nroadm") ).toInt(nullptr) );
+            retencao->setDemitidos( QVariant( consulta.value("nrodem") ).toInt(nullptr) );
+            __tempMap.insert(pos, retencao);
+        }
+    }
+    return __tempMap;
+}
+
 QMap<int, CadastroColaborador *> BancoDeDados::getColaboradoresAtivos(QString __ID_Empresa, QString __ID_Filial, QDate __dataReferencia)
 {
     QMap<int, CadastroColaborador*> __tempMap;
@@ -679,7 +609,10 @@ QMap<int, CadastroColaborador *> BancoDeDados::getColaboradoresAtivos(QString __
                               "        hca.codcar, "
                               "        car.titcar, "
                               "        hsa.tipsal, "
-                              "        hsa.valsal "
+                              "        hsa.valsal, "
+                              "        fun.deffis, "
+                              "        sin.nomsin, "
+                              "        sin.numcgc cgcsin "
                               " FROM   r034fun fun "
                               "        INNER JOIN r038hvi hvi "
                               "                ON hvi.numemp = fun.numemp "
@@ -737,6 +670,16 @@ QMap<int, CadastroColaborador *> BancoDeDados::getColaboradoresAtivos(QString __
                               "                                            AND tb5.tipcol = hsa.tipcol "
                               "                                            AND tb5.numcad = hsa.numcad "
                               "                                            AND tb5.datalt = hsa.datalt) "
+                              "         LEFT JOIN r038hsi hsi "
+                              "                ON hsi.numemp = fun.numemp "
+                              "                   AND hsi.tipcol = fun.tipcol "
+                              "                   AND hsi.numcad = fun.numcad "
+                              "                   AND hsi.datalt = (SELECT Max(tb6.datalt) "
+                              "                                     FROM   r038hsi tb6 "
+                              "                                     WHERE  tb6.numemp = hsi.numemp "
+                              "                                            AND tb6.tipcol = hsi.tipcol "
+                              "                                            AND tb6.numcad = hsi.numcad "
+                              "                                            AND tb6.datalt <= ' %0 ') "
                               "        INNER JOIN r022vin vin  "
                               "                ON vin.codvin = hvi.codvin "
                               "                   AND vin.calfol = 'S' "
@@ -757,6 +700,8 @@ QMap<int, CadastroColaborador *> BancoDeDados::getColaboradoresAtivos(QString __
                               "        INNER JOIN r024car car  "
                               "                ON car.estcar = hca.estcar "
                               "                   AND car.codcar = hca.codcar "
+                              "        INNER JOIN r014sin sin  "
+                              "                ON sin.codsin = hsi.codsin "
                               " WHERE  fun.numemp %1 "
                               "        AND fun.datadm <= ' %0 ' "
                               "        AND NOT EXISTS (SELECT 1 "
@@ -808,12 +753,202 @@ QMap<int, CadastroColaborador *> BancoDeDados::getColaboradoresAtivos(QString __
                 colaborador->setCargo( QVariant( consulta.value( 19 )).toString());
                 colaborador->setTipoDeSalario( QVariant( consulta.value( 20 )).toInt(nullptr));
                 colaborador->setSalario( QVariant( consulta.value( 21 )).toDouble(nullptr));
+                colaborador->setSindicatoNome( QVariant( consulta.value( 23 )).toString());
+                colaborador->setSindicatoCNPJ( QVariant( consulta.value( 24 )).toString());
                 __tempMap.insert(pos, colaborador);
                 pos++;
             }
         }
     }
     return __tempMap;
+}
+
+QMap<int, ObjetoCrednossoRetorno *> BancoDeDados::getCrednossoRetorno(QDate __competencia)
+{
+    QDate __folhaMens(__competencia.year(), __competencia.month(), 1);
+    QDate __iniPeriodo(__competencia.year(), __competencia.month()+1, 1);
+    int ultimoDiaMes = 0;
+
+    if( ((__competencia.month()+1)%2) == 0)
+        ultimoDiaMes = 30;
+    else
+        ultimoDiaMes = 31;
+
+    QDate __fimPeriodo(__competencia.year(), __competencia.month()+1, ultimoDiaMes);
+    QString __FOLHA = QString(" AND cal.inicmp = ' %0 ' ").arg(__folhaMens.toString(Qt::ISODate));
+    QString __FERIAS = QString(" AND fev.inifer BETWEEN ' %0 ' AND ' %1 ' ").arg(__iniPeriodo.toString(Qt::ISODate)).arg(__fimPeriodo.toString(Qt::ISODate));
+
+    QMap<int, ObjetoCrednossoRetorno *> __tempMap;
+    QString comando = QString(" WITH crednossofolha (numemp, numcpf, razsoc, codfil, nomfil, numcgc, numcad, "
+                              "      nomfun, "
+                              "      codeve, deseve, valeve) "
+                              "      AS (SELECT ver.numemp, "
+                              "                 fun.numcpf, "
+                              "                 fil.razsoc, "
+                              "                 hfi.codfil, "
+                              "                 fil.nomfil, "
+                              "                 fil.numcgc, "
+                              "                 ver.numcad, "
+                              "                 fun.nomfun, "
+                              "                 ver.codeve, "
+                              "                 evc.deseve, "
+                              "                 ver.valeve "
+                              "          FROM   r046ver ver "
+                              "                 INNER JOIN r044cal cal "
+                              "                         ON cal.numemp = ver.numemp "
+                              "                            AND cal.codcal = ver.codcal "
+                              "                AND cal.tipcal = 11 "
+                              "                 INNER JOIN r008evc evc "
+                              "                         ON evc.codtab = ver.tabeve "
+                              "                            AND evc.codeve = ver.codeve "
+                              "                 INNER JOIN r034fun fun "
+                              "                         ON fun.numemp = ver.numemp "
+                              "                            AND fun.tipcol = ver.tipcol "
+                              "                            AND fun.numcad = ver.numcad "
+                              "                 INNER JOIN r038hfi hfi "
+                              "                         ON hfi.numemp = ver.numemp "
+                              "                            AND hfi.tipcol = ver.tipcol "
+                              "                            AND hfi.numcad = ver.numcad "
+                              "                            AND hfi.datalt = (SELECT Max(tb0.datalt) "
+                              "                                              FROM   r038hfi tb0 "
+                              "                                              WHERE  tb0.numemp = hfi.numemp "
+                              "                                                     AND tb0.tipcol = hfi.tipcol "
+                              "                                                     AND tb0.numcad = hfi.numcad "
+                              "                                                     AND tb0.numemp = tb0.empatu "
+                              "                                                     AND tb0.numcad = tb0.cadatu "
+                              "                           AND tb0.datalt <= cal.perref) "
+                              "                 INNER JOIN r030fil fil "
+                              "                         ON fil.numemp = ver.numemp "
+                              "                            AND fil.codfil = hfi.codfil "
+                              "          WHERE  ver.numemp > 1000 "
+                              "                 AND ver.codeve = 1767"
+                              "                 %0 "
+                              "      ), "
+                              "      crednossoferias (numemp, numcpf, razsoc, codfil, nomfil, numcgc, numcad, "
+                              "      nomfun, codeve, deseve, valeve) "
+                              "      AS (SELECT fev.numemp, "
+                              "                 fun.numcpf, "
+                              "                 fil.razsoc, "
+                              "                 hfi.codfil, "
+                              "                 fil.nomfil, "
+                              "                 fil.numcgc, "
+                              "                 fev.numcad, "
+                              "                 fun.nomfun, "
+                              "                 fev.codeve, "
+                              "                 evc.deseve, "
+                              "                 fev.valeve "
+                              "          FROM   r040fev fev "
+                              "                 INNER JOIN r008evc evc "
+                              "                         ON evc.codtab = fev.tabeve "
+                              "                            AND evc.codeve = fev.codeve "
+                              "                 INNER JOIN r034fun fun "
+                              "                         ON fun.numemp = fev.numemp "
+                              "                            AND fun.tipcol = fev.tipcol "
+                              "                            AND fun.numcad = fev.numcad "
+                              "                 INNER JOIN r038hfi hfi "
+                              "                         ON hfi.numemp = fev.numemp "
+                              "                            AND hfi.tipcol = fev.tipcol "
+                              "                            AND hfi.numcad = fev.numcad "
+                              "                            AND hfi.datalt = (SELECT Max(tb0.datalt) "
+                              "                                              FROM   r038hfi tb0 "
+                              "                                              WHERE  tb0.numemp = hfi.numemp "
+                              "                                                     AND tb0.tipcol = hfi.tipcol "
+                              "                                                     AND tb0.numcad = hfi.numcad "
+                              "                                                     AND tb0.numemp = tb0.empatu "
+                              "                                                     AND tb0.numcad = tb0.cadatu) "
+                              "                 INNER JOIN r030fil fil "
+                              "                         ON fil.numemp = fev.numemp "
+                              "                            AND fil.codfil = hfi.codfil "
+                              "          WHERE  fev.numemp > 1000 "
+                              "                 AND fev.codeve = 1209"
+                              "                 %1 "
+                              " ) "
+                              " SELECT numemp, "
+                              "        numcpf, "
+                              "        razsoc, "
+                              "        codfil, "
+                              "        nomfil, "
+                              "        numcgc, "
+                              "        numcad, "
+                              "        nomfun, "
+                              "        codeve, "
+                              "        deseve, "
+                              "        valeve "
+                              " FROM   crednossofolha "
+                              " UNION "
+                              " SELECT numemp, "
+                              "        numcpf, "
+                              "        razsoc, "
+                              "        codfil, "
+                              "        nomfil, "
+                              "        numcgc, "
+                              "        numcad, "
+                              "        nomfun, "
+                              "        codeve, "
+                              "        deseve, "
+                              "        valeve "
+                              " FROM   crednossoferias "
+                              " ORDER  BY numemp, "
+                              "           codfil, "
+                              "           numcad  ")
+            .arg(__FOLHA).arg(__FERIAS);
+    QSqlQuery consulta;
+    consulta.setForwardOnly(true);
+    consulta.prepare(comando);
+    if(!consulta.exec()) {
+        emit messagemRetorno(consulta.lastError().text());
+        return __tempMap;
+    } else {
+        int pos = 0;
+        while (consulta.next()) {
+            pos++;
+            ObjetoCrednossoRetorno *retorno = new ObjetoCrednossoRetorno;
+            retorno->setCodigoDaEmpresa( QVariant( consulta.value("numemp") ).toInt(nullptr));
+            retorno->setCPF( QVariant( consulta.value("numcpf") ).toInt(nullptr));
+            retorno->setEmpresa( QVariant( consulta.value("razsoc") ).toString());
+            retorno->setCodigoDaFilial( QVariant( consulta.value("codfil") ).toInt(nullptr));
+            retorno->setFilial( QVariant( consulta.value("nomfil") ).toString());
+            retorno->setCNPJ( QVariant( consulta.value("numcgc") ).toString());
+            retorno->setMatricula( QVariant( consulta.value("numcad") ).toInt(nullptr));
+            retorno->setNome( QVariant( consulta.value("nomfun") ).toString());
+            retorno->setCodigoDoEvento( QVariant( consulta.value("codeve") ).toInt(nullptr));
+            retorno->setEvento( QVariant( consulta.value("deseve") ).toString());
+            retorno->setValor( QVariant( consulta.value("valeve") ).toDouble(nullptr));
+            __tempMap.insert(pos, retorno);
+        }
+    }
+    return __tempMap;
+}
+
+QMap<int, UpdateDataTableColumm *> BancoDeDados::getUpdateCadastroArquivo(int codigoEmpresa, int matricula, int linha, int coluna, bool ok)
+{
+    QMap<int, UpdateDataTableColumm *> __tempMap;
+    QString comando = QString(" SELECT fun.nomfun, fun.codfil, fil.nomfil "
+                              " FROM   r034fun fun "
+                              "        INNER JOIN r030fil fil "
+                              "                ON fil.numemp = fun.numemp "
+                              "               AND fil.codfil = fun.codfil "
+                              " WHERE  fun.numemp = %0 "
+                              "    AND fun.numcad = %1 ").arg(codigoEmpresa).arg(matricula);
+    QSqlQuery consulta;
+    consulta.setForwardOnly(true);
+    consulta.prepare(comando);
+    if(!consulta.exec()) {
+        emit messagemRetorno(consulta.lastError().text());
+        return __tempMap;
+    } else {
+        while (consulta.next()) {
+            UpdateDataTableColumm *cadastro = new UpdateDataTableColumm;
+            cadastro->setLinha(linha);
+            cadastro->setColuna(coluna);
+            cadastro->setNome(consulta.value("nomfun").toString());
+            cadastro->setCodigoFilial(consulta.value("codfil").toInt(nullptr));
+            cadastro->setFilial(consulta.value("nomfil").toString());
+            cadastro->setUltimoRegistro(ok);
+            __tempMap.insert(0, cadastro);
+        }
+        return __tempMap;
+    }
 }
 
 double BancoDeDados::getSaldoRateioNegativo() const

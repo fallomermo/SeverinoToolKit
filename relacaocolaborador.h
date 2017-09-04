@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QFile>
+#include <QThread>
 #include <QWidget>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -18,6 +19,7 @@
 #include "cadastrofilial.h"
 #include "cadastrocolaborador.h"
 #include "exportararquivo.h"
+#include "caixamensagemprogresso.h"
 
 
 namespace Ui {
@@ -39,6 +41,14 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
 
+signals:
+    void finishThread();
+    void progressValue(int);
+    void minimumProgressValue(int);
+    void maximumProgressValue(int);
+    void fecharCaixaMensagem();
+    void obterRelacaoColaboradores(QString, QString, QDate);
+
 private slots:
     void filtroItemTabela(QString);
     void pesquisarEmpresa();
@@ -50,6 +60,7 @@ private slots:
     void retornaCadastroFilial(QString);
     void focusDataReferencia();
     void getDatatable();
+    void preencherTabela(QMap<int, CadastroColaborador*>);
     void inserirItemTabela(int,int,QString);
     void inserirItemTabela(int,int,QDate);
     void inserirItemTabela(int, int, double);

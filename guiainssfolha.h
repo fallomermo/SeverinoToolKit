@@ -18,6 +18,7 @@
 #include "eventos.h"
 #include "controledao.h"
 #include "exportararquivo.h"
+#include "caixamensagemprogresso.h"
 
 
 namespace Ui {
@@ -39,6 +40,20 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
 
+    QString getCodigoEmpresaAtivo() const;
+    void setCodigoEmpresaAtivo(const QString &value);
+
+    QString getCodigoFilialAtivo() const;
+    void setCodigoFilialAtivo(const QString &value);
+
+signals:
+    void obterGuiaINSS(QString,QString,QString,QString,int);
+    void finishThread();
+    void setProgressValue(int);
+    void minimumProgressValue(int);
+    void maximumProgressValue(int);
+    void fecharCaixaMensagem();
+
 private slots:
     void filtroItemTabela(QString);
     void focusPeriodoInicial();
@@ -51,6 +66,7 @@ private slots:
     void retornaCadastroFilial();
     void retornaCadastroFilial(QString);
     void getDatatable();
+    void preencherTabela(QMap<int, Eventos*>);
     void inserirItemTabela(int,int,QString);
     void inserirItemTabela(int,int,QDate);
     void inserirItemTabela(int, int, double);
@@ -64,6 +80,9 @@ private:
     QMap<int, CadastroEmpresa *> mapEmpresas;
     QMap<int, CadastroFilial *> mapFiliais;
     ControleDAO *controle;
+
+    QString CodigoEmpresaAtivo;
+    QString CodigoFilialAtivo;
 };
 
 #endif // GUIAINSSFOLHA_H

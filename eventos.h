@@ -69,6 +69,9 @@ public:
     int getNumeroRegistros() const;
     void setNumeroRegistros(int value);
 
+    int getTipoDeCalculo() const;
+    void setTipoDeCalculo(int value);
+
 signals:
 
 public slots:
@@ -82,6 +85,7 @@ private:
     QString CidadeRegiao;
     int Calculo;
     QDate Competencia;
+    int TipoDeCalculo;
     QString Setor;
     int CodigoEvento;
     QString Evento;

@@ -59,8 +59,6 @@ void PlanoDeContas::atualizarTabela()
 {
     ui->campoIDEmpresa->setToolTip("Código da Empresa.");
     ui->campoIDFilial->setToolTip("Código da Filial.");
-    //    ui->botaoPesquisaEmpresa->setToolTip("Lista de Empresas Disponíveis.");
-    //    ui->botaoPesquisaFilial->setToolTip("Lista de Filiais Disponíveis.");
     ui->campoInicioPeriodo->setToolTip("Início da Competência de Cálculo.");
     ui->campoFinalPeriodo->setToolTip("Fim da Competência de Cálculo.");
     ui->botaoProcessar->setToolTip("Clique para processar a requisição das Informações.");
@@ -74,6 +72,7 @@ void PlanoDeContas::atualizarTabela()
                                        << "Cidade Região"
                                        << "Cálculo"
                                        << "Competência"
+                                       << "Tipo de Cálculo"
                                        << "Setor"
                                        << "Código do Evento"
                                        << "Descrição do Evento"
@@ -86,55 +85,67 @@ void PlanoDeContas::atualizarTabela()
 
 void PlanoDeContas::empresaSelecionada()
 {
-    QMapIterator<int, CadastroEmpresa*> mi(getMapEmpresas());
-    QString _nomeEmpresa;
+    if(!ui->campoIDEmpresa->text().isEmpty()) {
+        QMapIterator<int, CadastroEmpresa*> mi(getMapEmpresas());
+        QString _nomeEmpresa;
 
-    while (mi.hasNext()) {
-        mi.next();
-        CadastroEmpresa *_cemp = new CadastroEmpresa(this);
-        _cemp = mi.value();
+        while (mi.hasNext()) {
+            mi.next();
+            CadastroEmpresa *_cemp = new CadastroEmpresa(this);
+            _cemp = mi.value();
 
-        if(_cemp->getID_Empresa() == ui->campoIDEmpresa->text()) {
-            _nomeEmpresa = _cemp->getEmpresa();
+            if(_cemp->getID_Empresa() == ui->campoIDEmpresa->text()) {
+                _nomeEmpresa = _cemp->getEmpresa();
+            }
         }
-    }
 
-    if(_nomeEmpresa.isEmpty()) {
-        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa não encontrada [!]"), QMessageBox::Ok);
-        ui->campoIDEmpresa->setFocus();
+        if(_nomeEmpresa.isEmpty()) {
+            QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa não encontrada [!]"), QMessageBox::Ok);
+            ui->campoIDEmpresa->setFocus();
+        } else {
+            ui->campoNomeEmpresa->setText(_nomeEmpresa);
+            ui->campoIDFilial->setFocus();
+        }
     } else {
-        ui->campoNomeEmpresa->setText(_nomeEmpresa);
         ui->campoIDFilial->setFocus();
     }
 }
 
 void PlanoDeContas::filialSelecionada()
 {
-    if(ui->campoNomeEmpresa->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Seleção de Filtro"), QString("Nenhuma Empresa Selecionada"), QMessageBox::Ok);
+    if(ui->campoNomeEmpresa->text().isEmpty() && !ui->campoIDFilial->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Seleção de Filtro"), QString("Nenhuma Empresa Selecionada"),QMessageBox::Ok);
         ui->campoIDEmpresa->setFocus();
     } else {
-        QMapIterator<int, CadastroFilial*> mi(getMapFiliais());
-        QString _nomeFilial;
+        if(!ui->campoIDFilial->text().isEmpty()) {
+            QMapIterator<int, CadastroFilial*> mi(getMapFiliais());
+            QString _nomeFilial;
 
-        while (mi.hasNext()) {
-            mi.next();
-            CadastroFilial *_cfil = new CadastroFilial(this);
-            _cfil = mi.value();
+            while (mi.hasNext()) {
+                mi.next();
+                CadastroFilial *_cfil = new CadastroFilial(this);
+                _cfil = mi.value();
 
-            if(_cfil->getID_Empresa() == ui->campoIDEmpresa->text()) {
-                if(_cfil->getID_Filial() == ui->campoIDFilial->text()) {
-                    _nomeFilial = _cfil->getFilial();
+                if(_cfil->getID_Empresa() == ui->campoIDEmpresa->text()) {
+                    if(_cfil->getID_Filial() == ui->campoIDFilial->text()) {
+                        _nomeFilial = _cfil->getFilial();
+                    }
                 }
             }
-        }
 
-        if(_nomeFilial.isEmpty()) {
-            QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial não encontrada [!]"), QMessageBox::Ok);
-            ui->campoIDFilial->setFocus();
+            if(_nomeFilial.isEmpty()) {
+                QMessageBox::critical(
+                            this,
+                            tr("Cadastro Filial [!]"),
+                            QString("Filial não encontrada [!]"),
+                            QMessageBox::Ok);
+                ui->campoIDFilial->setFocus();
+            } else {
+                ui->campoNomeFilial->setText(_nomeFilial);
+                ui->campoFolhaNormal->setFocus();
+            }
         } else {
-            ui->campoNomeFilial->setText(_nomeFilial);
-            ui->botaoProcessar->setFocus();
+            ui->campoFolhaNormal->setFocus();
         }
     }
 }
@@ -243,36 +254,61 @@ void PlanoDeContas::setFilial(QString f)
 
 void PlanoDeContas::getDatatable()
 {
-    QProgressDialog _progresso("Processando... \nAguardade!", "Cancelar", 70, 200, this);
-    _progresso.setWindowModality(Qt::WindowModal);
-    _progresso.setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    _progresso.activateWindow();
-    _progresso.setRange(0, 0);
-    _progresso.setValue(0);
-    _progresso.setAutoClose(true);
-    _progresso.setVisible(true);
-    _progresso.show();
-    qApp->processEvents(QEventLoop::DialogExec);
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    CaixaMensagemProgresso *cxMensagem = new CaixaMensagemProgresso(this);
+    connect(this, SIGNAL(progressValue(int)), cxMensagem, SLOT(setProgressValue(int)));
+    cxMensagem->setWindowFlag(Qt::Window);
+    cxMensagem->setWindowFlag(Qt::FramelessWindowHint);
+    cxMensagem->setWindowModality(Qt::ApplicationModal);
+    cxMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
+
+    connect(this, SIGNAL(fecharCaixaMensagem()), cxMensagem, SLOT(fecharJanela()));
+    connect(this, SIGNAL(minimumProgressValue(int)), cxMensagem, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(maximumProgressValue(int)), cxMensagem, SLOT(setMaximumValue(int)));
+
+    QMovie *movie = new QMovie(":/images/splash.gif");
+    cxMensagem->setMovie(movie);
+    cxMensagem->show();
+    qApp->processEvents();
 
     ui->tableWidget->clear();
-    QStringList labels = QStringList() << "ID Empresa"
+    QStringList labels = QStringList() << "Código da Empresa"
                                        << "Empresa"
-                                       << "ID Filial"
+                                       << "Código da Filial"
                                        << "Filial"
                                        << "CNPJ"
                                        << "Cidade Região"
                                        << "Cálculo"
                                        << "Competência"
+                                       << "Tipo de Cálculo"
                                        << "Setor"
                                        << "Código do Evento"
                                        << "Descrição do Evento"
-                                       << "Tipo Evento"
+                                       << "Tipo do Evento"
                                        << "Valor";
     ui->tableWidget->setColumnCount(labels.count());
     ui->tableWidget->setHorizontalHeaderLabels(labels);
     ui->tableWidget->resizeColumnsToContents();
 
-    controle = new ControleDAO(this);
+    int __tipoCalculo = 0;
+    if(ui->campoFolhaNormal->isChecked())
+        __tipoCalculo = 11;
+    if(ui->campoFolhaDissidio->isChecked())
+        __tipoCalculo = 14;
+
+    QThread *threadDAO = new QThread(nullptr);
+    controle = new ControleDAO(nullptr);
+    controle->moveToThread(threadDAO);
+
+    qRegisterMetaType<QMap<int,Eventos*>>("__tempMapEventos");
+    connect(this, SIGNAL(retornaPlanoDeContas(QString,QString,QString,QString,int)), controle, SLOT(retornaPlanoContas(QString,QString,QString,QString,int)));
+    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
+    connect(controle, SIGNAL(enviarPlanoContas(QMap<int,Eventos*>)), this, SLOT(preencherTabela(QMap<int,Eventos*>)));
+
+    threadDAO->start(QThread::NormalPriority);
+
     QDate _tempDateIni = ui->campoInicioPeriodo->date();
     QDate _tempDateFim = ui->campoFinalPeriodo->date();
     int _anoComIni = _tempDateIni.year();
@@ -283,66 +319,18 @@ void PlanoDeContas::getDatatable()
     int _anoComFim = _tempDateFim.year();
     int _mesComFim = _tempDateFim.month();
     int _diaComFim = 1;
+    if(ui->campoFolhaDissidio->isChecked()) {
+        if((_mesComFim%2) == 0)
+            _diaComFim = 30;
+        else
+            _diaComFim = 31;
+    }
     QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
-
-    _progresso.setLabelText(QString("Coletando Eventos de Plano de Contas..."));
-    //QMap<int, Eventos*> pc = controle->getPlanoContas(ui->campoIDEmpresa->text(), ui->campoIDFilial->text(), __dataIni.toString(Qt::ISODate), __dataFim.toString(Qt::ISODate));
-    QMap<int, Eventos*> pc = controle->getPlanoContas("", "", "1900-12-31", "1900-12-31");
-    _progresso.setLabelText(QString("Coletando Eventos de Guia INSS..."));
-    QMap<int, Eventos*> gp = controle->getGuiaINSS(ui->campoIDEmpresa->text(), ui->campoIDFilial->text(), __dataIni.toString(Qt::ISODate), __dataFim.toString(Qt::ISODate));
-
-    if(pc.isEmpty() && gp.isEmpty()) {
-        _progresso.setValue(100);
-        _progresso.setLabelText(QString("Ops!..."));
-        _progresso.close();
-        QMessageBox::information(this, tr("Eventos Plano de Contas"), QString("Nenhuma informação Encontrada [!]"), QMessageBox::Ok);
-        ui->campoInicioPeriodo->setFocus();
-        return;
-    }
-
-    _progresso.setMaximum(pc.count() + gp.count());
-    _progresso.setLabelText(QString("Organizando dados..."));
-
-    ui->tableWidget->setRowCount(pc.count());
-    QMapIterator<int, Eventos*> map1(pc);
-    int linha = 0;
-    _progresso.setValue(0);
-    _progresso.setLabelText(QString("Atualizando Lista de Eventos Plano de Contas..."));
-
-    double _valTotReg = 0.0;
-    while (map1.hasNext()) {
-        map1.next();
-        _progresso.setValue(map1.key());
-        Eventos *evento = new Eventos;
-        evento = map1.value();
-        inserirLinhaTabela(linha,ui->tableWidget->columnCount(),evento);
-        _valTotReg += evento->getValorEvento();
-        linha++;
-    }
-
-    QMapIterator<int, Eventos*> map2(gp);
-    _progresso.setLabelText(QString("Atualizando Lista de Eventos GUIA INSS Ratiada..."));
-
-    while (map2.hasNext()) {
-        map2.next();
-        _progresso.setValue(map2.key());
-        ui->tableWidget->insertRow(linha);
-        Eventos *evento = new Eventos;
-        evento = map2.value();
-        inserirLinhaTabela(linha,ui->tableWidget->columnCount(),evento);
-        _valTotReg += evento->getValorEvento();
-        linha++;
-    }
-
-    _progresso.setValue(pc.count() + gp.count());
-    _progresso.setLabelText("Concluido!");
-    ui->tableWidget->resizeColumnsToContents();
-
-    ui->tableWidget->resizeColumnsToContents();
-    ui->tableWidget->sortByColumn(7);
-    ui->campoTotalRegistros->setText(QString::number(pc.count() + gp.count()));
-    ui->campoValorTotalAgrupado->setText(QString("%L1").arg(_valTotReg,12, 'f',2,' '));
-    ui->botaoExportar->setFocus();
+    QString __idEmp = ui->campoIDEmpresa->text().trimmed();
+    QString __idFil = ui->campoIDFilial->text().trimmed();
+    QString __datIni = __dataIni.toString(Qt::ISODate);
+    QString __datFim = __dataFim.toString(Qt::ISODate);
+    emit retornaPlanoDeContas(__idEmp, __idFil, __datIni, __datFim, __tipoCalculo);
 }
 
 void PlanoDeContas::inserirItemTabela(int r, int c, QString sValue)
@@ -357,7 +345,7 @@ void PlanoDeContas::inserirItemTabela(int r, int c, QDate v)
 
 void PlanoDeContas::inserirItemTabela(int r, int c, double dValue)
 {
-    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 12, 'f', 4));
+    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 0, 'f', 4));
     item->setTextAlignment(Qt::AlignRight);
     ui->tableWidget->setItem(r,c,item);
 }
@@ -389,14 +377,16 @@ void PlanoDeContas::inserirLinhaTabela(int linha, int nrColunas, Eventos *evento
         if(coluna == 7)
             inserirItemTabela(linha, coluna, evento->getCompetencia().toString("dd/MM/yyyy"));
         if(coluna == 8)
-            inserirItemTabela(linha, coluna, evento->getSetor());
+            inserirItemTabela(linha, coluna, evento->getTipoDeCalculo());
         if(coluna == 9)
-            inserirItemTabela(linha, coluna, evento->getCodigoEvento());
+            inserirItemTabela(linha, coluna, evento->getSetor());
         if(coluna == 10)
-            inserirItemTabela(linha, coluna, evento->getEvento());
+            inserirItemTabela(linha, coluna, evento->getCodigoEvento());
         if(coluna == 11)
-            inserirItemTabela(linha, coluna, evento->getTipoEvento());
+            inserirItemTabela(linha, coluna, evento->getEvento());
         if(coluna == 12)
+            inserirItemTabela(linha, coluna, evento->getTipoEvento());
+        if(coluna == 13)
             inserirItemTabela(linha, coluna, evento->getValorEvento());
     }
 }
@@ -409,10 +399,12 @@ void PlanoDeContas::exportarParaExcel()
     else
         nomeArquivoTitulo = ui->campoNomeFilial->text().replace(' ','_');
 
-    QString __nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->campoInicioPeriodo->text().replace('/','-')+"_"+ui->campoFinalPeriodo->text().replace('/','-');
+    QString __nomeArquivo = "/"+nomeArquivoTitulo
+            +"_"+ui->campoInicioPeriodo->text().replace('/','-')
+            +"_"+ui->campoFinalPeriodo->text().replace('/','-');
     ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
     connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-    exp->exportar(__nomeArquivo);
+    exp->exportar(__nomeArquivo,0);
 }
 
 void PlanoDeContas::atualizarResultados(QModelIndex i)
@@ -434,7 +426,7 @@ void PlanoDeContas::atualizarResultados(QModelIndex i)
             }
         }
     }
-    ui->campoValorEventoAgrupado->setText(QString("%L1").arg(dValue,12,'f',4));
+    ui->campoValorEventoAgrupado->setText(QString("%L1").arg(dValue, 0, 'f', 4, Qt::AlignRight));
 }
 
 void PlanoDeContas::mensagemInfoUsuario(QString msg)
@@ -455,6 +447,45 @@ void PlanoDeContas::filtroItemTabela(QString filtro)
         }
         ui->tableWidget->setRowHidden( i, !match );
     }
+}
+
+void PlanoDeContas::preencherTabela(QMap<int, Eventos *> __tempMap)
+{
+    emit finishThread();
+    if(__tempMap.isEmpty()) {
+        emit progressValue(0);
+        emit fecharCaixaMensagem();
+        QMessageBox::information(this, tr("Eventos Plano de Contas"), QString("Nenhuma informação Encontrada [!]"), QMessageBox::Ok);
+        ui->campoInicioPeriodo->setFocus();
+        emit fecharCaixaMensagem();
+        return;
+    }
+
+    emit minimumProgressValue(0);
+    emit maximumProgressValue(__tempMap.count());
+
+    ui->tableWidget->setRowCount(__tempMap.count());
+    QMapIterator<int, Eventos*> __tempItarator(__tempMap);
+    int linha = 0;
+
+    double _valTotReg = 0.0;
+    while (__tempItarator.hasNext()) {
+        __tempItarator.next();
+        emit progressValue(__tempItarator.key());
+        Eventos *evento = new Eventos;
+        evento = __tempItarator.value();
+        inserirLinhaTabela(linha, ui->tableWidget->columnCount(), evento);
+        _valTotReg += evento->getValorEvento();
+        linha++;
+    }
+
+    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->sortByColumn(7);
+    ui->campoValorEventoAgrupado->setText(QString("%L1").arg(0, 0, 'f', 4, Qt::AlignRight));
+    ui->campoTotalRegistros->setText(QString("%L1").arg(__tempMap.count(), 0, 'f', 4, Qt::AlignRight));
+    ui->campoValorTotalAgrupado->setText(QString("%L1").arg(_valTotReg, 0, 'f', 4, Qt::AlignRight));
+    emit fecharCaixaMensagem();
+    ui->botaoExportar->setFocus();
 }
 
 QMap<int, CadastroFilial *> PlanoDeContas::getMapFiliais() const

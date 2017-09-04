@@ -9,9 +9,31 @@ class UpdateDataTableColumm : public QObject
 public:
     explicit UpdateDataTableColumm(QObject *parent = nullptr);
 
-signals:
+    int getLinha() const;
+    void setLinha(int value);
 
-public slots:
+    int getColuna() const;
+    void setColuna(int value);
+
+    QString getNome() const;
+    void setNome(const QString &value);
+
+    int getCodigoFilial() const;
+    void setCodigoFilial(int value);
+
+    QString getFilial() const;
+    void setFilial(const QString &value);
+
+    bool getUltimoRegistro() const;
+    void setUltimoRegistro(bool value);
+
+private:
+    int linha;
+    int coluna;
+    QString nome;
+    int codigoFilial;
+    QString filial;
+    bool ultimoRegistro;
 };
 
 #endif // UPDATEDATATABLECOLUMM_H

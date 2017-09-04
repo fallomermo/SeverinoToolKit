@@ -1,5 +1,6 @@
 #include "planosaude.h"
 #include "ui_planosaude.h"
+#include "caixamensagemprogresso.h"
 
 PlanoSaude::PlanoSaude(QWidget *parent) : QWidget(parent), ui(new Ui::PlanoSaude)
 {
@@ -13,7 +14,7 @@ PlanoSaude::PlanoSaude(QWidget *parent) : QWidget(parent), ui(new Ui::PlanoSaude
     connect(ui->botaoProcessar, SIGNAL(clicked(bool)), this, SLOT(getDatatable()));
     connect(ui->botaoExportar, SIGNAL(clicked(bool)), this, SLOT(exportarParaExcel()));
 
-    ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
+    ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/filter.png"), QLineEdit::TrailingPosition);
     ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar Itens na Tabela"));
     connect(ui->campoPesquisarObjetosTabela, SIGNAL(textChanged(QString)), this, SLOT(filtroItemTabela(QString)));
 
@@ -54,7 +55,30 @@ PlanoSaude::~PlanoSaude()
 
 void PlanoSaude::getDatatable()
 {
-    controle = new ControleDAO(this);
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    caixaDeMensagem = new CaixaMensagemProgresso(this);
+    connect(this, SIGNAL(minimumProgressValue(int)), caixaDeMensagem, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(maximumProgressValue(int)), caixaDeMensagem, SLOT(setMaximumValue(int)));
+    connect(this, SIGNAL(progressValue(int)), caixaDeMensagem, SLOT(setProgressValue(int)));
+    connect(this, SIGNAL(fecharMensagemProgresso()), caixaDeMensagem, SLOT(fecharJanela()));
+    caixaDeMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
+    caixaDeMensagem->setWindowFlag(Qt::Window);
+    caixaDeMensagem->setWindowFlag(Qt::FramelessWindowHint);
+    caixaDeMensagem->setWindowModality(Qt::ApplicationModal);
+    caixaDeMensagem->show();
+    qApp->processEvents();;
+
+    QThread *threadDAO = new QThread(nullptr);
+    controle = new ControleDAO(nullptr);
+    qRegisterMetaType<QMap<int,EcoclinicRepasses*>>("__metaDataObjectPS");
+    connect(this, SIGNAL(obterPlanoSaude(QString,QString,int)), controle, SLOT(obterPlanoSaude(QString,QString,int)));
+    connect(controle, SIGNAL(enviarPlanoSaude(QMap<int,EcoclinicRepasses*>)), this, SLOT(setPlanoSaude(QMap<int,EcoclinicRepasses*>)));
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
+    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
+    controle->moveToThread(threadDAO);
+    threadDAO->start(QThread::NormalPriority);
+
     QDate _tempDateIni = ui->periodoInicial->date();
     QDate _tempDateFim = ui->periodoFinal->date();
     int _anoComIni = _tempDateIni.year();
@@ -68,32 +92,19 @@ void PlanoSaude::getDatatable()
     QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
 
     int __indiceCBX = ui->comboBox->currentIndex();
-    QMap<int, EcoclinicRepasses*> __tempMap = controle->getPlanoSaude(__dataIni.toString(Qt::ISODate), __dataFim.toString(Qt::ISODate), __indiceCBX);
-    QMapIterator<int, EcoclinicRepasses*> __mapIterator(__tempMap);
-    if(__tempMap.isEmpty()) {
-        return;
-    } else {
-        ui->tableWidget->setRowCount(__tempMap.count());
-        int linha = 0;
-        while (__mapIterator.hasNext()) {
-            __mapIterator.next();
-            EcoclinicRepasses *repasses = new EcoclinicRepasses;
-            repasses = __mapIterator.value();
-            for (int coluna = 0; coluna < ui->tableWidget->colorCount(); ++coluna) {
-                inserirLinhaTabela(linha, coluna, repasses);
-            }
-            linha++;
-        }
-        ui->tableWidget->resizeColumnsToContents();
-    }
+    emit obterPlanoSaude(__dataIni.toString(Qt::ISODate),
+                         __dataFim.toString(Qt::ISODate),
+                         __indiceCBX);
 }
 
 void PlanoSaude::exportarParaExcel()
 {
-    QString __nomeArquivo = "/"+ui->comboBox->currentText()+"_"+ui->periodoInicial->text().replace('/','-')+"_"+ui->periodoFinal->text().replace('/','-');
+    QString __nomeArquivo = "/"+ui->comboBox->currentText()
+            +"_"+ui->periodoInicial->text().replace('/','-')
+            +"_"+ui->periodoFinal->text().replace('/','-');
     ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
     connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-    exp->exportar(__nomeArquivo);
+    exp->exportar(__nomeArquivo,0);
 }
 
 void PlanoSaude::inserirLinhaTabela(int linha, int nrColunas, EcoclinicRepasses * repasses)
@@ -159,7 +170,7 @@ void PlanoSaude::inserirItemTabela(int r, int c, int iValue)
 
 void PlanoSaude::inserirItemTabela(int r , int c, double dValue)
 {
-    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 12, 'f', 4));
+    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 0, 'f', 4));
     item->setTextAlignment(Qt::AlignRight);
     ui->tableWidget->setItem(r,c,item);
 }
@@ -192,4 +203,47 @@ void PlanoSaude::filtroItemTabela(QString filter)
 void PlanoSaude::caixaMensagemUsuario(QString msg)
 {
     QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
+}
+
+void PlanoSaude::setPlanoSaude(QMap<int, EcoclinicRepasses *> __tempMap)
+{
+    emit finishThread();
+    this->setMapPlanoSaude(__tempMap);
+    this->preencherTabela(__tempMap);
+}
+
+void PlanoSaude::preencherTabela(QMap<int, EcoclinicRepasses *> __tempMap)
+{
+    emit minimumProgressValue(0);
+    emit maximumProgressValue(__tempMap.count());
+    QMapIterator<int, EcoclinicRepasses*> __mapIterator(__tempMap);
+    if(__tempMap.isEmpty()) {
+        emit fecharMensagemProgresso();
+        return;
+    } else {
+        ui->tableWidget->setRowCount(__tempMap.count());
+        int linha = 0;
+        while (__mapIterator.hasNext()) {
+            __mapIterator.next();
+            emit progressValue(linha);
+            EcoclinicRepasses *repasses = new EcoclinicRepasses;
+            repasses = __mapIterator.value();
+            for (int coluna = 0; coluna < ui->tableWidget->columnCount(); ++coluna) {
+                inserirLinhaTabela(linha, coluna, repasses);
+            }
+            linha++;
+        }
+        ui->tableWidget->resizeColumnsToContents();
+        emit fecharMensagemProgresso();
+    }
+}
+
+QMap<int, EcoclinicRepasses *> PlanoSaude::getMapPlanoSaude() const
+{
+    return mapPlanoSaude;
+}
+
+void PlanoSaude::setMapPlanoSaude(const QMap<int, EcoclinicRepasses *> &value)
+{
+    mapPlanoSaude = value;
 }

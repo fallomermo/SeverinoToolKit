@@ -172,3 +172,13 @@ void Eventos::setNumeroRegistros(int value)
 {
     NumeroRegistros = value;
 }
+
+int Eventos::getTipoDeCalculo() const
+{
+    return TipoDeCalculo;
+}
+
+void Eventos::setTipoDeCalculo(int value)
+{
+    TipoDeCalculo = value;
+}

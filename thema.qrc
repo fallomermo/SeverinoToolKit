@@ -78,5 +78,50 @@
         <file>images/droplet.png</file>
         <file>images/water-drop.png</file>
         <file>images/tema.css</file>
+        <file>images/edit-table.png</file>
+        <file>images/iconeSeverino.ico</file>
+        <file>images/info.png</file>
+        <file>images/layers.png</file>
+        <file>images/warning.png</file>
+        <file>images/splash.gif</file>
+        <file>images/address-book.png</file>
+        <file>images/calendar.png</file>
+        <file>images/drawer.png</file>
+        <file>images/file.png</file>
+        <file>images/funnel-.png</file>
+        <file>images/home.png</file>
+        <file>images/loading.gif</file>
+        <file>images/newspaper.png</file>
+        <file>images/powerpoint.png</file>
+        <file>images/question.png</file>
+        <file>images/trash.png</file>
+        <file>images/filter.png</file>
+        <file>images/groupcrednosso.png</file>
+        <file>images/groupfinanceiro.png</file>
+        <file>images/grouprh.png</file>
+        <file>images/businessman.png</file>
+        <file>images/credit-card.png</file>
+        <file>images/flag_bom.png</file>
+        <file>images/flag_otimo.png</file>
+        <file>images/flag_ruim.png</file>
+        <file>images/group.png</file>
+        <file>images/useradd.png</file>
+        <file>images/userlogin.png</file>
+        <file>images/credinosso_card.png</file>
+        <file>images/financeiro.png</file>
+        <file>images/open-book.png</file>
+        <file>images/open-folder.png</file>
+        <file>images/tools.png</file>
+        <file>images/iconeSeverinoInstaller.ico</file>
+        <file>images/iconeSeverinoInstaller.png</file>
+        <file>images/moderntop.bmp</file>
+        <file>images/settings-interface-silhouette.png</file>
+        <file>images/vt.png</file>
+        <file>images/backgroundPanel.jpg</file>
+        <file>images/cat-relogio-de-ponto.png</file>
+        <file>images/clock-circular-outline.png</file>
+        <file>images/icon_rep.png</file>
+        <file>images/logo-ahgora.png</file>
+        <file>images/backgroundPanel.png</file>
     </qresource>
 </RCC>

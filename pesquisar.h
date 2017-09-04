@@ -44,7 +44,10 @@ private slots:
     void setData(int, int);
     void setData();
     void setEmpresa(int,int);
+    void setEmpresa();
     void setFilial(int,int);
+    void setFilial();
+    void fecharPesquisa();
 
 private:
     Ui::Pesquisar *ui;

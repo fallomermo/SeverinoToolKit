@@ -79,6 +79,15 @@ public:
     double getSalario() const;
     void setSalario(double value);
 
+    QString getPCD() const;
+    void setPCD(const QString &value);
+
+    QString getSindicatoNome() const;
+    void setSindicatoNome(const QString &value);
+
+    QString getSindicatoCNPJ() const;
+    void setSindicatoCNPJ(const QString &value);
+
 private:
     QString CodigoDaEmpresa;
     QString Empresa;
@@ -102,6 +111,9 @@ private:
     QString Cargo;
     int TipoDeSalario;
     double Salario;
+    QString PCD;
+    QString SindicatoNome;
+    QString SindicatoCNPJ;
 
 };
 

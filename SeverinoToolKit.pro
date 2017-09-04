@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,7 +38,27 @@ SOURCES += \
     principal.cpp \
     relacaocolaborador.cpp \
     main.cpp \
-    exportararquivo.cpp
+    exportararquivo.cpp \
+    objetoretencao.cpp \
+    metaretencao.cpp \
+    homeinicio.cpp \
+    metaretencaoestruturada.cpp \
+    higienizacaocrednosso.cpp \
+    responsavelselecaoagregado.cpp \
+    threadobject.cpp \
+    caixamensagemprogresso.cpp \
+    detalhesretencao.cpp \
+    objetocrednossoretorno.cpp \
+    objetocrednossohigienizacao.cpp \
+    objetocrednossobeneficios.cpp \
+    processararquivocrednosso.cpp \
+    objetocadastroupdatefile.cpp \
+    blissbeneficios.cpp \
+    validacao.cpp \
+    updatedatatablecolumm.cpp \
+    atualizaritenstabelas.cpp \
+    truncararquivostexto.cpp \
+    controlador.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -54,7 +74,27 @@ HEADERS += \
     planosaude.h \
     principal.h \
     relacaocolaborador.h \
-    exportararquivo.h
+    exportararquivo.h \
+    objetoretencao.h \
+    metaretencao.h \
+    homeinicio.h \
+    metaretencaoestruturada.h \
+    higienizacaocrednosso.h \
+    responsavelselecaoagregado.h \
+    threadobject.h \
+    caixamensagemprogresso.h \
+    detalhesretencao.h \
+    objetocrednossoretorno.h \
+    objetocrednossohigienizacao.h \
+    objetocrednossobeneficios.h \
+    processararquivocrednosso.h \
+    objetocadastroupdatefile.h \
+    blissbeneficios.h \
+    validacao.h \
+    updatedatatablecolumm.h \
+    atualizaritenstabelas.h \
+    truncararquivostexto.h \
+    controlador.h
 
 FORMS += \
     guiainssfolha.ui \
@@ -62,7 +102,16 @@ FORMS += \
     planodecontas.ui \
     planosaude.ui \
     principal.ui \
-    relacaocolaborador.ui
+    relacaocolaborador.ui \
+    metaretencao.ui \
+    homeinicio.ui \
+    metaretencaoestruturada.ui \
+    higienizacaocrednosso.ui \
+    caixamensagemprogresso.ui \
+    detalhesretencao.ui \
+    processararquivocrednosso.ui \
+    blissbeneficios.ui \
+    truncararquivostexto.ui
 
 RESOURCES += \
     thema.qrc

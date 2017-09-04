@@ -24,6 +24,7 @@
 #include "controledao.h"
 #include "pesquisar.h"
 #include "exportararquivo.h"
+#include "caixamensagemprogresso.h"
 
 
 namespace Ui {
@@ -44,7 +45,13 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
 
 signals:
+    void finishThread();
     void statusProgresso(bool);
+    void progressValue(int);
+    void minimumProgressValue(int);
+    void maximumProgressValue(int);
+    void fecharCaixaMensagem();
+    void retornaPlanoDeContas(QString,QString,QString,QString,int);
 
 private slots:
     void atualizarTabela();
@@ -64,15 +71,16 @@ private slots:
     void setEmpresa(QString);
     void setFilial(QString);
     void getDatatable();
-    void inserirItemTabela(int,int,QString);
-    void inserirItemTabela(int,int,QDate);
+    void inserirItemTabela(int, int, QString);
+    void inserirItemTabela(int, int, QDate);
     void inserirItemTabela(int, int, double);
-    void inserirItemTabela(int,int,int);
+    void inserirItemTabela(int, int, int);
     void inserirLinhaTabela(int, int, Eventos *);
     void exportarParaExcel();
     void atualizarResultados(QModelIndex);
     void mensagemInfoUsuario(QString);
     void filtroItemTabela(QString);
+    void preencherTabela(QMap<int, Eventos *>);
 
 private:
     Ui::PlanoDeContas *ui;
@@ -82,6 +90,9 @@ private:
     CadastroFilial *_cfil;
     ControleDAO *controle;
     bool _statusProgresso;
+
+    QString codigoEmpresa;
+    QString codigoFilial;
 };
 
 #endif // PLANODECONTAS_H

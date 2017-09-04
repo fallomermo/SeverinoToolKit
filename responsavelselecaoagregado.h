@@ -9,9 +9,19 @@ class ResponsavelSelecaoAgregado : public QObject
 public:
     explicit ResponsavelSelecaoAgregado(QObject *parent = nullptr);
 
-signals:
+    QString getReposavel() const;
+    void setReposavel(const QString &value);
 
-public slots:
+    int getNumeroAdmitidos() const;
+    void setNumeroAdmitidos(int value);
+
+    int getNumeroDemitidos() const;
+    void setNumeroDemitidos(int value);
+
+private:
+    QString reposavel;
+    int numeroAdmitidos;
+    int numeroDemitidos;
 };
 
 #endif // RESPONSAVELSELECAOAGREGADO_H

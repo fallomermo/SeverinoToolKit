@@ -8,7 +8,7 @@ GuiaINSSFolha::GuiaINSSFolha(QWidget *parent) : QWidget(parent), ui(new Ui::Guia
     ui->periodoFinal->setDate(QDateTime::currentDateTime().date());
     connect(ui->periodoInicial, SIGNAL(editingFinished()), this, SLOT(focusPeriodoInicial()));
     connect(ui->periodoFinal, SIGNAL(editingFinished()), this, SLOT(focusPeriodoFinal()));
-    ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
+    ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/filter.png"), QLineEdit::TrailingPosition);
     ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar Itens na Tabela"));
     QAction *_act_emp = ui->campoID_Empresa->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
     connect(_act_emp, SIGNAL(triggered(bool)), this, SLOT(pesquisarEmpresa()));
@@ -127,7 +127,7 @@ void GuiaINSSFolha::setEmpresa(QString e)
 
 void GuiaINSSFolha::pesquisarFilial()
 {
-    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), ui->campoID_Empresa->text(), 2);
+    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), this->getCodigoEmpresaAtivo(), 2);
     p->setWindowModality(Qt::ApplicationModal);
     p->setWindowFlags(Qt::Window);
     p->setWindowTitle("Selecionar Filial");
@@ -137,7 +137,6 @@ void GuiaINSSFolha::pesquisarFilial()
 
 void GuiaINSSFolha::setFilial(QString f)
 {
-    ui->campoID_Filial->setText(f);
     retornaCadastroFilial(f);
 }
 
@@ -157,10 +156,15 @@ void GuiaINSSFolha::retornaCadastroEmpresa()
     }
 
     if(_nomeEmpresa.isEmpty()) {
-        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa não encontrada [!]"), QMessageBox::Ok);
+        QMessageBox::critical(
+                    this,
+                    tr("Cadastro Empresa [!]"),
+                    QString("Empresa Não Encontrada [!]"),
+                    QMessageBox::Ok);
         ui->campoID_Empresa->setFocus();
     } else {
-        ui->campoDescricaoEmpresa->setText(_nomeEmpresa);
+        this->setCodigoEmpresaAtivo(ui->campoID_Empresa->text().trimmed());
+        ui->campoID_Empresa->setText(QString("%0 - %1").arg(ui->campoID_Empresa->text().trimmed()).arg(_nomeEmpresa));
         ui->campoID_Filial->setFocus();
     }
 }
@@ -186,11 +190,15 @@ void GuiaINSSFolha::retornaCadastroFilial()
         }
 
         if(_nomeFilial.isEmpty()) {
-            QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+            QMessageBox::critical(
+                        this,
+                        tr("Cadastro Filial [!]"),
+                        QString("Filial Inválida [!]"),
+                        QMessageBox::Ok);
             ui->campoID_Filial->setFocus();
         } else {
-            ui->campoID_Filial->setText(_ID_Filial);
-            ui->campoDescricaoFilial->setText(_nomeFilial);
+            this->setCodigoFilialAtivo(_ID_Filial);
+            ui->campoID_Filial->setText(QString("%0 - %1").arg(_ID_Filial).arg(_nomeFilial));
             ui->botaoProcessar->setFocus();
         }
     }
@@ -198,8 +206,12 @@ void GuiaINSSFolha::retornaCadastroFilial()
 
 void GuiaINSSFolha::retornaCadastroFilial(QString _ID_Filial)
 {
-    if(ui->campoID_Empresa->text().isEmpty()) {
-        QMessageBox::critical(this, tr("Seleção de Filtro"), QString("Nenhuma Empresa Selecionada"), QMessageBox::Ok);
+    if(this->getCodigoEmpresaAtivo().isEmpty()) {
+        QMessageBox::critical(
+                    this,
+                    tr("Seleção de Filtro"),
+                    QString("Nenhuma Empresa Selecionada"),
+                    QMessageBox::Ok);
         ui->campoID_Empresa->setFocus();
     } else {
         QMapIterator<int, CadastroFilial*> mi(getMapFiliais());
@@ -209,18 +221,22 @@ void GuiaINSSFolha::retornaCadastroFilial(QString _ID_Filial)
             mi.next();
             CadastroFilial *_cfil = new CadastroFilial;
             _cfil = mi.value();
-            QString _ID_Empresa = ui->campoID_Empresa->text();
+            QString _ID_Empresa = this->getCodigoEmpresaAtivo().trimmed();
             if(_cfil->getID_Empresa() == _ID_Empresa && _cfil->getID_Filial() == _ID_Filial) {
                 _nomeFilial = _cfil->getFilial();
             }
         }
 
         if(_nomeFilial.isEmpty()) {
-            QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+            QMessageBox::critical(
+                        this,
+                        tr("Cadastro Filial [!]"),
+                        QString("Filial Inválida [!]"),
+                        QMessageBox::Ok);
             ui->campoID_Filial->setFocus();
         } else {
-            ui->campoID_Filial->setText(_ID_Filial);
-            ui->campoDescricaoFilial->setText(_nomeFilial);
+            this->setCodigoFilialAtivo(_ID_Filial);
+            ui->campoID_Filial->setText(QString("%0 - %1").arg(_ID_Filial).arg(_nomeFilial));
             ui->botaoProcessar->setFocus();
         }
     }
@@ -228,20 +244,50 @@ void GuiaINSSFolha::retornaCadastroFilial(QString _ID_Filial)
 
 void GuiaINSSFolha::getDatatable()
 {
-    QProgressDialog progresso("Trabalhando em sua requisição, aguarde...", "Cancelar", 0, 100, this, Qt::Dialog);
-    progresso.setWindowModality(Qt::ApplicationModal);
-    progresso.setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
-    progresso.setModal( true );
-    progresso.setVisible( true );
-    progresso.setAutoClose( true );
+    if(!ui->campoFolhaNormal->isChecked() && !ui->campoFolhaDissidio->isChecked()) {
+        QMessageBox::critical(
+                    this,
+                    tr("Dados omtidos!"),
+                    QString("Você precisa informar um tipo de Cálculo Folha!"),
+                    QMessageBox::Ok);
+        return;
+    }
 
-    qApp->processEvents(QEventLoop::DialogExec);
-    progresso.setRange(0,1);
-    progresso.setValue(0);
-    progresso.setRange(0,0);
-    
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+    CaixaMensagemProgresso *caixaMensagem = new CaixaMensagemProgresso(this);
+    connect(this, SIGNAL(fecharCaixaMensagem()), caixaMensagem, SLOT(fecharJanela()));
+    connect(this, SIGNAL(setProgressValue(int)), caixaMensagem, SLOT(setProgressValue(int)));
+    connect(this, SIGNAL(minimumProgressValue(int)), caixaMensagem, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(maximumProgressValue(int)), caixaMensagem, SLOT(setMaximumValue(int)));
 
-    controle = new ControleDAO(this);
+    caixaMensagem->setWindowFlag(Qt::FramelessWindowHint);
+    caixaMensagem->setWindowFlag(Qt::Window);
+    caixaMensagem->setWindowModality(Qt::ApplicationModal);
+    caixaMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
+    caixaMensagem->show();
+    caixaMensagem->setVisible(true);
+    qApp->processEvents();
+
+    int __tipoCalculo = 0;
+    if(ui->campoFolhaNormal->isChecked())
+        __tipoCalculo = 11;
+    if(ui->campoFolhaDissidio->isChecked())
+        __tipoCalculo = 14;
+
+    QThread *threadDAO = new QThread(nullptr);
+    controle = new ControleDAO(nullptr);
+    controle->moveToThread(threadDAO);
+
+    qRegisterMetaType<QMap<int, Eventos *>>("__tempMetodoINSS");
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
+    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
+    connect(caixaMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(terminate()));
+    connect(this, SIGNAL(obterGuiaINSS(QString,QString,QString,QString,int)), controle, SLOT(retornaGuiaINSS(QString,QString,QString,QString,int)));
+    connect(controle, SIGNAL(enviarGuiaINSS(QMap<int, Eventos*>)), this, SLOT(preencherTabela(QMap<int,Eventos*>)));
+
+    threadDAO->start(QThread::NormalPriority);
+
     QDate _tempDateIni = ui->periodoInicial->date();
     QDate _tempDateFim = ui->periodoFinal->date();
     int _anoComIni = _tempDateIni.year();
@@ -254,30 +300,36 @@ void GuiaINSSFolha::getDatatable()
     int _diaComFim = 1;
     QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
 
-    QMap<int, Eventos*> __tempMap = controle->getGuiaINSS(
-                ui->campoID_Empresa->text(),
-                ui->campoID_Filial->text(),
+    emit obterGuiaINSS(
+                this->getCodigoEmpresaAtivo().trimmed(),
+                this->getCodigoFilialAtivo().trimmed(),
                 __dataIni.toString(Qt::ISODate),
-                __dataFim.toString(Qt::ISODate));
-    progresso.setLabelText("Processando dados...");
+                __dataFim.toString(Qt::ISODate),
+                __tipoCalculo);
+}
 
+void GuiaINSSFolha::preencherTabela(QMap<int, Eventos *> __tempMap)
+{
+    emit finishThread();
     if(__tempMap.isEmpty()) {
-        QMessageBox::information(this, tr("Eventos GUIA INSS"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
+        QMessageBox::information(this, tr("Eventos GUIA INSS"), QString("Nenhuma Informação encontrada!"), QMessageBox::Ok);
+        emit fecharCaixaMensagem();
         return;
     }
 
     QMapIterator<int, Eventos*> __mapIterator(__tempMap);
-    progresso.setMaximum(__tempMap.count());
+    emit maximumProgressValue(__tempMap.count());
 
     ui->tableWidget->setRowCount(__tempMap.count());
     int linha = 0;
     while (__mapIterator.hasNext()) {
         __mapIterator.next();
-        progresso.setValue(__mapIterator.key());
+        emit setProgressValue(linha);
         Eventos *evento = __mapIterator.value();
         inserirLinhaTabela(linha, ui->tableWidget->columnCount(), evento);
         linha++;
     }
+    emit fecharCaixaMensagem();
     ui->tableWidget->resizeColumnsToContents();
 }
 
@@ -293,7 +345,7 @@ void GuiaINSSFolha::inserirItemTabela(int r, int c, QDate dtValue)
 
 void GuiaINSSFolha::inserirItemTabela(int r, int c, double dValue)
 {
-    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 12, 'f', 4));
+    QTableWidgetItem *item = new QTableWidgetItem(QString("%L1").arg(dValue, 0, 'f', 4));
     item->setTextAlignment(Qt::AlignRight);
     ui->tableWidget->setItem(r,c,item);
 }
@@ -339,21 +391,41 @@ void GuiaINSSFolha::inserirLinhaTabela(int linha, int nrColunas, Eventos *evento
 
 void GuiaINSSFolha::exportarParaExcel()
 {
-        QString nomeArquivoTitulo = "";
-        if(ui->campoDescricaoEmpresa->text().isEmpty() || ui->campoDescricaoFilial->text().isEmpty())
-            nomeArquivoTitulo = "FullData";
-        else
-            nomeArquivoTitulo = ui->campoDescricaoFilial->text().replace(' ','_');
+    QString nomeArquivoTitulo = "";
+    if(this->getCodigoEmpresaAtivo().isEmpty() || this->getCodigoFilialAtivo().isEmpty())
+        nomeArquivoTitulo = "FullData";
+    else
+        nomeArquivoTitulo = ui->campoID_Empresa->text().replace(' ','_');
 
-        QString __nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->periodoInicial->text().replace('/','-')+"_"+ui->periodoFinal->text().replace('/','-');
-        ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
-        connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-        exp->exportar(__nomeArquivo);
+    QString __nomeArquivo = "/"+nomeArquivoTitulo+"_"+ui->periodoInicial->text().replace('/','-')+"_"+ui->periodoFinal->text().replace('/','-');
+    ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
+    connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
+    exp->exportar(__nomeArquivo,0);
 }
 
 void GuiaINSSFolha::caixaMensagemUsuario(QString msg)
 {
     QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
+}
+
+QString GuiaINSSFolha::getCodigoFilialAtivo() const
+{
+    return CodigoFilialAtivo;
+}
+
+void GuiaINSSFolha::setCodigoFilialAtivo(const QString &value)
+{
+    CodigoFilialAtivo = value;
+}
+
+QString GuiaINSSFolha::getCodigoEmpresaAtivo() const
+{
+    return CodigoEmpresaAtivo;
+}
+
+void GuiaINSSFolha::setCodigoEmpresaAtivo(const QString &value)
+{
+    CodigoEmpresaAtivo = value;
 }
 
 QMap<int, CadastroFilial *> GuiaINSSFolha::getMapFiliais() const

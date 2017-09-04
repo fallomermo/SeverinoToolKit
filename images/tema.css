@@ -1,7 +1,5 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) <2013-2014> <Colin Duquesnoy>
+ * Copyright (c) <2017-2017> <Fábio Reis>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +17,18 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE. 
  */
+
+#framePanel
+{
+    background-image: url(:/images/backgroundPanel.png);
+}
 
 QToolTip
 {
     border: 1px solid #76797C;
-    background-color: rgb(90, 102, 117);;
+    background-color: rgb(90, 102, 117);
     color: white;
     padding: 5px;
     opacity: 200;
@@ -106,7 +109,7 @@ QGroupBox::indicator:checked:hover,
 QGroupBox::indicator:checked:focus,
 QGroupBox::indicator:checked:pressed
 {
-  border: none;
+    border: none;
     image: url(:/images/checkbox_checked_focus.png);
 }
 
@@ -501,7 +504,7 @@ QTextEdit
 
 QPlainTextEdit
 {
-    background-color: #232629;;
+    background-color: #232629;
     color: #eff0f1;
     border-radius: 2px;
     border: 1px solid #76797C;
