@@ -18,10 +18,9 @@
 #include "objetocrednossoretorno.h"
 #include "objetocadastroupdatefile.h"
 #include "updatedatatablecolumm.h"
+#include "bancodedados.h"
 
-class BancoDeDados;
-
-class ControleDAO : public QThread
+class ControleDAO : public QObject
 {
     Q_OBJECT
 public:
@@ -59,6 +58,7 @@ private slots:
     void obterPlanoSaude(QString, QString, int);
     void obterCrednossoRetorno(QDate);
     void obterUpdateDadosCadastroColaborador(int, int, int, int, bool);
+    void obterUpdateDadosCadastroColaborador(UpdateDataTableColumm*);
     void mensagemControlador(QString, QString, int);
     void exitClass();
 

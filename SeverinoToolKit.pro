@@ -56,9 +56,10 @@ SOURCES += \
     blissbeneficios.cpp \
     validacao.cpp \
     updatedatatablecolumm.cpp \
-    atualizaritenstabelas.cpp \
     truncararquivostexto.cpp \
-    controlador.cpp
+    controlador.cpp \
+    downloadahgoraafd.cpp \
+    login.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -92,9 +93,10 @@ HEADERS += \
     blissbeneficios.h \
     validacao.h \
     updatedatatablecolumm.h \
-    atualizaritenstabelas.h \
     truncararquivostexto.h \
-    controlador.h
+    controlador.h \
+    downloadahgoraafd.h \
+    login.h
 
 FORMS += \
     guiainssfolha.ui \
@@ -111,7 +113,9 @@ FORMS += \
     detalhesretencao.ui \
     processararquivocrednosso.ui \
     blissbeneficios.ui \
-    truncararquivostexto.ui
+    truncararquivostexto.ui \
+    downloadahgoraafd.ui \
+    login.ui
 
 RESOURCES += \
     thema.qrc

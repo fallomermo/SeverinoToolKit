@@ -15,6 +15,12 @@ public:
     int getColuna() const;
     void setColuna(int value);
 
+    int getCodigoEmpresa() const;
+    void setCodigoEmpresa(int value);
+
+    int getMatricula() const;
+    void setMatricula(int value);
+
     QString getNome() const;
     void setNome(const QString &value);
 
@@ -30,6 +36,8 @@ public:
 private:
     int linha;
     int coluna;
+    int codigoEmpresa;
+    int matricula;
     QString nome;
     int codigoFilial;
     QString filial;

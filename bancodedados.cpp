@@ -16,8 +16,6 @@ bool BancoDeDados::abrirConexao()
 
     if(!db.open()) {
         emit messagemRetorno(db.lastError().text());
-        qDebug() << db.lastError().text();
-        qDebug() << db.drivers();
         return false;
     } else {
         return true;

@@ -1,7 +1,6 @@
 #include "controledao.h"
-#include "bancodedados.h"
 
-ControleDAO::ControleDAO(QObject *parent) : QThread(parent)
+ControleDAO::ControleDAO(QObject *parent) : QObject(parent)
 {
     db = new BancoDeDados(nullptr);
     connect(db, SIGNAL(messagemRetorno(QString)), this, SLOT(mensagemRetornoUsuario(QString)));
@@ -121,6 +120,13 @@ void ControleDAO::obterUpdateDadosCadastroColaborador(int __empresa, int __matri
     emit enviarUpdateDadosCadastroColaborador(__tempMap);
 }
 
+void ControleDAO::obterUpdateDadosCadastroColaborador(UpdateDataTableColumm *p)
+{
+    db = new BancoDeDados;
+    QMap<int, UpdateDataTableColumm *> __tempMap = db->getUpdateCadastroArquivo(p->getCodigoEmpresa(), p->getMatricula(), p->getLinha(), p->getColuna(), p->getUltimoRegistro());
+    emit enviarUpdateDadosCadastroColaborador(__tempMap);
+}
+
 void ControleDAO::mensagemControlador(QString titulo, QString mensagem, int t)
 {
     emit mensagemControle(titulo, mensagem, t);
@@ -129,4 +135,5 @@ void ControleDAO::mensagemControlador(QString titulo, QString mensagem, int t)
 void ControleDAO::exitClass()
 {
     exit(0);
+    this->deleteLater();
 }

@@ -6,6 +6,7 @@
 #include <QTime>
 #include <QMenu>
 #include <QLabel>
+#include <QVersionNumber>
 #include <QDebug>
 #include <QThread>
 #include <QWidget>
@@ -61,11 +62,16 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
 
+    QString getUsuarioAutenticado() const;
+    void setUsuarioAutenticado(const QString &value);
+
 signals:
     void finishThread();
     void obterConexaoBanco();
     void obterCadastroDeEmpresas();
     void obterCadastroDeFiliais();
+    void trocarUsuario();
+    void fecharSistema();
 
 private slots:
     void homeInicio();
@@ -90,6 +96,9 @@ private slots:
     void mensagemRetornoUsuario(QString);
     void mensagemControlador(QMessageBox&);
     void finishThreadBool(bool);
+
+    void atualizarInformacoesUsuario(QString);
+    void alterarUsuario();
 
 private:
     Ui::Principal *ui;
@@ -143,6 +152,7 @@ private:
     QMap<int, CadastroFilial*> mapFiliais;
 
     QLocale local;
+    QString usuarioAutenticado;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);

@@ -20,6 +20,11 @@
  * THE SOFTWARE. 
  */
 
+#widgetPrincipal
+{
+    background-image: url(:/images/backgroundLogin.png);
+}
+
 #framePanel
 {
     background-image: url(:/images/backgroundPanel.png);

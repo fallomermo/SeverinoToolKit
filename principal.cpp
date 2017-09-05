@@ -4,7 +4,8 @@
 Principal::Principal(QWidget *parent) : QWidget(parent), ui(new Ui::Principal)
 {
     ui->setupUi(this);
-    this->setWindowTitle(QString("Severino Tools | Build 1.1.3 ").append(QT_VERSION_MINOR));
+    QVersionNumber *versao = new QVersionNumber;
+    this->setWindowTitle(QString("Severino Tools | 2.0 ").append(versao->toString()));
     local.setDefault(QLocale(QLocale::Portuguese, QLocale::Brazil));
     setTimeSession(QTime::currentTime());
 
@@ -18,6 +19,7 @@ Principal::~Principal()
 
 void Principal::aplicarDefinicoesGerais()
 {
+    ui->campoUsuario->setText(this->getUsuarioAutenticado());
     atualizarTema();
 
     ui->toolButtonIntegracaoFinanceira->setPopupMode(QToolButton::InstantPopup);
@@ -41,6 +43,7 @@ void Principal::aplicarDefinicoesGerais()
     QAction *actionDownloadAhgoraAFD = new QAction(QIcon(":/images/clock-circular-outline.png"), "&Download Ahgora AFD",ui->toolButtonControlePonto);
     QAction *actionProcessarArquivo = new QAction(QIcon(":/images/groupcrednosso.png"), "&Processar Arquivo",ui->toolButtonFerramentas);
     QAction *actionTruncarArquivo = new QAction(QIcon(":/images/tools.png"), "&Truncar Arquivo",ui->toolButtonFerramentas);
+    QAction *actionTrocarUsuario = new QAction(QIcon(":/images/user.png"), "&Trocar Usuário",ui->toolButtonFerramentas);
 
     //Criand menus para os botoes
     QMenu *menuFinanceiro = new QMenu(ui->toolButtonIntegracaoFinanceira);
@@ -63,6 +66,7 @@ void Principal::aplicarDefinicoesGerais()
     connect(actionDownloadAhgoraAFD, SIGNAL(triggered(bool)), this, SLOT(downloadAhgoraAFD()));
     connect(actionProcessarArquivo, SIGNAL(triggered(bool)), this, SLOT(processarArquivos()));
     connect(actionTruncarArquivo, SIGNAL(triggered(bool)), this, SLOT(truncarArquivos()));
+    connect(actionTrocarUsuario, SIGNAL(triggered(bool)), this, SLOT(alterarUsuario()));
 
     //Adicionado acoes no menu de grupo financeiro
     menuFinanceiro->addAction(actionHomeInicio);
@@ -95,6 +99,7 @@ void Principal::aplicarDefinicoesGerais()
     //Adicionado acoes no menu de grupo crednosso
     menuFerramentas->addAction(actionProcessarArquivo);
     menuFerramentas->addAction(actionTruncarArquivo);
+    menuFerramentas->addAction(actionTrocarUsuario);
     ui->toolButtonFerramentas->setMenu(menuFerramentas);
 
     _flagHomeInicio   = false;
@@ -400,6 +405,36 @@ void Principal::finishThreadBool(bool ok)
     }
 }
 
+void Principal::atualizarInformacoesUsuario(QString usr)
+{
+    ui->campoUsuario->setText(usr);
+}
+
+void Principal::alterarUsuario()
+{
+    emit trocarUsuario();
+}
+
+QString Principal::getUsuarioAutenticado() const
+{
+    return usuarioAutenticado;
+}
+
+void Principal::setUsuarioAutenticado(const QString &value)
+{
+    usuarioAutenticado = value;
+}
+
+void Principal::closeEvent(QCloseEvent *event)
+{
+    if(QMessageBox::question(this, this->windowTitle(), QString("Deseja realmente sair?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No) {
+        event->ignore();
+    } else {
+        emit fecharSistema();
+        this->close();
+    }
+}
+
 QMap<int, CadastroFilial *> Principal::getMapFiliais() const
 {
     return mapFiliais;
@@ -458,12 +493,6 @@ void Principal::definirCadastrosDeFiliais(const QMap<int, CadastroFilial *> __te
     emit finishThread();
 }
 
-void Principal::closeEvent(QCloseEvent *event)
-{
-    if(QMessageBox::question(this, this->windowTitle(), QString("Deseja realmente sair?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)
-        event->ignore();
-}
-
 void Principal::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_F2) {
@@ -487,6 +516,11 @@ void Principal::keyPressEvent(QKeyEvent *event)
         return;
     }
     if(event->key() == Qt::Key_F6) {
+        ui->toolButtonControlePonto->setFocus();
+        ui->toolButtonControlePonto->click();
+        return;
+    }
+    if(event->key() == Qt::Key_F7) {
         ui->toolButtonFerramentas->setFocus();
         ui->toolButtonFerramentas->click();
         return;
