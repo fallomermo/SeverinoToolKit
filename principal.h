@@ -151,7 +151,6 @@ private:
     QMap<int, CadastroEmpresa*> mapEmpresas;
     QMap<int, CadastroFilial*> mapFiliais;
 
-    QLocale local;
     QString usuarioAutenticado;
 
 protected:

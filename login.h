@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QFile>
+#include <QLocale>
 #include <QTextStream>
 
 #include "principal.h"
@@ -46,6 +47,7 @@ private:
     Ui::Login *ui;
     Principal *sistema;
 
+    QLocale local;
     bool statusSistema;
 
 };

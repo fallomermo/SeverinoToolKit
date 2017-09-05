@@ -4,9 +4,6 @@
 Principal::Principal(QWidget *parent) : QWidget(parent), ui(new Ui::Principal)
 {
     ui->setupUi(this);
-    QVersionNumber *versao = new QVersionNumber;
-    this->setWindowTitle(QString("Severino Tools | 2.0 ").append(versao->toString()));
-    local.setDefault(QLocale(QLocale::Portuguese, QLocale::Brazil));
     setTimeSession(QTime::currentTime());
 
     aplicarDefinicoesGerais();

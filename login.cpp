@@ -26,7 +26,9 @@ Login::Login(QWidget *parent) :
     ui(new Ui::Login)
 {
     ui->setupUi(this);
-
+    QVersionNumber *versao = new QVersionNumber;
+    this->setWindowTitle(QString("Severino Tools | Versão 2.0 ").append(versao->toString()));
+    local.setDefault(QLocale(QLocale::Portuguese, QLocale::Brazil));
     this->atualizarTema();
     connect(ui->botaoEntrar, SIGNAL(clicked(bool)), this, SLOT(focusBotaoEntrar()));
     connect(ui->campoUsuario, SIGNAL(returnPressed()), this, SLOT(focusCampoUsuario()));

@@ -20,6 +20,16 @@ ProcessarArquivoCrednosso::ProcessarArquivoCrednosso(QWidget *parent) :
                                                << "HIGIENIZAÇÃO CREDNOSSO DEMITIDPS"
                                                << "HIGIENIZAÇÃO CREDNOSSO PLANO DE SAÚDE";
     ui->comboBox->addItems(itensConversao);
+
+    connect(this, SIGNAL(progressValue(int)), msg, SLOT(setProgressValue(int)));
+    connect(this, SIGNAL(minimumProgressValue(int)), msg, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(maximumProgressValue(int)), msg, SLOT(setMaximumValue(int)));
+    connect(this, SIGNAL(fecharCaixaDeMensagem()), msg, SLOT(fecharJanela()));
+    connect(msg, SIGNAL(cancelarProcesso()), this, SLOT(cancelarOperacao()));
+    connect(this, SIGNAL(cancelarProcesso()), threadInstancia, SLOT(quit()), Qt::DirectConnection);
+    connect(threadInstancia, SIGNAL(finished()), controlador, SLOT(exitClass()));
+    connect(this, SIGNAL(obterUpdateDadosColaborador(UpdateDataTableColumm*)), controlador, SLOT(obterUpdateDadosCadastroColaborador(UpdateDataTableColumm*)));
+    connect(controlador, SIGNAL(enviarUpdateDadosCadastroColaborador(QMap<int,UpdateDataTableColumm*>)), this, SLOT(updateDadosArquivoLayoutBasico(QMap<int,UpdateDataTableColumm*>)));
 }
 
 ProcessarArquivoCrednosso::~ProcessarArquivoCrednosso()
@@ -509,11 +519,6 @@ void ProcessarArquivoCrednosso::limparDadosTempTable()
 void ProcessarArquivoCrednosso::updateDadosArquivoLayoutBasico()
 {
     msg = new CaixaMensagemProgresso(this);
-    connect(this, SIGNAL(progressValue(int)), msg, SLOT(setProgressValue(int)));
-    connect(this, SIGNAL(minimumProgressValue(int)), msg, SLOT(setMinimumValue(int)));
-    connect(this, SIGNAL(maximumProgressValue(int)), msg, SLOT(setMaximumValue(int)));
-    connect(this, SIGNAL(fecharCaixaDeMensagem()), msg, SLOT(fecharJanela()));
-    connect(msg, SIGNAL(cancelarProcesso()), this, SLOT(cancelarOperacao()));
     msg->setWindowFlag(Qt::Window);
     msg->setWindowFlag(Qt::FramelessWindowHint);
     msg->setWindowModality(Qt::ApplicationModal);
@@ -529,10 +534,6 @@ void ProcessarArquivoCrednosso::updateDadosArquivoLayoutBasico()
     threadInstancia = new QThread(nullptr);
     controlador = new ControleDAO(nullptr);
 
-    connect(this, SIGNAL(cancelarProcesso()), threadInstancia, SLOT(quit()), Qt::DirectConnection);
-    connect(threadInstancia, SIGNAL(finished()), controlador, SLOT(exitClass()));
-    connect(this, SIGNAL(obterUpdateDadosColaborador(UpdateDataTableColumm*)), controlador, SLOT(obterUpdateDadosCadastroColaborador(UpdateDataTableColumm*)));
-    connect(controlador, SIGNAL(enviarUpdateDadosCadastroColaborador(QMap<int,UpdateDataTableColumm*>)), this, SLOT(updateDadosArquivoLayoutBasico(QMap<int,UpdateDataTableColumm*>)));
     controlador->moveToThread(threadInstancia);
     threadInstancia->start(QThread::NormalPriority);
 
