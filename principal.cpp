@@ -16,13 +16,12 @@ Principal::~Principal()
 
 void Principal::aplicarDefinicoesGerais()
 {
-    ui->campoUsuario->setText(this->getUsuarioAutenticado());
     atualizarTema();
 
     ui->toolButtonIntegracaoFinanceira->setPopupMode(QToolButton::InstantPopup);
-    ui->toolButtonIntegracaoRH->setPopupMode(QToolButton::InstantPopup);
-    ui->toolButtonIntegracaoCrednosso->setPopupMode(QToolButton::InstantPopup);
-    ui->toolButtonBlissBeneficios->setPopupMode(QToolButton::InstantPopup);
+    ui->toolButtonRecursosHumanos->setPopupMode(QToolButton::InstantPopup);
+    ui->toolButtonCartaoCrednosso->setPopupMode(QToolButton::InstantPopup);
+    ui->toolButtonBeneficios->setPopupMode(QToolButton::InstantPopup);
     ui->toolButtonControlePonto->setPopupMode(QToolButton::InstantPopup);
     ui->toolButtonFerramentas->setPopupMode(QToolButton::InstantPopup);
 
@@ -30,23 +29,24 @@ void Principal::aplicarDefinicoesGerais()
     QAction *actionPlanoContas = new QAction(QIcon(":/images/tax.png"), "&Plano de Contas",ui->toolButtonIntegracaoFinanceira);
     QAction *actionPlanoSaude = new QAction(QIcon(":/images/heart.png"), "&Plano de Saúde",ui->toolButtonIntegracaoFinanceira);
     QAction *actionLiquidoFolha = new QAction(QIcon(":/images/water-drop.png"), "&Líquido Folha [No]",ui->toolButtonIntegracaoFinanceira);
-    QAction *actionGuiaINSS = new QAction(QIcon(":/images/piggy-bank.png"), "&Guia INSS Rateio",ui->toolButtonIntegracaoRH);
-    QAction *actionEventosFolha = new QAction(QIcon(":/images/"),"&Eventos Folha [No]",ui->toolButtonIntegracaoRH);
-    QAction *actionMetaRetencaoNormal = new QAction(QIcon(":/images/stocks-graphic-with-a-magnifier-tool.png"),"&Meta Retenção",ui->toolButtonIntegracaoRH);
-    QAction *actionMetaRetencaoEstruturada= new QAction(QIcon(":/images/handshake.png"),"&Meta Retenção Estruturada",ui->toolButtonIntegracaoRH);
-    QAction *actionRelacaoColaboradores = new QAction(QIcon(":/images/team.png"), "&Relação de Colaboradores",ui->toolButtonIntegracaoRH);
-    QAction *actionHigienizacaoCrednosso = new QAction(QIcon(":/images/groupcrednosso.png"), "&Higienizacao Crednosso",ui->toolButtonIntegracaoCrednosso);
-    QAction *actionBlissConvertFiles = new QAction(QIcon(":/images/groupcrednosso.png"), "&Processar Arquivos Bliss",ui->toolButtonBlissBeneficios);
+    QAction *actionGuiaINSS = new QAction(QIcon(":/images/piggy-bank.png"), "&Guia INSS Rateio",ui->toolButtonRecursosHumanos);
+    QAction *actionEventosFolha = new QAction(QIcon(":/images/"),"&Eventos Folha [No]",ui->toolButtonRecursosHumanos);
+    QAction *actionMetaRetencaoNormal = new QAction(QIcon(":/images/stocks-graphic-with-a-magnifier-tool.png"),"&Meta Retenção",ui->toolButtonRecursosHumanos);
+    QAction *actionMetaRetencaoEstruturada= new QAction(QIcon(":/images/handshake.png"),"&Meta Retenção Estruturada",ui->toolButtonRecursosHumanos);
+    QAction *actionRelacaoColaboradores = new QAction(QIcon(":/images/team.png"), "&Relação de Colaboradores",ui->toolButtonRecursosHumanos);
+    QAction *actionHigienizacaoCrednosso = new QAction(QIcon(":/images/groupcrednosso.png"), "&Higienizacao Crednosso",ui->toolButtonCartaoCrednosso);
+    QAction *actionBlissConvertFiles = new QAction(QIcon(":/images/groupcrednosso.png"), "&Processar Arquivos Bliss",ui->toolButtonBeneficios);
     QAction *actionDownloadAhgoraAFD = new QAction(QIcon(":/images/clock-circular-outline.png"), "&Download Ahgora AFD",ui->toolButtonControlePonto);
+    QAction *actionEcoclinic = new QAction(QIcon(":/images/clock-circular-outline.png"), "&Ecoclinic Repasses",ui->toolButtonBeneficios);
     QAction *actionProcessarArquivo = new QAction(QIcon(":/images/groupcrednosso.png"), "&Processar Arquivo",ui->toolButtonFerramentas);
     QAction *actionTruncarArquivo = new QAction(QIcon(":/images/tools.png"), "&Truncar Arquivo",ui->toolButtonFerramentas);
     QAction *actionTrocarUsuario = new QAction(QIcon(":/images/user.png"), "&Trocar Usuário",ui->toolButtonFerramentas);
 
     //Criand menus para os botoes
     QMenu *menuFinanceiro = new QMenu(ui->toolButtonIntegracaoFinanceira);
-    QMenu *menuCrednosso = new QMenu(ui->toolButtonIntegracaoCrednosso);
-    QMenu *menuRH = new QMenu(ui->toolButtonIntegracaoRH);
-    QMenu *menuBlissBeneficios = new QMenu(ui->toolButtonBlissBeneficios);
+    QMenu *menuCrednosso = new QMenu(ui->toolButtonCartaoCrednosso);
+    QMenu *menuRH = new QMenu(ui->toolButtonRecursosHumanos);
+    QMenu *menuBeneficios = new QMenu(ui->toolButtonBeneficios);
     QMenu *menuControlePonto = new QMenu(ui->toolButtonControlePonto);
     QMenu *menuFerramentas = new QMenu(ui->toolButtonFerramentas);
 
@@ -61,6 +61,7 @@ void Principal::aplicarDefinicoesGerais()
     connect(actionHigienizacaoCrednosso, SIGNAL(triggered(bool)), this, SLOT(higienizacaoCrednosso()));
     connect(actionBlissConvertFiles, SIGNAL(triggered(bool)), this, SLOT(processarArquivosBliss()));
     connect(actionDownloadAhgoraAFD, SIGNAL(triggered(bool)), this, SLOT(downloadAhgoraAFD()));
+    connect(actionEcoclinic, SIGNAL(triggered(bool)), this, SLOT(ecoclinicRepasses()));
     connect(actionProcessarArquivo, SIGNAL(triggered(bool)), this, SLOT(processarArquivos()));
     connect(actionTruncarArquivo, SIGNAL(triggered(bool)), this, SLOT(truncarArquivos()));
     connect(actionTrocarUsuario, SIGNAL(triggered(bool)), this, SLOT(alterarUsuario()));
@@ -74,7 +75,7 @@ void Principal::aplicarDefinicoesGerais()
 
     //Adicionado acoes no menu de grupo crednosso
     menuCrednosso->addAction(actionHigienizacaoCrednosso);
-    ui->toolButtonIntegracaoCrednosso->setMenu(menuCrednosso);
+    ui->toolButtonCartaoCrednosso->setMenu(menuCrednosso);
 
     //Adicionado acoes no menu de grupo RH
     menuRH->addAction(actionHomeInicio);
@@ -83,11 +84,12 @@ void Principal::aplicarDefinicoesGerais()
     menuRH->addAction(actionMetaRetencaoNormal);
     menuRH->addAction(actionMetaRetencaoEstruturada);
     menuRH->addAction(actionRelacaoColaboradores);
-    ui->toolButtonIntegracaoRH->setMenu(menuRH);
+    ui->toolButtonRecursosHumanos->setMenu(menuRH);
 
     //Adicionado acoes no menu de grupo Bliss Beneficios
-    menuBlissBeneficios->addAction(actionBlissConvertFiles);
-    ui->toolButtonBlissBeneficios->setMenu(menuBlissBeneficios);
+    menuBeneficios->addAction(actionBlissConvertFiles);
+    menuBeneficios->addAction(actionEcoclinic);
+    ui->toolButtonBeneficios->setMenu(menuBeneficios);
 
     //Adicionado acoes no menu de Controle de Ponto
     menuControlePonto->addAction(actionDownloadAhgoraAFD);
@@ -110,6 +112,7 @@ void Principal::aplicarDefinicoesGerais()
     _flagRelacaoColaborador = false;
     _flagHigienizacaoCrednosso = false;
     _flagDownloadAhgoraAFD = false;
+    _flagEcoclinic = false;
     _flagProcessarBlissBeneficios = false;
     _flagProcessarArquivos = false;
     _flagTruncarArquivos = false;
@@ -138,7 +141,6 @@ void Principal::aplicarDefinicoesGerais()
     connect(ui->tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     connect(ui->botaoSair, SIGNAL(clicked(bool)), this, SLOT(close()));
     emit obterConexaoBanco();
-    ui->campoUsuario->setText("Convidado");
 }
 
 void Principal::homeInicio()
@@ -266,6 +268,20 @@ void Principal::downloadAhgoraAFD()
         ui->tabWidget->setCornerWidget(__downloadAhgoraAFD);
         _flagDownloadAhgoraAFD = true;
         _indexDownloadAhgoraAFD = ui->tabWidget->indexOf(__downloadAhgoraAFD);
+    }
+}
+
+void Principal::ecoclinicRepasses()
+{
+    if(_flagEcoclinic) {
+        ui->tabWidget->setCurrentIndex(_indexEcoclinic);
+    } else {
+        __ecoclinicRepasses = new Ecoclinic(this);
+        __ecoclinicRepasses->setObjectName("ecoclinicRepasses");
+        ui->tabWidget->addTab(__ecoclinicRepasses, QString("Ecoclinic Repasses (Plano Saúde)"));
+        ui->tabWidget->setCornerWidget(__ecoclinicRepasses);
+        _flagEcoclinic = true;
+        _indexEcoclinic = ui->tabWidget->indexOf(__ecoclinicRepasses);
     }
 }
 
@@ -402,24 +418,9 @@ void Principal::finishThreadBool(bool ok)
     }
 }
 
-void Principal::atualizarInformacoesUsuario(QString usr)
-{
-    ui->campoUsuario->setText(usr);
-}
-
 void Principal::alterarUsuario()
 {
     emit trocarUsuario();
-}
-
-QString Principal::getUsuarioAutenticado() const
-{
-    return usuarioAutenticado;
-}
-
-void Principal::setUsuarioAutenticado(const QString &value)
-{
-    usuarioAutenticado = value;
 }
 
 void Principal::closeEvent(QCloseEvent *event)
@@ -498,18 +499,18 @@ void Principal::keyPressEvent(QKeyEvent *event)
         return;
     }
     if(event->key() == Qt::Key_F3) {
-        ui->toolButtonIntegracaoCrednosso->setFocus();
-        ui->toolButtonIntegracaoCrednosso->click();
+        ui->toolButtonCartaoCrednosso->setFocus();
+        ui->toolButtonCartaoCrednosso->click();
         return;
     }
     if(event->key() == Qt::Key_F4) {
-        ui->toolButtonIntegracaoRH->setFocus();
-        ui->toolButtonIntegracaoRH->click();
+        ui->toolButtonRecursosHumanos->setFocus();
+        ui->toolButtonRecursosHumanos->click();
         return;
     }
     if(event->key() == Qt::Key_F5) {
-        ui->toolButtonBlissBeneficios->setFocus();
-        ui->toolButtonBlissBeneficios->click();
+        ui->toolButtonBeneficios->setFocus();
+        ui->toolButtonBeneficios->click();
         return;
     }
     if(event->key() == Qt::Key_F6) {

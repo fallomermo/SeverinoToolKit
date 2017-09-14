@@ -57,13 +57,6 @@ PlanoDeContas::~PlanoDeContas()
 
 void PlanoDeContas::atualizarTabela()
 {
-    ui->campoIDEmpresa->setToolTip("Código da Empresa.");
-    ui->campoIDFilial->setToolTip("Código da Filial.");
-    ui->campoInicioPeriodo->setToolTip("Início da Competência de Cálculo.");
-    ui->campoFinalPeriodo->setToolTip("Fim da Competência de Cálculo.");
-    ui->botaoProcessar->setToolTip("Clique para processar a requisição das Informações.");
-    ui->botaoExportar->setToolTip("Exportar para arquivo .CSV!");
-    ui->tableWidget->setToolTip("Tabela dos Eventos de Rateio para Plano e Contas.");
     QStringList labels = QStringList() << "ID Empresa"
                                        << "Empresa"
                                        << "ID Filial"
@@ -257,11 +250,9 @@ void PlanoDeContas::getDatatable()
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
     CaixaMensagemProgresso *cxMensagem = new CaixaMensagemProgresso(this);
-    connect(this, SIGNAL(progressValue(int)), cxMensagem, SLOT(setProgressValue(int)));
     cxMensagem->setWindowFlag(Qt::Window);
     cxMensagem->setWindowFlag(Qt::FramelessWindowHint);
     cxMensagem->setWindowModality(Qt::ApplicationModal);
-    cxMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
 
     connect(this, SIGNAL(fecharCaixaMensagem()), cxMensagem, SLOT(fecharJanela()));
     connect(this, SIGNAL(minimumProgressValue(int)), cxMensagem, SLOT(setMinimumValue(int)));
@@ -292,10 +283,7 @@ void PlanoDeContas::getDatatable()
     ui->tableWidget->resizeColumnsToContents();
 
     int __tipoCalculo = 0;
-    if(ui->campoFolhaNormal->isChecked())
-        __tipoCalculo = 11;
-    if(ui->campoFolhaDissidio->isChecked())
-        __tipoCalculo = 14;
+    if(ui->campoFolhaNormal->isChecked()) __tipoCalculo = 11; else __tipoCalculo = 14;
 
     QThread *threadDAO = new QThread(nullptr);
     controle = new ControleDAO(nullptr);
@@ -311,21 +299,8 @@ void PlanoDeContas::getDatatable()
 
     QDate _tempDateIni = ui->campoInicioPeriodo->date();
     QDate _tempDateFim = ui->campoFinalPeriodo->date();
-    int _anoComIni = _tempDateIni.year();
-    int _mesComIni = _tempDateIni.month();
-    int _diaComIni = 1;
-    QDate __dataIni( _anoComIni, _mesComIni, _diaComIni );
-
-    int _anoComFim = _tempDateFim.year();
-    int _mesComFim = _tempDateFim.month();
-    int _diaComFim = 1;
-    if(ui->campoFolhaDissidio->isChecked()) {
-        if((_mesComFim%2) == 0)
-            _diaComFim = 30;
-        else
-            _diaComFim = 31;
-    }
-    QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
+    QDate __dataIni( _tempDateIni.year(), _tempDateIni.month(), 1);
+    QDate __dataFim( _tempDateFim.year(), _tempDateFim.month(), _tempDateFim.daysInMonth());
     QString __idEmp = ui->campoIDEmpresa->text().trimmed();
     QString __idFil = ui->campoIDFilial->text().trimmed();
     QString __datIni = __dataIni.toString(Qt::ISODate);

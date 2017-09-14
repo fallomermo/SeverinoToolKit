@@ -30,6 +30,7 @@ public:
 
     bool getStatusSistema() const;
     void setStatusSistema(bool value);
+
 signals:
     void usuarioAutenticado(QString);
 

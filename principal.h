@@ -37,6 +37,7 @@
 #include "blissbeneficios.h"
 #include "truncararquivostexto.h"
 #include "downloadahgoraafd.h"
+#include "ecoclinic.h"
 
 
 namespace Ui {
@@ -62,9 +63,6 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
 
-    QString getUsuarioAutenticado() const;
-    void setUsuarioAutenticado(const QString &value);
-
 signals:
     void finishThread();
     void obterConexaoBanco();
@@ -86,6 +84,7 @@ private slots:
     void relacaoColaborador();
     void higienizacaoCrednosso();
     void downloadAhgoraAFD();
+    void ecoclinicRepasses();
     void processarArquivosBliss();
     void processarArquivos();
     void truncarArquivos();
@@ -97,7 +96,6 @@ private slots:
     void mensagemControlador(QMessageBox&);
     void finishThreadBool(bool);
 
-    void atualizarInformacoesUsuario(QString);
     void alterarUsuario();
 
 private:
@@ -112,6 +110,7 @@ private:
     HigienizacaoCrednosso *__crednosso;
     BlissBeneficios *__blissBeneficios;
     DownloadAhgoraAFD *__downloadAhgoraAFD;
+    Ecoclinic *__ecoclinicRepasses;
     ProcessarArquivoCrednosso *__processarArquivos;
     TruncarArquivosTexto *__truncarArquivos;
     ControleDAO *controleFluxo;
@@ -128,6 +127,7 @@ private:
     bool _flagHigienizacaoCrednosso;
     bool _flagProcessarBlissBeneficios;
     bool _flagDownloadAhgoraAFD;
+    bool _flagEcoclinic;
     bool _flagProcessarArquivos;
     bool _flagTruncarArquivos;
 
@@ -143,6 +143,7 @@ private:
     int _indexHigienizacaoCrednosso;
     int _indexProcessarBlissBeneficios;
     int _indexDownloadAhgoraAFD;
+    int _indexEcoclinic;
     int _indexProcessarArquivos;
     int _indexTruncarArquivos;
 
@@ -150,8 +151,6 @@ private:
     QTime timeSession;
     QMap<int, CadastroEmpresa*> mapEmpresas;
     QMap<int, CadastroFilial*> mapFiliais;
-
-    QString usuarioAutenticado;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);

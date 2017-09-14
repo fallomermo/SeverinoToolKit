@@ -51,7 +51,6 @@ private slots:
     void converterArquivoLayoutBasico();
     void converterArquivoCorteFerias();
     void converterArquivoCorteFeriasDAT();
-    void converterArquivoGarantiaCredinosso();
     void atualizarDadosCorteFeriasDATSenior();
     void converterArquivoCrednossoPlanoSaudeLinhas();
     void filtroItemTabela(QString);
@@ -66,8 +65,6 @@ private slots:
     void updateDadosArquivoLayoutBasico(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoFerias(QMap<int, ObjetoCadastroUpdateFile *>);
     void updateDadosArquivoCrednossoRetorno(QMap<int, ObjetoCadastroUpdateFile *>);
-    void updateDadosArquivoCrednossoGarantia();
-    void updateDadosArquivoCrednossoGarantia(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoFeriasDAT(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoMesCorte(QMap<int, ObjetoCadastroUpdateFile *>);
     void updateDadosArquivoCrednossoDemitidos(QMap<int, ObjetoCadastroUpdateFile *>);

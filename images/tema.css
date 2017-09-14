@@ -22,12 +22,12 @@
 
 #widgetPrincipal
 {
-    background-image: url(:/images/backgroundLogin.png);
+    background-image: url(:/images/backgroundLogin.jpg);
 }
 
 #framePanel
 {
-    background-image: url(:/images/backgroundPanel.png);
+    background-image: url(:/images/backgroundPanel.jpg);
 }
 
 QToolTip

@@ -12,8 +12,8 @@ public:
     int getCodigoDaEmpresa() const;
     void setCodigoDaEmpresa(int value);
 
-    int getCPF() const;
-    void setCPF(int value);
+    QString getCPF() const;
+    void setCPF(const QString value);
 
     QString getEmpresa() const;
     void setEmpresa(const QString &value);
@@ -44,7 +44,7 @@ public:
 
 private:
     int CodigoDaEmpresa;
-    int CPF;
+    QString CPF;
     QString Empresa;
     int CodigoDaFilial;
     QString Filial;

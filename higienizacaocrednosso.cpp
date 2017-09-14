@@ -31,13 +31,12 @@ void HigienizacaoCrednosso::getDatatable()
     progresso->setWindowFlag(Qt::FramelessWindowHint);
     progresso->setWindowModality(Qt::ApplicationModal);
     progresso->setVisible(true);
-    progresso->setWindowTitle(QString("Trabalhando em sua requisição..."));
     progresso->show();
     qApp->processEvents();
 
     if(ui->campoListaOpcoes->currentIndex() == 0) {
         qRegisterMetaType<QMap<int, ObjetoCrednossoRetorno*>>("__metaDataCrednossoRetorno");
-        QThread *processo = new QThread;
+        QThread *processo = new QThread(Q_NULLPTR);
         controle = new ControleDAO(nullptr);
         controle->moveToThread(processo);
 
@@ -80,26 +79,16 @@ void HigienizacaoCrednosso::inserirLinhaTabela(int linha, int nrColunas, ObjetoC
 {
     for (int coluna = 0; coluna < nrColunas; ++coluna) {
         if(coluna == 0)
-            inserirItemTabela(linha, coluna, objeto->getCodigoDaEmpresa());
-        if(coluna == 1)
             inserirItemTabela(linha, coluna, objeto->getCPF());
-        if(coluna == 2)
-            inserirItemTabela(linha, coluna, objeto->getEmpresa());
-        if(coluna == 3)
-            inserirItemTabela(linha, coluna, objeto->getCodigoDaFilial());
-        if(coluna == 4)
-            inserirItemTabela(linha, coluna, objeto->getFilial());
-        if(coluna == 5)
-            inserirItemTabela(linha, coluna, objeto->getCNPJ());
-        if(coluna == 6)
+        if(coluna == 1)
             inserirItemTabela(linha, coluna, objeto->getMatricula());
-        if(coluna == 7)
+        if(coluna == 2)
             inserirItemTabela(linha, coluna, objeto->getNome());
-        if(coluna == 8)
+        if(coluna == 3)
+            inserirItemTabela(linha, coluna, 100);
+        if(coluna == 4)
             inserirItemTabela(linha, coluna, objeto->getCodigoDoEvento());
-        if(coluna == 9)
-            inserirItemTabela(linha, coluna, objeto->getEvento());
-        if(coluna == 10)
+        if(coluna == 5)
             inserirItemTabela(linha, coluna, objeto->getValor());
     }
 }
@@ -151,16 +140,11 @@ void HigienizacaoCrednosso::preencherTabela(QMap<int, ObjetoCrednossoRetorno *> 
 {
     emit finishThread();
     QMapIterator<int,ObjetoCrednossoRetorno *> __tempIterator(__tempMap);
-    QStringList labels = QStringList() << "Codigo da Empresa"
-                                       << "CPF"
-                                       << "Empresa"
-                                       << "Codigo da Filial"
-                                       << "Filial"
-                                       << "CNPJ"
+    QStringList labels = QStringList() << "CPF"
                                        << "Matricula"
                                        << "Nome"
+                                       << "Tabela"
                                        << "Codigo do Evento"
-                                       << "Evento"
                                        << "Valor";
     ui->tableWidget->setColumnCount(labels.count());
     ui->tableWidget->setHorizontalHeaderLabels(labels);
@@ -171,23 +155,7 @@ void HigienizacaoCrednosso::preencherTabela(QMap<int, ObjetoCrednossoRetorno *> 
     __tempTable->setColumnCount(labels.count());
     __tempTable->setRowCount(__tempMap.count());
     ui->campoTotalRegistros->setText(QString::number(__tempMap.count()));
-    __tempMap.clear();
 
-    while (__tempIterator.hasNext()) {
-        __tempIterator.next();
-        ObjetoCrednossoRetorno* objetoAtual = __tempIterator.value();
-        if(!__tempMap.contains(objetoAtual->getCPF())) {
-            dValues+= objetoAtual->getValor();
-            __tempMap.insert(objetoAtual->getCPF(), objetoAtual);
-        } else {
-            ObjetoCrednossoRetorno *__tempObj = __tempMap.value(objetoAtual->getCPF());
-            objetoAtual->setValor(objetoAtual->getValor() + __tempObj->getValor());
-            dValues+=__tempObj->getValor();
-            __tempMap.insert(objetoAtual->getCPF(), objetoAtual);
-        }
-    }
-
-    ui->campoValorTotal->setText(QString("%L1").arg(dValues, 0, 'f', 4));
     int linha = 0;
     progresso->setMaximumValue(__tempMap.count());
     ui->tableWidget->setRowCount(__tempMap.count());
@@ -196,9 +164,12 @@ void HigienizacaoCrednosso::preencherTabela(QMap<int, ObjetoCrednossoRetorno *> 
         __tempIterator.next();
         ObjetoCrednossoRetorno* objeto = __tempIterator.value();
         inserirLinhaTabela(linha, ui->tableWidget->columnCount(), objeto);
+        dValues+=objeto->getValor();
         linha++;
     }
+
     ui->tableWidget->resizeColumnsToContents();
+    ui->campoValorTotal->setText(QString("%L1").arg(dValues, 0, 'f', 4));
     emit fecharCaixaMensagem();
 }
 

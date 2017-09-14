@@ -17,20 +17,32 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox_FiltroPesquisa_2">
      <property name="title">
-      <string>Filtro de Pesquisa</string>
+      <string>Filtro de Pesquisa - Competência</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_Referencia">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="botaoExportar">
         <property name="text">
-         <string>Competência:</string>
+         <string>Exportar</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/txt-file-symbol.png</normaloff>:/images/txt-file-symbol.png</iconset>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
+       <widget class="QPushButton" name="botaoProcessar">
+        <property name="text">
+         <string>Processar</string>
+        </property>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/paper-plane.png</normaloff>:/images/paper-plane.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QDateEdit" name="campoDataReferencia">
         <property name="font">
          <font>
@@ -50,17 +62,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_TipoProcessamento">
-        <property name="text">
-         <string>Tipo de processamento:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
+      <item row="0" column="0" colspan="3">
        <widget class="QComboBox" name="campoListaOpcoes">
         <item>
          <property name="text">
@@ -84,35 +86,13 @@
         </item>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="botaoExportar">
-        <property name="text">
-         <string>Exportar</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/txt-file-symbol.png</normaloff>:/images/txt-file-symbol.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="botaoProcessar">
-        <property name="text">
-         <string>Processar</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/paper-plane.png</normaloff>:/images/paper-plane.png</iconset>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="groupBox_FiltroPesquisa">
      <property name="title">
-      <string>Registros</string>
+      <string>Resultados</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">

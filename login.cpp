@@ -94,7 +94,7 @@ bool Login::autenticarUsuario()
 {
     QString __usuario = this->getUsuario();
     QString __senha = this->getSenha();
-    if((__usuario == "admin") && (__senha == "admin"))
+    if(((__usuario == "admin") && (__senha == "admin")) or ((__usuario == "Administrador") && (__senha == "admin")))
         return true;
     else
         return false;
@@ -104,12 +104,10 @@ void Login::abrirSistema()
 {
     if(autenticarUsuario()) {
         Principal *sistema = new Principal(this);
-        sistema->setUsuarioAutenticado(this->getUsuario());
         ui->groupBox_Login->hide();
         ui->horizontalLayout->addWidget(sistema);
         connect(sistema, SIGNAL(fecharSistema()), this, SLOT(fecharSistema()));
         connect(sistema, SIGNAL(trocarUsuario()), this, SLOT(trocarUsuario()));
-        connect(this, SIGNAL(usuarioAutenticado(QString)), sistema, SLOT(atualizarInformacoesUsuario(QString)));
         sistema->setWindowModality(Qt::ApplicationModal);
         this->setStatusSistema(true);
         sistema->show();
@@ -120,7 +118,7 @@ void Login::abrirSistema()
         ui->campoUsuario->setEnabled(true);
         ui->campoSenha->setEnabled(true);
         ui->campoSenha->clear();
-        QMessageBox::critical(this, tr("Autenticação Falhou!"), QString("Usuário ou Senha Inválida!"), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Autenticação Falhou!"), QString("Usuário ou Senha Inválidos!"), QMessageBox::Ok);
         ui->campoUsuario->setFocus();
     }
 }

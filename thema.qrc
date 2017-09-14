@@ -122,12 +122,10 @@
         <file>images/clock-circular-outline.png</file>
         <file>images/icon_rep.png</file>
         <file>images/logo-ahgora.png</file>
-        <file>images/backgroundPanel.png</file>
         <file>images/banner.jpg</file>
         <file>images/dialog.jpg</file>
         <file>images/spy.png</file>
         <file>images/userPlogin.png</file>
         <file>images/backgroundLogin.jpg</file>
-        <file>images/backgroundLogin.png</file>
     </qresource>
 </RCC>

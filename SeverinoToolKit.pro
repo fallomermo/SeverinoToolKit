@@ -59,7 +59,8 @@ SOURCES += \
     truncararquivostexto.cpp \
     controlador.cpp \
     downloadahgoraafd.cpp \
-    login.cpp
+    login.cpp \
+    ecoclinic.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -96,7 +97,8 @@ HEADERS += \
     truncararquivostexto.h \
     controlador.h \
     downloadahgoraafd.h \
-    login.h
+    login.h \
+    ecoclinic.h
 
 FORMS += \
     guiainssfolha.ui \
@@ -115,7 +117,8 @@ FORMS += \
     blissbeneficios.ui \
     truncararquivostexto.ui \
     downloadahgoraafd.ui \
-    login.ui
+    login.ui \
+    ecoclinic.ui
 
 RESOURCES += \
     thema.qrc

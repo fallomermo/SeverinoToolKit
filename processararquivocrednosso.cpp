@@ -21,11 +21,9 @@ ProcessarArquivoCrednosso::ProcessarArquivoCrednosso(QWidget *parent) :
                                                << "HIGIENIZAÇÃO CREDNOSSO PLANO DE SAÚDE";
     ui->comboBox->addItems(itensConversao);
 
-    connect(this, SIGNAL(progressValue(int)), msg, SLOT(setProgressValue(int)));
-    connect(this, SIGNAL(minimumProgressValue(int)), msg, SLOT(setMinimumValue(int)));
-    connect(this, SIGNAL(maximumProgressValue(int)), msg, SLOT(setMaximumValue(int)));
-    connect(this, SIGNAL(fecharCaixaDeMensagem()), msg, SLOT(fecharJanela()));
-    connect(msg, SIGNAL(cancelarProcesso()), this, SLOT(cancelarOperacao()));
+    threadInstancia = new QThread(Q_NULLPTR);
+    controlador = new ControleDAO(Q_NULLPTR);
+
     connect(this, SIGNAL(cancelarProcesso()), threadInstancia, SLOT(quit()), Qt::DirectConnection);
     connect(threadInstancia, SIGNAL(finished()), controlador, SLOT(exitClass()));
     connect(this, SIGNAL(obterUpdateDadosColaborador(UpdateDataTableColumm*)), controlador, SLOT(obterUpdateDadosCadastroColaborador(UpdateDataTableColumm*)));
@@ -39,10 +37,16 @@ ProcessarArquivoCrednosso::~ProcessarArquivoCrednosso()
 
 void ProcessarArquivoCrednosso::abrirArquivo()
 {
-    QString local = QFileDialog::getOpenFileName(this, tr("Abrir"), QDir::currentPath(), QString("Arquivo Texto (*.txt);;Arquivo DAT(*.dat);;Todos os arquivos(*.*)"));
+    QFileDialog d;
+    d.setFileMode(QFileDialog::AnyFile);
+    QString local = d.getOpenFileName(this, tr("Abrir"), QDir::currentPath(), QString("Arquivo Texto (*.txt);;Arquivo DAT(*.dat);;Todos os arquivos(*.*)"));
+    QFileInfo f(local);
     if(!local.isEmpty()) {
         ui->campoLocalDoArquivo->setText(local);
-        ui->botaoConverter->setFocus();
+        QMessageBox q;
+        int ok = q.question(this, QString("Arquivo: %0").arg(f.fileName()), QString("Deseja carregar o arquivo %0?").arg(f.fileName()), QMessageBox::Yes, QMessageBox::No);
+        if(ok == QMessageBox::Yes) { this->converterArquivo(); ui->botaoAtualizar->setFocus();
+        } else { ui->botaoConverter->setFocus();}
     }
 }
 
@@ -56,7 +60,7 @@ void ProcessarArquivoCrednosso::converterArquivo()
         break;
     case 1: this->converterArquivo("R");
         break;
-    case 2: this->converterArquivoGarantiaCredinosso();
+    case 2: this->converterArquivoLayoutBasico();
         break;
     case 3: this->converterArquivoCorteFeriasDAT();
         break;
@@ -273,77 +277,6 @@ void ProcessarArquivoCrednosso::converterArquivoCorteFeriasDAT()
     ui->botaoAtualizar->setFocus();
 }
 
-void ProcessarArquivoCrednosso::converterArquivoGarantiaCredinosso()
-{
-    QFile file(ui->campoLocalDoArquivo->text().trimmed());
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(0);
-
-    CaixaMensagemProgresso *mensagem = new CaixaMensagemProgresso(this);
-    connect(this, SIGNAL(progressValue(int)), mensagem, SLOT(setProgressValue(int)));
-    connect(this, SIGNAL(minimumProgressValue(int)), mensagem, SLOT(setMinimumValue(int)));
-    connect(this, SIGNAL(maximumProgressValue(int)), mensagem, SLOT(setMaximumValue(int)));
-    connect(this, SIGNAL(fecharCaixaDeMensagem()), mensagem, SLOT(fecharJanela()));
-    mensagem->setWindowFlag(Qt::Window);
-    mensagem->setWindowFlag(Qt::FramelessWindowHint);
-    mensagem->setWindowModality(Qt::ApplicationModal);
-    mensagem->setMinimumValue(0);
-    mensagem->setVisible(true);
-    mensagem->show();
-    qApp->processEvents();
-
-    QTextStream in(&file);
-    int linha = 0;
-    int colunaCalculada = 10;
-    while (!in.atEnd()) {
-        linha++;
-        emit minimumProgressValue(linha);
-        QString registro = in.readLine();
-        QRegExp rx("^(\\d{2})+(\\d{4})+(\\d{1})+(\\d{9})+(\\d{4})+(\\d{3})+(\\d{4})+(\\d{11})+(\\d{11})+(\\d{11})$");
-        rx.indexIn(registro);
-        QStringList labels;
-        labels = QStringList() << "Linha Completa" << "Indice" << "Empresa" << "Filial" << "Matricula" << "Nome" << "Tabela" << "Evento" << "Referencia" << "RAT" << "Valor";
-        QStringList lista = rx.capturedTexts();
-        if(linha == 1) {
-            ui->tableWidget->setRowCount(linha);
-            ui->tableWidget->setColumnCount(labels.count());
-            ui->tableWidget->setHorizontalHeaderLabels(labels);
-            for (int coluna = 0; coluna < lista.count(); ++coluna) {
-                ui->tableWidget->setRowCount(linha);
-                if(coluna == colunaCalculada) {
-                    QString sValue = lista.at(coluna);
-                    double dValue = (static_cast<double>(sValue.toInt(nullptr))) / 100;
-                    QTableWidgetItem *item = new QTableWidgetItem(QString::number(dValue).replace('.',','));
-                    item->setTextAlignment(Qt::AlignRight);
-                    ui->tableWidget->setItem(linha-1, coluna, item);
-                } else {
-                    ui->tableWidget->setItem(linha-1, coluna, new QTableWidgetItem(lista.at(coluna)));
-                }
-            }
-        } else {
-            ui->tableWidget->setRowCount(linha);
-            for (int coluna = 0; coluna < ui->tableWidget->columnCount(); ++coluna) {
-                if(coluna == colunaCalculada) {
-                    QString sValue = lista.at(coluna);
-                    double dValue = (static_cast<double>(sValue.toInt(nullptr))) / 100;
-                    QTableWidgetItem *item = new QTableWidgetItem(QString::number(dValue).replace('.',','));
-                    item->setTextAlignment(Qt::AlignRight);
-                    ui->tableWidget->setItem(linha-1, coluna, item);
-                } else {
-                    ui->tableWidget->setItem(linha-1, coluna, new QTableWidgetItem(lista.at(coluna)));
-                }
-            }
-        }
-    }
-    file.close();
-    emit fecharCaixaDeMensagem();
-    ui->tableWidget->resizeColumnsToContents();
-    ui->botaoAtualizar->setFocus();
-}
-
 void ProcessarArquivoCrednosso::atualizarDadosCorteFeriasDATSenior()
 {
     CaixaMensagemProgresso *mensagem = new CaixaMensagemProgresso(this);
@@ -491,18 +424,18 @@ void ProcessarArquivoCrednosso::cancelarOperacao()
 {
     if(QMessageBox::question(this, tr("Cancelar Operação?"), QString("Deseja realmente cancelar?"), QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
         emit cancelarProcesso();
-        this->thread()->quit();
+        if(threadInstancia->isRunning())
+            this->thread()->quit();
     }
 }
 
 void ProcessarArquivoCrednosso::atualizarDados()
 {
     int control = ui->comboBox->currentIndex();
-    qDebug() << control;
     switch (control) {
     case 0: break;
     case 1: break;
-    case 2: this->updateDadosArquivoCrednossoGarantia(); break;
+    case 2: this->updateDadosArquivoLayoutBasico(); break;
     case 3: this->atualizarDadosCorteFeriasDATSenior(); break;
     case 4: this->atualizarDadosCorteFeriasDATSenior(); break;
     case 5: this->atualizarDadosCorteFeriasDATSenior(); break;
@@ -519,18 +452,23 @@ void ProcessarArquivoCrednosso::limparDadosTempTable()
 void ProcessarArquivoCrednosso::updateDadosArquivoLayoutBasico()
 {
     msg = new CaixaMensagemProgresso(this);
+    connect(this, SIGNAL(progressValue(int)), msg, SLOT(setProgressValue(int)));
+    connect(this, SIGNAL(minimumProgressValue(int)), msg, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(maximumProgressValue(int)), msg, SLOT(setMaximumValue(int)));
+    connect(this, SIGNAL(fecharCaixaDeMensagem()), msg, SLOT(fecharJanela()));
+    connect(msg, SIGNAL(cancelarProcesso()), this, SLOT(cancelarOperacao()));
     msg->setWindowFlag(Qt::Window);
     msg->setWindowFlag(Qt::FramelessWindowHint);
     msg->setWindowModality(Qt::ApplicationModal);
     msg->setMinimumValue(0);
     msg->setVisible(true);
     msg->show();
-    qApp->processEvents();
+    qApp->processEvents(QEventLoop::AllEvents);
 
     QTableWidget *tabela = ui->tableWidget;
 
-    qRegisterMetaType<QMap<int,UpdateDataTableColumm*>>("__mapUpdateDataTableColumm");
-    qRegisterMetaType<QMap<int,UpdateDataTableColumm*>>("__objUpdateDataTableColumm");
+    qRegisterMetaType<QMap<int,UpdateDataTableColumm*>>("__mapUpdtDatTabCol");
+    qRegisterMetaType<QMap<int,UpdateDataTableColumm*>>("__objUpdtDatTabCol");
     threadInstancia = new QThread(nullptr);
     controlador = new ControleDAO(nullptr);
 
@@ -557,25 +495,23 @@ void ProcessarArquivoCrednosso::updateDadosArquivoLayoutBasico()
 void ProcessarArquivoCrednosso::updateDadosArquivoLayoutBasico(QMap<int, UpdateDataTableColumm *> __tempMap)
 {
     UpdateDataTableColumm *i = __tempMap.value(0);
-    qDebug() << QString("Linha: %0 - %1 [%2}").arg(i->getLinha()+1).arg(i->getNome()).arg(i->getUltimoRegistro());
+    qDebug() << QString("Linha: %0 - %1 [ %2 ]").arg(i->getLinha()+1).arg(i->getNome()).arg(i->getUltimoRegistro());
 
     if(i->getUltimoRegistro()) {
         emit finishThread();
+        emit cancelarProcesso();
         emit progressValue(i->getLinha()+1);
-        emit fecharCaixaDeMensagem();
         ui->tableWidget->setItem(i->getLinha(), 3, new QTableWidgetItem(i->getFilial()));
         ui->tableWidget->setItem(i->getLinha(), 5, new QTableWidgetItem(i->getNome()));
         ui->tableWidget->resizeColumnsToContents();
-        QMessageBox::information(this, tr("Processamento de arquivo"), QString("Concluído!"), QMessageBox::Ok);
-        ui->tableWidget->resizeColumnsToContents();
+        emit fecharCaixaDeMensagem();
+        qDebug() << QString("Linha: %0 - Concluido!").arg(i->getLinha()+1);
         ui->botaoExportar->setFocus();
     } else {
         emit progressValue(i->getLinha()+1);
         ui->tableWidget->setItem(i->getLinha(), 3, new QTableWidgetItem(i->getFilial()));
         ui->tableWidget->setItem(i->getLinha(), 5, new QTableWidgetItem(i->getNome()));
     }
-
-    i->deleteLater();
 }
 
 void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoFerias(QMap<int, ObjetoCadastroUpdateFile *>)
@@ -586,71 +522,6 @@ void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoFerias(QMap<int, Obje
 void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoRetorno(QMap<int, ObjetoCadastroUpdateFile *>)
 {
     //Para quando for retorno da folha
-}
-
-void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoGarantia()
-{
-    CaixaMensagemProgresso *mensagem = new CaixaMensagemProgresso(this);
-    connect(this, SIGNAL(progressValue(int)), mensagem, SLOT(setProgressValue(int)));
-    connect(this, SIGNAL(minimumProgressValue(int)), mensagem, SLOT(setMinimumValue(int)));
-    connect(this, SIGNAL(maximumProgressValue(int)), mensagem, SLOT(setMaximumValue(int)));
-    connect(this, SIGNAL(fecharCaixaDeMensagem()), mensagem, SLOT(fecharJanela()));
-    mensagem->setWindowFlag(Qt::Window);
-    mensagem->setWindowFlag(Qt::FramelessWindowHint);
-    mensagem->setWindowModality(Qt::ApplicationModal);
-    mensagem->setMinimumValue(0);
-    mensagem->setVisible(true);
-    mensagem->show();
-    qApp->processEvents();
-
-    QTableWidget *tabela = ui->tableWidget;
-    qRegisterMetaType<QMap<int,UpdateDataTableColumm*>>("__metaTypeUpdateDataTableColumm");
-    QThread *thread_Update = new QThread(nullptr);
-    connect(this, SIGNAL(finishThread()), thread_Update, SLOT(terminate()));
-    connect(mensagem, SIGNAL(cancelarProcesso()), thread_Update, SLOT(terminate()));
-    ControleDAO *controle = new ControleDAO(nullptr);
-    connect(thread_Update, SIGNAL(finished()), controle, SLOT(deleteLater()));
-    connect(this, SIGNAL(obterUpdateDadosColaborador(int,int,int,int,bool)),
-            controle, SLOT(obterUpdateDadosCadastroColaborador(int,int,int,int,bool)));
-    connect(controle, SIGNAL(enviarUpdateDadosCadastroColaborador(QMap<int,UpdateDataTableColumm*>)),
-            this, SLOT(updateDadosArquivoCrednossoGarantia(QMap<int,UpdateDataTableColumm*>)));
-    controle->moveToThread(thread_Update);
-    thread_Update->start(QThread::NormalPriority);
-
-    int registros = (tabela->rowCount()) - 1;
-    emit maximumProgressValue(tabela->rowCount());
-    for (int linha = 0; linha < tabela->rowCount(); ++linha) {
-        QTableWidgetItem *iemp = ui->tableWidget->item(linha, 2);
-        QTableWidgetItem *icad = ui->tableWidget->item(linha, 4);
-        int numemp = iemp->text().toInt(nullptr);
-        int numcad = icad->text().toInt(nullptr);
-        if(linha == registros) {
-            emit obterUpdateDadosColaborador(numemp, numcad, linha, 0, true);
-        } else {
-            emit obterUpdateDadosColaborador(numemp, numcad, linha, 0, false);
-        }
-    }
-}
-
-void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoGarantia(QMap<int, UpdateDataTableColumm *> __tempMap)
-{
-    UpdateDataTableColumm *i = __tempMap.value(0);
-    if(i->getUltimoRegistro()) {
-        emit finishThread();
-        emit progressValue(i->getLinha()+1);
-        emit fecharCaixaDeMensagem();
-        ui->tableWidget->setItem(i->getLinha(), 3, new QTableWidgetItem(i->getFilial()));
-        ui->tableWidget->setItem(i->getLinha(), 5, new QTableWidgetItem(i->getNome()));
-        ui->tableWidget->resizeColumnsToContents();
-        QMessageBox::information(this, tr("Processamento de arquivo"), QString("Concluído!"), QMessageBox::Ok);
-        ui->botaoExportar->setFocus();
-    } else {
-        emit progressValue(i->getLinha()+1);
-        ui->tableWidget->setItem(i->getLinha(), 3, new QTableWidgetItem(i->getFilial()));
-        ui->tableWidget->setItem(i->getLinha(), 5, new QTableWidgetItem(i->getNome()));
-    }
-
-    i->deleteLater();
 }
 
 void ProcessarArquivoCrednosso::updateDadosArquivoCrednossoFeriasDAT(QMap<int, UpdateDataTableColumm *> __tempMap)
