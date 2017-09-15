@@ -62,8 +62,7 @@ SOURCES += \
     downloadahgoraafd.cpp \
     login.cpp \
     ecoclinic.cpp \
-    usuarios.cpp \
-    relacaocolaboradores.cpp
+    usuarios.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -102,8 +101,7 @@ HEADERS += \
     downloadahgoraafd.h \
     login.h \
     ecoclinic.h \
-    usuarios.h \
-    relacaocolaboradores.h
+    usuarios.h
 
 FORMS += \
     guiainssfolha.ui \
@@ -123,8 +121,7 @@ FORMS += \
     truncararquivostexto.ui \
     downloadahgoraafd.ui \
     login.ui \
-    ecoclinic.ui \
-    relacaocolaboradores.ui
+    ecoclinic.ui
 
 RESOURCES += \
     thema.qrc

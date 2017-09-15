@@ -123,8 +123,13 @@ void RelacaoColaborador::pesquisarEmpresa()
 
 void RelacaoColaborador::setEmpresa(QString e)
 {
-    ui->campoID_Empresa->setText(e);
-    retornaCadastroEmpresa();
+    if(!e.isEmpty()) {
+        ui->campoID_Empresa->setText(e);
+        this->retornaCadastroEmpresa();
+    } else {
+        ui->campoID_Empresa->clear();
+        ui->campoDescricaoEmpresa->clear();
+    }
 }
 
 void RelacaoColaborador::pesquisarFilial()
@@ -139,13 +144,19 @@ void RelacaoColaborador::pesquisarFilial()
 
 void RelacaoColaborador::setFilial(QString f)
 {
-    ui->campoID_Filial->setText(f);
-    retornaCadastroFilial(f);
+    if(f.isEmpty() && !ui->campoID_Filial->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+        ui->campoID_Filial->clear();
+    } else {
+        this->retornaCadastroFilial(f);
+        ui->campoID_Filial->clear();
+        ui->campoDescricaoFilial->clear();
+    }
 }
 
 void RelacaoColaborador::retornaCadastroEmpresa()
 {
-    QMapIterator<int, CadastroEmpresa*> mi(getMapEmpresas());
+    QMapIterator<int, CadastroEmpresa*> mi(this->getMapEmpresas());
     QString _nomeEmpresa;
 
     while (mi.hasNext()) {
@@ -158,8 +169,10 @@ void RelacaoColaborador::retornaCadastroEmpresa()
         }
     }
 
-    if(_nomeEmpresa.isEmpty()) {
-        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa não encontrada [!]"), QMessageBox::Ok);
+    if(_nomeEmpresa.isEmpty() && !ui->campoID_Empresa->text().isEmpty()) {
+        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa Inválida [!]"), QMessageBox::Ok);
+        ui->campoID_Empresa->clear();
+        ui->campoDescricaoEmpresa->clear();
         ui->campoID_Empresa->setFocus();
     } else {
         ui->campoDescricaoEmpresa->setText(_nomeEmpresa);
@@ -170,16 +183,20 @@ void RelacaoColaborador::retornaCadastroEmpresa()
 void RelacaoColaborador::retornaCadastroFilial()
 {
     QString _ID_Filial = ui->campoID_Filial->text();
-    if(ui->campoID_Empresa->text().isEmpty()) {
+    if(ui->campoID_Empresa->text().isEmpty() && !ui->campoID_Filial->text().isEmpty()) {
         QMessageBox::critical(this, tr("Seleção de Filtro"), QString("Nenhuma Empresa Selecionada"), QMessageBox::Ok);
+        ui->campoID_Empresa->clear();
+        ui->campoDescricaoEmpresa->clear();
+        ui->campoID_Filial->clear();
+        ui->campoDescricaoFilial->clear();
         ui->campoID_Empresa->setFocus();
     } else {
-        QMapIterator<int, CadastroFilial*> mi(getMapFiliais());
+        QMapIterator<int, CadastroFilial*> mi(this->getMapFiliais());
         QString _nomeFilial;
 
         while (mi.hasNext()) {
             mi.next();
-            CadastroFilial *_cfil = new CadastroFilial;
+            CadastroFilial *_cfil = new CadastroFilial(Q_NULLPTR);
             _cfil = mi.value();
             QString _ID_Empresa = ui->campoID_Empresa->text();
             if(_cfil->getID_Empresa() == _ID_Empresa && _cfil->getID_Filial() == _ID_Filial) {
@@ -187,8 +204,10 @@ void RelacaoColaborador::retornaCadastroFilial()
             }
         }
 
-        if(_nomeFilial.isEmpty()) {
+        if(_nomeFilial.isEmpty() && !ui->campoID_Filial->text().isEmpty()) {
             QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+            ui->campoDescricaoFilial->clear();
+            ui->campoID_Filial->clear();
             ui->campoID_Filial->setFocus();
         } else {
             ui->campoID_Filial->setText(_ID_Filial);
