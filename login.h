@@ -7,6 +7,7 @@
 #include <QTextStream>
 
 #include "principal.h"
+#include "usuarios.h"
 
 namespace Ui {
 class Login;
@@ -50,6 +51,8 @@ private:
 
     QLocale local;
     bool statusSistema;
+
+    QMap<int, Usuarios*> listUsers;
 
 };
 

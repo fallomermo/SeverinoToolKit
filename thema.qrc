@@ -126,6 +126,8 @@
         <file>images/dialog.jpg</file>
         <file>images/spy.png</file>
         <file>images/userPlogin.png</file>
-        <file>images/backgroundLogin.jpg</file>
+        <file>images/backgroundLogin.png</file>
+        <file>images/backgroundLoginAutentication.png</file>
+        <file>images/bg_login.png</file>
     </qresource>
 </RCC>

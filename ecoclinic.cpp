@@ -7,6 +7,7 @@ Ecoclinic::Ecoclinic(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    qDebug() << "Contrutor instanciado para Ecoclinic...";
     threadProcesso = new QThread(Q_NULLPTR);
     controle = new ControleDAO(Q_NULLPTR);
 

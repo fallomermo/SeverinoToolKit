@@ -29,7 +29,32 @@ Login::Login(QWidget *parent) :
     QVersionNumber *versao = new QVersionNumber;
     this->setWindowTitle(QString("Severino Tools | Versão 2.0 ").append(versao->toString()));
     local.setDefault(QLocale(QLocale::Portuguese, QLocale::Brazil));
-    this->atualizarTema();
+
+    Usuarios *usr1 = new Usuarios(Q_NULLPTR);
+    Usuarios *usr2 = new Usuarios(Q_NULLPTR);
+    Usuarios *usr3 = new Usuarios(Q_NULLPTR);
+    Usuarios *usr4 = new Usuarios(Q_NULLPTR);
+
+    usr1->setUsuario("recrutador");
+    usr1->setSenha("recrutador");
+
+    usr2->setUsuario("coordenador");
+    usr2->setSenha("coordenador");
+
+    usr3->setUsuario("admin");
+    usr3->setSenha("admin");
+
+    usr4->setUsuario("analistas");
+    usr4->setSenha("analistas");
+
+    listUsers.insert(0, usr1);
+    listUsers.insert(1, usr2);
+    listUsers.insert(2, usr3);
+    listUsers.insert(3, usr4);
+
+
+    //this->atualizarTema();
+
     connect(ui->botaoEntrar, SIGNAL(clicked(bool)), this, SLOT(focusBotaoEntrar()));
     connect(ui->campoUsuario, SIGNAL(returnPressed()), this, SLOT(focusCampoUsuario()));
     connect(ui->campoSenha, SIGNAL(returnPressed()), this, SLOT(focusCampoSenha()));
@@ -64,8 +89,6 @@ void Login::atualizarTema()
 void Login::focusCampoUsuario()
 {
     this->setUsuario(ui->campoUsuario->text().trimmed());
-    if(this->getUsuario() == "admin")
-        ui->campoUsuario->setText("Administrador");
     ui->campoUsuario->setEnabled(false);
     ui->campoSenha->setFocus();
 }
@@ -92,22 +115,28 @@ void Login::focusBotaoEntrar()
 
 bool Login::autenticarUsuario()
 {
-    QString __usuario = this->getUsuario();
-    QString __senha = this->getSenha();
-    if(((__usuario == "admin") && (__senha == "admin")) or ((__usuario == "Administrador") && (__senha == "admin")))
-        return true;
-    else
-        return false;
+    QMapIterator<int, Usuarios*> i(listUsers);
+    bool ok = false;
+    while (i.hasNext() && !ok) {
+        i.next();
+        Usuarios *u = i.value();
+        if((u->getUsuario().contains(this->getUsuario(), Qt::CaseSensitive)) && (u->getSenha().contains(this->getSenha(), Qt::CaseSensitive)))
+            ok = true;
+        else
+            ok = false;
+    }
+    return ok;
 }
 
 void Login::abrirSistema()
 {
     if(autenticarUsuario()) {
-        Principal *sistema = new Principal(this);
-        ui->groupBox_Login->hide();
+        Principal *sistema = new Principal(this, this->getUsuario());
+        ui->groupBox_LoginPanel->hide();
         ui->horizontalLayout->addWidget(sistema);
         connect(sistema, SIGNAL(fecharSistema()), this, SLOT(fecharSistema()));
         connect(sistema, SIGNAL(trocarUsuario()), this, SLOT(trocarUsuario()));
+        connect(this, SIGNAL(usuarioAutenticado(QString)), sistema, SLOT(usuarioAutenticado(QString)));
         sistema->setWindowModality(Qt::ApplicationModal);
         this->setStatusSistema(true);
         sistema->show();
@@ -118,7 +147,7 @@ void Login::abrirSistema()
         ui->campoUsuario->setEnabled(true);
         ui->campoSenha->setEnabled(true);
         ui->campoSenha->clear();
-        QMessageBox::critical(this, tr("Autenticação Falhou!"), QString("Usuário ou Senha Inválidos!"), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Falha de Autenticação!"), QString("Usuário ou Senha Inválidos!"), QMessageBox::Ok);
         ui->campoUsuario->setFocus();
     }
 }
@@ -127,7 +156,7 @@ void Login::trocarUsuario()
 {
     this->setUsuario(Q_NULLPTR);
     this->setSenha(Q_NULLPTR);
-    ui->groupBox_Login->show();
+    ui->groupBox_LoginPanel->show();
     ui->campoUsuario->setEnabled(true);
     ui->campoSenha->setEnabled(true);
     ui->campoSenha->clear();

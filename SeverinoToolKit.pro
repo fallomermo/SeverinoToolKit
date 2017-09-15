@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
 
 
 SOURCES += \
@@ -60,7 +61,9 @@ SOURCES += \
     controlador.cpp \
     downloadahgoraafd.cpp \
     login.cpp \
-    ecoclinic.cpp
+    ecoclinic.cpp \
+    usuarios.cpp \
+    relacaocolaboradores.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -98,7 +101,9 @@ HEADERS += \
     controlador.h \
     downloadahgoraafd.h \
     login.h \
-    ecoclinic.h
+    ecoclinic.h \
+    usuarios.h \
+    relacaocolaboradores.h
 
 FORMS += \
     guiainssfolha.ui \
@@ -118,7 +123,8 @@ FORMS += \
     truncararquivostexto.ui \
     downloadahgoraafd.ui \
     login.ui \
-    ecoclinic.ui
+    ecoclinic.ui \
+    relacaocolaboradores.ui
 
 RESOURCES += \
     thema.qrc

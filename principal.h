@@ -49,7 +49,7 @@ class Principal : public QWidget
     Q_OBJECT
 
 public:
-    explicit Principal(QWidget *parent = 0);
+    explicit Principal(QWidget *parent = 0, QString u = nullptr);
     ~Principal();
 
     void aplicarDefinicoesGerais();
@@ -62,6 +62,9 @@ public:
 
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
+
+    QString getUsuarioSessao() const;
+    void setUsuarioSessao(const QString &value);
 
 signals:
     void finishThread();
@@ -97,6 +100,7 @@ private slots:
     void finishThreadBool(bool);
 
     void alterarUsuario();
+    void usuarioAutenticado(QString);
 
 private:
     Ui::Principal *ui;
@@ -151,6 +155,7 @@ private:
     QTime timeSession;
     QMap<int, CadastroEmpresa*> mapEmpresas;
     QMap<int, CadastroFilial*> mapFiliais;
+    QString usuarioSessao;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);

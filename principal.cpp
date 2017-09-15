@@ -1,7 +1,7 @@
 #include "principal.h"
 #include "ui_principal.h"
 
-Principal::Principal(QWidget *parent) : QWidget(parent), ui(new Ui::Principal)
+Principal::Principal(QWidget *parent, QString u) : QWidget(parent), usuarioSessao(u), ui(new Ui::Principal)
 {
     ui->setupUi(this);
     setTimeSession(QTime::currentTime());
@@ -16,8 +16,6 @@ Principal::~Principal()
 
 void Principal::aplicarDefinicoesGerais()
 {
-    atualizarTema();
-
     ui->toolButtonIntegracaoFinanceira->setPopupMode(QToolButton::InstantPopup);
     ui->toolButtonRecursosHumanos->setPopupMode(QToolButton::InstantPopup);
     ui->toolButtonCartaoCrednosso->setPopupMode(QToolButton::InstantPopup);
@@ -100,6 +98,35 @@ void Principal::aplicarDefinicoesGerais()
     menuFerramentas->addAction(actionTruncarArquivo);
     menuFerramentas->addAction(actionTrocarUsuario);
     ui->toolButtonFerramentas->setMenu(menuFerramentas);
+
+    ui->toolButtonIntegracaoFinanceira->setEnabled(false);
+    ui->toolButtonCartaoCrednosso->setEnabled(false);
+    ui->toolButtonRecursosHumanos->setEnabled(false);
+    ui->toolButtonBeneficios->setEnabled(false);
+    ui->toolButtonControlePonto->setEnabled(false);
+    ui->toolButtonFerramentas->setEnabled(false);
+
+    if(this->getUsuarioSessao().contains("admin") || this->getUsuarioSessao().contains("analistas")) {
+        ui->toolButtonIntegracaoFinanceira->setEnabled(true);
+        ui->toolButtonCartaoCrednosso->setEnabled(true);
+        ui->toolButtonRecursosHumanos->setEnabled(true);
+        ui->toolButtonBeneficios->setEnabled(true);
+        ui->toolButtonControlePonto->setEnabled(true);
+        ui->toolButtonFerramentas->setEnabled(true);
+    }
+
+    if(this->getUsuarioSessao().contains("coordenador")) {
+        ui->toolButtonIntegracaoFinanceira->setEnabled(true);
+        ui->toolButtonCartaoCrednosso->setEnabled(true);
+        ui->toolButtonRecursosHumanos->setEnabled(true);
+        ui->toolButtonBeneficios->setEnabled(true);
+        ui->toolButtonControlePonto->setEnabled(true);
+        ui->toolButtonFerramentas->setEnabled(true);
+    }
+
+    if(this->getUsuarioSessao().contains("recrutador")) {
+        ui->toolButtonRecursosHumanos->setEnabled(true);
+    }
 
     _flagHomeInicio   = false;
     _flagPlanoContas  = false;
@@ -350,6 +377,8 @@ void Principal::closeTab(int i)
         _flagHigienizacaoCrednosso = false;
     if(wgt->objectName().contains("blissBeneficios"))
         _flagProcessarBlissBeneficios = false;
+    if(wgt->objectName().contains("ecoclinicRepasses"))
+        _flagEcoclinic = false;
     if(wgt->objectName().contains("downloadAhgoraAFD"))
         _flagDownloadAhgoraAFD = false;
     if(wgt->objectName().contains("processarArquivos"))
@@ -421,6 +450,21 @@ void Principal::finishThreadBool(bool ok)
 void Principal::alterarUsuario()
 {
     emit trocarUsuario();
+}
+
+void Principal::usuarioAutenticado(QString u)
+{
+    this->setUsuarioSessao(u);
+}
+
+QString Principal::getUsuarioSessao() const
+{
+    return usuarioSessao;
+}
+
+void Principal::setUsuarioSessao(const QString &value)
+{
+    usuarioSessao = value;
 }
 
 void Principal::closeEvent(QCloseEvent *event)

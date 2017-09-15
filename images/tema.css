@@ -30,6 +30,11 @@
     background-image: url(:/images/backgroundPanel.jpg);
 }
 
+#groupBox_Login
+{
+    background-image: transparent;
+}
+
 QToolTip
 {
     border: 1px solid #76797C;
@@ -1235,7 +1240,7 @@ QDateEdit
     border-style: solid;
     border: 1px solid #3375A3;
     border-radius: 2px;
-    padding: 1px;
+    padding: 5px;
     min-width: 75px;
 }
 
