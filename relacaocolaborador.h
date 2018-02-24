@@ -41,6 +41,12 @@ public:
     QMap<int, CadastroFilial *> getMapFiliais() const;
     void setMapFiliais(const QMap<int, CadastroFilial *> &value);
 
+    QString getCodigoDaEmpresa() const;
+    void setCodigoDaEmpresa(const QString &value);
+
+    QString getCodigoDaFilial() const;
+    void setCodigoDaFilial(const QString &value);
+
 signals:
     void finishThread();
     void progressValue(int);
@@ -52,9 +58,9 @@ signals:
 private slots:
     void filtroItemTabela(QString);
     void pesquisarEmpresa();
-    void setEmpresa(QString);
+    void setEmpresa(const QString);
     void pesquisarFilial();
-    void setFilial(QString);
+    void setFilial(const QString);
     void retornaCadastroEmpresa();
     void retornaCadastroFilial();
     void retornaCadastroFilial(QString);
@@ -68,8 +74,6 @@ private slots:
     void inserirLinhaTabela(int, int, CadastroColaborador *);
     void exportarParaExcel();
     void exibirNumeroRegistros(QModelIndex);
-    void exibirDataCompleta();
-    void exibirDataCompleta(QDate);
     void caixaMensagemUsuario(QString);
 
 private:
@@ -77,6 +81,9 @@ private:
     QMap<int, CadastroEmpresa *> mapEmpresas;
     QMap<int, CadastroFilial *> mapFiliais;
     ControleDAO *controle;
+
+    QString codigoDaEmpresa;
+    QString codigoDaFilial;
 };
 
 #endif // RELACAOCOLABORADOR_H

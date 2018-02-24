@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>783</width>
-    <height>538</height>
+    <width>808</width>
+    <height>421</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,24 +17,146 @@
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="4" column="0" colspan="4">
+   <item row="2" column="0" rowspan="2" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Filtro">
+     <property name="title">
+      <string>Empresa e Filial</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="campoIDEmpresa">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="campoIDFilial">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="4">
     <widget class="QTableWidget" name="tableWidget">
      <property name="sortingEnabled">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="4">
+   <item row="6" column="0" colspan="4">
     <widget class="QLineEdit" name="campoPesquisarObjetosTabela">
      <property name="clearButtonEnabled">
       <bool>true</bool>
      </property>
     </widget>
    </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Filtro_3">
+     <property name="title">
+      <string>Período</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QDateEdit" name="campoInicioPeriodo">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="showGroupSeparator" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>MM/yyyy</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDateEdit" name="campoFinalPeriodo">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="showGroupSeparator" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>MM/yyyy</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Filtro_5">
+     <property name="title">
+      <string>Tipo de Folha</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QComboBox" name="comboBoxTiposCalculos">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <item>
+         <property name="text">
+          <string>11 - Folha Normal Mês</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>14 - Folha Complementar de Dissídio Coletivo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>31 - Folha de Adiantamento de 13º Salário</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>32 - Folha de 13º - Integral</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="2" rowspan="2" colspan="2">
     <widget class="QGroupBox" name="groupBox_Filtro_2">
      <property name="title">
-      <string/>
+      <string>Scouts</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="1" column="0">
@@ -144,18 +266,16 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QPushButton" name="botaoExportar">
-        <property name="text">
-         <string>Exportar...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/csv-file-format-extension.png</normaloff>:/images/csv-file-format-extension.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="2" rowspan="2" colspan="2">
+    <widget class="QGroupBox" name="groupBox_Filtro_4">
+     <property name="title">
+      <string>Ações</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
        <widget class="QPushButton" name="botaoProcessar">
         <property name="text">
          <string>Processar</string>
@@ -166,251 +286,28 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="2" colspan="2">
-    <widget class="QGroupBox" name="groupBox_Filtro">
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>81</width>
-          <height>16777215</height>
-         </size>
-        </property>
+      <item>
+       <widget class="QPushButton" name="botaoExportar">
         <property name="text">
-         <string>Empresa:</string>
+         <string>Exportar...</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDateEdit" name="campoInicioPeriodo">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="showGroupSeparator" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>MM/yyyy</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Final Competência</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="2">
-       <widget class="QLabel" name="campoNomeEmpresa">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>81</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Filial:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="campoIDEmpresa">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>140</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QDateEdit" name="campoFinalPeriodo">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <property name="showGroupSeparator" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>MM/yyyy</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2" colspan="2">
-       <widget class="QLabel" name="campoNomeFilial">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Início Competência:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2" colspan="2">
-       <widget class="QRadioButton" name="campoFolhaDissidio">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quando for folha de dissidio, a pesquisa se baseia na data de pagamento do calculo. Portanto, selecione um período em que essa data seja abrangida.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string>Folha Dissídio</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QRadioButton" name="campoFolhaNormal">
-        <property name="text">
-         <string>Folha Normal</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="campoIDFilial">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>140</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Tipo de Folha:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="icon">
+         <iconset resource="thema.qrc">
+          <normaloff>:/images/csv-file-format-extension.png</normaloff>:/images/csv-file-format-extension.png</iconset>
         </property>
        </widget>
       </item>
      </layout>
-     <zorder>campoNomeFilial</zorder>
-     <zorder>label_6</zorder>
-     <zorder>label_5</zorder>
-     <zorder>label_7</zorder>
-     <zorder>campoIDEmpresa</zorder>
-     <zorder>campoIDFilial</zorder>
-     <zorder>campoNomeEmpresa</zorder>
-     <zorder>label</zorder>
-     <zorder>campoInicioPeriodo</zorder>
-     <zorder>campoFinalPeriodo</zorder>
-     <zorder>campoFolhaNormal</zorder>
-     <zorder>campoFolhaDissidio</zorder>
-     <zorder>label_2</zorder>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>campoIDEmpresa</tabstop>
-  <tabstop>campoIDFilial</tabstop>
   <tabstop>campoInicioPeriodo</tabstop>
   <tabstop>campoFinalPeriodo</tabstop>
-  <tabstop>campoFolhaNormal</tabstop>
-  <tabstop>campoFolhaDissidio</tabstop>
+  <tabstop>comboBoxTiposCalculos</tabstop>
+  <tabstop>campoIDEmpresa</tabstop>
+  <tabstop>campoIDFilial</tabstop>
   <tabstop>botaoProcessar</tabstop>
   <tabstop>botaoExportar</tabstop>
   <tabstop>campoPesquisarObjetosTabela</tabstop>

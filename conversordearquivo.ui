@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConversorDeArquivo</class>
+ <widget class="QWidget" name="ConversorDeArquivo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>711</width>
+    <height>422</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QTableWidget" name="tableWidget_Senior"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QTableWidget" name="tableWidget_Planilha"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPushButton" name="botaoAtualizaTabelas">
+     <property name="text">
+      <string>Atualizar Tabelas</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="botaoExportarDados">
+     <property name="text">
+      <string>Exportar</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Checagem de registros x Planilha XLS</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="botaoEventosFichaFinanceira">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Eventos F. Fianceira</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="botaoEventosFichaFinanceira_2">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Inativo [1]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="botaoEventosLctoVariaveis">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Inativo [2]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="botaoEventosLctoVariaveis_2">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Inativo [3]</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Competência x Tipo de Folha</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="codigoFilialLlineEdit">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Código da Filial</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QDateEdit" name="dateEdit">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="displayFormat">
+         <string>MM/yyyy</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="codigoEmpresaLineEdit">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="maxLength">
+         <number>32767</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Código da Empresa</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QComboBox" name="tipoFolhaComboBox">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLineEdit" name="codigoEventoLlineEdit">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Código do Evento</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="codigoSindicatoLlineEdit">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>Código do Sindicato</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLineEdit" name="pesquisaItemTabelaALineEdit"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="pesquisaItemTabelaBLineEdit"/>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>dateEdit</tabstop>
+  <tabstop>tipoFolhaComboBox</tabstop>
+  <tabstop>codigoEmpresaLineEdit</tabstop>
+  <tabstop>codigoFilialLlineEdit</tabstop>
+  <tabstop>codigoEventoLlineEdit</tabstop>
+  <tabstop>codigoSindicatoLlineEdit</tabstop>
+  <tabstop>botaoEventosFichaFinanceira</tabstop>
+  <tabstop>botaoEventosFichaFinanceira_2</tabstop>
+  <tabstop>botaoEventosLctoVariaveis</tabstop>
+  <tabstop>botaoEventosLctoVariaveis_2</tabstop>
+  <tabstop>pesquisaItemTabelaALineEdit</tabstop>
+  <tabstop>pesquisaItemTabelaBLineEdit</tabstop>
+  <tabstop>tableWidget_Senior</tabstop>
+  <tabstop>tableWidget_Planilha</tabstop>
+  <tabstop>botaoAtualizaTabelas</tabstop>
+  <tabstop>botaoExportarDados</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

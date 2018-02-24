@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Sobre</class>
+ <widget class="QWidget" name="Sobre">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>773</width>
+    <height>492</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QPlainTextEdit" name="plainTextEdit">
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="documentTitle">
+      <string/>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="plainText">
+      <string>Morre o ator Paulo Silvino, Severino do Zorra Total, no Rio
+O humorista lutava contra um câncer desde setembro de 2016. O ator ficou conhecido por participar do programa Zorra Total, da TV Globo
+
+17 de Agosto de 2017 às 11:00
+Atualizado 17/08/2017 11:16:47
+Redação Folha Vitória
+
+Afastado da TV, o ator e humorista Paulo Silvino, 78 anos, morreu na manhã desta quinta-feira, 17. O ator estava lutando contra um câncer no estômago. 
+
+Silvino tinha o endocarcinoma, nome dado ao tumor maligno no estômago. Desde o início de setembro de 2016.
+
+No twitter, vários internautas lamentaram a morte do ator. Uma fã escreveu: &quot;E assim se vai um grande humorista descanse em paz #PauloSilvino&quot;. Um outro internauta lembrou da famosa frase que o humorista usava no programa: &quot;Vá em Paz Paulo Silvino, sempre vou achar graça do &quot;Isso é uma Bichona, ela ta falando: 'Clodoaldo!, Clodoaldo!' vai deixar saudades&quot;.
+
+Pelo Facebook, o filho do ator lamentou a morte do pai: 'Que Deus te receba de braços abertos meu pai amado', compartilhou o filho que também é ator.</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

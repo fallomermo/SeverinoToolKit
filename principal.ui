@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>973</width>
-    <height>537</height>
+    <width>824</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,6 @@
   <property name="windowIcon">
    <iconset resource="thema.qrc">
     <normaloff>:/images/iconeSeverino.png</normaloff>:/images/iconeSeverino.png</iconset>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -36,229 +33,60 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="0">
-    <widget class="QFrame" name="framePanel">
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
+   <item row="2" column="0">
+    <widget class="QFrame" name="framePanel_InfoUsuario">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QGridLayout" name="gridLayout_5">
       <property name="leftMargin">
-       <number>9</number>
+       <number>6</number>
       </property>
       <property name="topMargin">
-       <number>9</number>
+       <number>6</number>
       </property>
       <property name="rightMargin">
-       <number>9</number>
+       <number>6</number>
       </property>
       <property name="bottomMargin">
-       <number>9</number>
+       <number>6</number>
       </property>
-      <item>
-       <widget class="QToolButton" name="toolButtonIntegracaoFinanceira">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
+      <item row="0" column="2">
+       <widget class="QLabel" name="statusDevelop">
+        <property name="font">
+         <font>
+          <pointsize>7</pointsize>
+          <italic>true</italic>
+         </font>
         </property>
         <property name="text">
-         <string>Orçamento</string>
+         <string>Fábio Reis  - fabio.reis@grupomateus.com.br</string>
         </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/financeiro.png</normaloff>:/images/financeiro.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QToolButton" name="toolButtonIntegracaoCrednosso">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
-        </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="statusAplicacao">
         <property name="text">
-         <string>Crednosso</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/credinosso_card.png</normaloff>:/images/credinosso_card.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+         <string>[...]</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QToolButton" name="toolButtonIntegracaoRH">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
+      <item row="0" column="1">
+       <widget class="QLabel" name="campoTime">
+        <property name="font">
+         <font/>
         </property>
         <property name="text">
-         <string>RH</string>
+         <string>...</string>
         </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/grouprh.png</normaloff>:/images/grouprh.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButtonBlissBeneficios">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Benefícios</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/newspaper.png</normaloff>:/images/newspaper.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButtonControlePonto">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Ponto</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/clock-circular-outline.png</normaloff>:/images/clock-circular-outline.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButtonFerramentas">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Diversos</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/tools.png</normaloff>:/images/tools.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QToolButton" name="botaoSair">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>34</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Sair</string>
-        </property>
-        <property name="icon">
-         <iconset resource="thema.qrc">
-          <normaloff>:/images/exit.png</normaloff>:/images/exit.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>28</width>
-          <height>28</height>
-         </size>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -277,7 +105,431 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
+       <widget class="QFrame" name="framePanel">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolBox" name="toolBox">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="pageRotinas">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>-5</y>
+              <width>181</width>
+              <height>417</height>
+             </rect>
+            </property>
+            <attribute name="icon">
+             <iconset resource="thema.qrc">
+              <normaloff>:/images/order.png</normaloff>:/images/order.png</iconset>
+            </attribute>
+            <attribute name="label">
+             <string>Rotinas</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QToolButton" name="toolButtonRecursosHumanos">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Recursos Humanos</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/grouprh.png</normaloff>:/images/grouprh.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonIntegracaoFinanceira">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Orçamentos</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/financeiro.png</normaloff>:/images/financeiro.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonCartaoCrednosso">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Cartão Crednosso</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/credinosso_card.png</normaloff>:/images/credinosso_card.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonBeneficios">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Benefícios</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/newspaper.png</normaloff>:/images/newspaper.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonControlePonto">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Controle de Ponto</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/clock-circular-outline.png</normaloff>:/images/clock-circular-outline.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonFerramentas">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Diversos</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/archive.png</normaloff>:/images/archive.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="botaoSair">
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="contextMenuPolicy">
+                <enum>Qt::ActionsContextMenu</enum>
+               </property>
+               <property name="text">
+                <string>Sair</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/exit.png</normaloff>:/images/exit.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>28</width>
+                 <height>28</height>
+                </size>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="pageUsuario">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>198</width>
+              <height>412</height>
+             </rect>
+            </property>
+            <attribute name="icon">
+             <iconset resource="thema.qrc">
+              <normaloff>:/images/user.png</normaloff>:/images/user.png</iconset>
+            </attribute>
+            <attribute name="label">
+             <string>Usuário</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QToolButton" name="botaoAvatar">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>100</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>400</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>usuário</string>
+               </property>
+               <property name="icon">
+                <iconset resource="thema.qrc">
+                 <normaloff>:/images/user.png</normaloff>:/images/user.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>64</height>
+                </size>
+               </property>
+               <property name="shortcut">
+                <string>F12</string>
+               </property>
+               <property name="popupMode">
+                <enum>QToolButton::InstantPopup</enum>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
        <widget class="QTabWidget" name="tabWidget">
         <property name="tabPosition">
          <enum>QTabWidget::West</enum>
@@ -286,130 +538,10 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="documentMode">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="tabsClosable">
          <bool>true</bool>
-        </property>
-        <property name="movable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QFrame" name="framePanel_InfoUsuario">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <property name="leftMargin">
-       <number>9</number>
-      </property>
-      <property name="topMargin">
-       <number>9</number>
-      </property>
-      <property name="rightMargin">
-       <number>9</number>
-      </property>
-      <property name="bottomMargin">
-       <number>9</number>
-      </property>
-      <item row="0" column="1">
-       <widget class="QGroupBox" name="groupBox_Sessao">
-        <property name="title">
-         <string>Sessão:</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <property name="rightMargin">
-          <number>9</number>
-         </property>
-         <item row="0" column="1">
-          <widget class="QLabel" name="campoTime">
-           <property name="font">
-            <font/>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="campoTime_Descricao">
-           <property name="font">
-            <font/>
-           </property>
-           <property name="text">
-            <string>Decorrido: </string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox_InfoUsuario">
-        <property name="title">
-         <string>Informações de logon:</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="rightMargin">
-          <number>9</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_DescricaoUsuario">
-           <property name="text">
-            <string>Usuário:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="campoUsuario">
-           <property name="font">
-            <font/>
-           </property>
-           <property name="text">
-            <string>[]</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="statusDevelop">
-        <property name="font">
-         <font>
-          <pointsize>7</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Fábio Reis  - fabio.reis@grupomateus.com.br</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="statusAplicacao">
-        <property name="text">
-         <string>[...]</string>
         </property>
        </widget>
       </item>
@@ -420,13 +552,15 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>toolButtonRecursosHumanos</tabstop>
   <tabstop>toolButtonIntegracaoFinanceira</tabstop>
-  <tabstop>toolButtonIntegracaoCrednosso</tabstop>
-  <tabstop>toolButtonIntegracaoRH</tabstop>
-  <tabstop>toolButtonBlissBeneficios</tabstop>
+  <tabstop>toolButtonCartaoCrednosso</tabstop>
+  <tabstop>toolButtonBeneficios</tabstop>
   <tabstop>toolButtonControlePonto</tabstop>
   <tabstop>toolButtonFerramentas</tabstop>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>botaoSair</tabstop>
+  <tabstop>botaoAvatar</tabstop>
  </tabstops>
  <resources>
   <include location="thema.qrc"/>

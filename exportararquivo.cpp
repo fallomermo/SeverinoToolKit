@@ -1,13 +1,8 @@
 #include "exportararquivo.h"
 
-ExportarArquivo::ExportarArquivo(QWidget *parent)
-    :
-      QWidget(parent) { }
+ExportarArquivo::ExportarArquivo(QWidget *parent) :QWidget(parent) { }
 
-ExportarArquivo::ExportarArquivo(QWidget *parent, QTableWidget *t)
-    :
-      QWidget(parent), table(t)
-{}
+ExportarArquivo::ExportarArquivo(QWidget *parent, QTableWidget *t) : QWidget(parent), table(t) {}
 
 void ExportarArquivo::exportar(QString tituloArquivo, int removeColunas)
 {

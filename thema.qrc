@@ -106,7 +106,6 @@
         <file>images/flag_ruim.png</file>
         <file>images/group.png</file>
         <file>images/useradd.png</file>
-        <file>images/userlogin.png</file>
         <file>images/credinosso_card.png</file>
         <file>images/financeiro.png</file>
         <file>images/open-book.png</file>
@@ -118,10 +117,57 @@
         <file>images/settings-interface-silhouette.png</file>
         <file>images/vt.png</file>
         <file>images/backgroundPanel.jpg</file>
-        <file>images/cat-relogio-de-ponto.png</file>
         <file>images/clock-circular-outline.png</file>
         <file>images/icon_rep.png</file>
         <file>images/logo-ahgora.png</file>
-        <file>images/backgroundPanel.png</file>
+        <file>images/banner.jpg</file>
+        <file>images/dialog.jpg</file>
+        <file>images/spy.png</file>
+        <file>images/userlogin.png</file>
+        <file>images/bg_login.png</file>
+        <file>images/user_add.png</file>
+        <file>images/user_adm.png</file>
+        <file>images/user_fail.png</file>
+        <file>images/user_ok.png</file>
+        <file>images/backgroundLogin.jpg</file>
+        <file>images/password.png</file>
+        <file>images/user_change.png</file>
+        <file>images/pessoas.png</file>
+        <file>images/recrutas.png</file>
+        <file>images/add-button-inside-black-circle.png</file>
+        <file>images/add-square-button.png</file>
+        <file>images/archive.png</file>
+        <file>images/bk_panel_tabs.png</file>
+        <file>images/coin.png</file>
+        <file>images/database_alert.png</file>
+        <file>images/database_error.png</file>
+        <file>images/database_on.png</file>
+        <file>images/document.png</file>
+        <file>images/edit-selection-editor.png</file>
+        <file>images/facebook.png</file>
+        <file>images/facebook-app-logo.png</file>
+        <file>images/fade_recrutas.gif</file>
+        <file>images/file_analict.png</file>
+        <file>images/fire.png</file>
+        <file>images/fired.png</file>
+        <file>images/heart-shape-outline.png</file>
+        <file>images/icone_severino_logo_white.png</file>
+        <file>images/import.png</file>
+        <file>images/import_file.png</file>
+        <file>images/instagram-symbol.png</file>
+        <file>images/logotipo_animado.gif</file>
+        <file>images/male-job-search-symbol.png</file>
+        <file>images/minus-sign-on-a-square-outline.png</file>
+        <file>images/nome_logo_severino.png</file>
+        <file>images/PlanoFundoMateus.jpg</file>
+        <file>images/previous.png</file>
+        <file>images/save_diskette.png</file>
+        <file>images/splitter.png</file>
+        <file>images/traveler-with-a-suitcase.png</file>
+        <file>images/twitter-logo-on-black-background.png</file>
+        <file>images/user-profile-on-smartwatch.png</file>
+        <file>images/wall-clock.png</file>
+        <file>images/wax-seal-broken.png</file>
+        <file>images/whatsapp-logo.png</file>
     </qresource>
 </RCC>

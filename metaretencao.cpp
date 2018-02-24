@@ -14,8 +14,6 @@ MetaRetencao::MetaRetencao(QWidget *parent) : QWidget(parent), ui(new Ui::MetaRe
     connect(ui->campoPesquisarObjetosTabela, SIGNAL(textChanged(QString)), this, SLOT(filtroItemTabela(QString)));
     connect(ui->botaoProcessar, SIGNAL(clicked(bool)), this, SLOT(getDatatable()));
     connect(ui->botaoExportar, SIGNAL(clicked(bool)), this, SLOT(exportarParaExcel()));
-    connect(ui->tableWidget,SIGNAL(clicked(QModelIndex)), this, SLOT(atualizarResultados(QModelIndex)));
-    connect(ui->tableWidget,SIGNAL(activated(QModelIndex)), this, SLOT(atualizarResultados(QModelIndex)));
 
     QStringList labels = QStringList() << "CADASTRO"
                                        << "NOME"
@@ -44,16 +42,16 @@ MetaRetencao::~MetaRetencao()
 
 void MetaRetencao::filtroItemTabela(QString filter)
 {
-    for( int i = 0; i < ui->tableWidget->rowCount(); ++i ) {
+    for( int linha = 0; linha < ui->tableWidget->rowCount(); ++linha ) {
         bool match = false;
-        for( int j = 0; j < ui->tableWidget->columnCount(); ++j ) {
-            QTableWidgetItem *item = ui->tableWidget->item( i, j );
+        for( int coluna = 0; coluna < ui->tableWidget->columnCount() -1; ++coluna ) {
+            QTableWidgetItem *item = ui->tableWidget->item( linha, coluna );
             if( item->text().contains(filter) ) {
                 match = true;
                 break;
             }
         }
-        ui->tableWidget->setRowHidden( i, !match );
+        ui->tableWidget->setRowHidden( linha, !match );
     }
 }
 
@@ -69,44 +67,30 @@ void MetaRetencao::focusPeriodoFinal()
 
 void MetaRetencao::getDatatable()
 {
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
     cxMensagem = new CaixaMensagemProgresso(this);
     connect(this, SIGNAL(fecharCaixaDeMensagem()), cxMensagem, SLOT(fecharJanela()));
     connect(this, SIGNAL(minimumProgressValue(int)), cxMensagem, SLOT(setMinimumValue(int)));
     connect(this, SIGNAL(maximumProgressValue(int)), cxMensagem, SLOT(setMaximumValue(int)));
     connect(this, SIGNAL(progressValue(int)), cxMensagem, SLOT(setProgressValue(int)));
+    connect(cxMensagem, SIGNAL(cancelarProcesso()), this, SLOT(cancelarOperacao()));
     cxMensagem->setWindowFlag(Qt::Window);
     cxMensagem->setWindowFlag(Qt::FramelessWindowHint);
     cxMensagem->setWindowModality(Qt::ApplicationModal);
-    cxMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
     cxMensagem->show();
     qApp->processEvents();
 
-    QThread *threadDAO = new QThread(nullptr);
-    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
-    connect(cxMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(terminate()));
-    controle = new ControleDAO(nullptr);
-    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
-    controle->moveToThread(threadDAO);
-
-    QDate _tempDateIni = ui->periodoInicio->date();
-    QDate _tempDateFim = ui->periodoFim->date();
-    int _anoComIni = _tempDateIni.year();
-    int _mesComIni = _tempDateIni.month();
-    int _diaComIni = 1;
-    QDate __dataIni( _anoComIni, _mesComIni, _diaComIni );
-
-    int _anoComFim = _tempDateFim.year();
-    int _mesComFim = _tempDateFim.month();
-    int _diaComFim = 0;
-    if((_mesComFim%2) == 0)
-        _diaComFim = 30;
-    else
-        _diaComFim = 31;
-
-    QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
     qRegisterMetaType<QMap<int,ObjetoRetencao*>>("__tempMapRetencao");
+    QDate __dataIni( ui->periodoInicio->date().year(), ui->periodoInicio->date().month(), 1 );
+    QDate __dataFim( ui->periodoFim->date().year(), ui->periodoFim->date().month(), ui->periodoFim->date().daysInMonth() );
+    QThread *threadDAO = new QThread(Q_NULLPTR);
+    controle = new ControleDAO(Q_NULLPTR);
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(quit()), Qt::DirectConnection);
+    connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
     connect(this, SIGNAL(obterMetaRetencao(QDate,QDate)), controle, SLOT(obterMetaRetencao(QDate,QDate)));
     connect(controle, SIGNAL(enviarMetaRetencao(QMap<int,ObjetoRetencao*>)),this, SLOT(preencherTabela(QMap<int,ObjetoRetencao*>)));
+    controle->moveToThread(threadDAO);
     threadDAO->start(QThread::NormalPriority);
     emit obterMetaRetencao(__dataIni, __dataFim);
 }
@@ -173,7 +157,7 @@ void MetaRetencao::inserirLinhaTabela(int linha, int nrColunas, ObjetoRetencao *
             inserirItemTabela(linha, coluna, retencao->getDemitidos() );
         if(coluna == 14) {
             QWidget* pWidget = new QWidget();
-            QToolButton* btn_edit = new QToolButton();
+            QPushButton* btn_edit = new QPushButton(this);
             connect(btn_edit, SIGNAL(clicked(bool)), this, SLOT(removerItemTabela()));
             btn_edit->setIcon(QIcon(":/images/trash.png"));
             QHBoxLayout* pLayout = new QHBoxLayout(pWidget);
@@ -191,7 +175,7 @@ void MetaRetencao::exportarParaExcel()
     QString __nomeArquivo = "Listagem_Meta_Retencao_"+ui->periodoInicio->text().replace('/','-')+"_"+ui->periodoFim->text().replace('/','-');
     ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
     connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-    exp->exportar(__nomeArquivo,1);
+    exp->exportar(__nomeArquivo, 1);
 }
 
 void MetaRetencao::caixaMensagemUsuario(QString msg)
@@ -199,28 +183,16 @@ void MetaRetencao::caixaMensagemUsuario(QString msg)
     QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
 }
 
-void MetaRetencao::atualizarResultados(QModelIndex i)
+void MetaRetencao::atualizarResultados()
 {
     QTableWidget *tabela = ui->tableWidget;
-    QTableWidgetItem *_item = tabela->item(i.row(), i.column());
     int numeroAdmitidos = 0;
     int numeroDemitidos = 0;
-
-    QString sValue = _item->text().trimmed();
-    if(sValue.isEmpty())
-        ui->campoInfoRegistros->setText(QString("Total de registros:"));
-    else
-        ui->campoInfoRegistros->setText(sValue);
-
     for (int linha = 0; linha < tabela->rowCount(); ++linha) {
-        for (int coluna = 0; coluna <= i.column(); ++coluna) {
-            if(sValue == tabela->item(linha, coluna)->text().trimmed()) {
-                if(tabela->item(linha, 12)->text().toInt(nullptr) == 1)
-                    numeroAdmitidos++;
-                if(tabela->item(linha, 13)->text().toInt(nullptr) == 1)
-                    numeroDemitidos++;
-            }
-        }
+        if(tabela->item(linha, 12)->text().toInt(nullptr) == 1)
+            numeroAdmitidos++;
+        if(tabela->item(linha, 13)->text().toInt(nullptr) == 1)
+            numeroDemitidos++;
     }
 
     double percentualRetido = 0.0;
@@ -239,17 +211,16 @@ void MetaRetencao::setRetencao(const QMap<int, ObjetoRetencao *> &value)
 
 void MetaRetencao::preencherTabela(QMap<int, ObjetoRetencao *> __tempMap)
 {
-    emit finishThread();
     if(__tempMap.isEmpty()) {
-        QMessageBox::information(this, tr("Meta de Retenção"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
+        emit finishThread();
         emit fecharCaixaDeMensagem();
+        QMessageBox::information(this, tr("Meta de Retenção"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
         return;
     }
 
     QMapIterator<int, ObjetoRetencao*> __mapIterator(__tempMap);
-
+    emit maximumProgressValue(__tempMap.count());
     ui->tableWidget->setRowCount(__tempMap.count());
-    cxMensagem->setProgressValue(__tempMap.count());
     int linha = 0;
 
     int numeroAdmitidos = 0;
@@ -277,14 +248,25 @@ void MetaRetencao::preencherTabela(QMap<int, ObjetoRetencao *> __tempMap)
     ui->campoPercentualRetido->setText(QString("%L1").arg(percentualRetido, 0, 'f', 2, Qt::AlignLeft));
     ui->campoNumeroDeAdmitidos->setText(QString::number(numeroAdmitidos));
     ui->campoNumeroDeDemitidos->setText(QString::number(numeroDemitidos));
+    emit finishThread();
     emit fecharCaixaDeMensagem();
 }
 
 void MetaRetencao::removerItemTabela()
 {
     int linha = ui->tableWidget->currentRow();
-    if(QMessageBox::question(this, tr("Remover Item"), QString("Deseja realmente remover a linha selecionada?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    if(QMessageBox::question(this, tr("Remover Item"), QString("Deseja realmente remover a linha selecionada?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
         ui->tableWidget->removeRow(linha);
+        this->atualizarResultados();
+    }
+}
+
+void MetaRetencao::cancelarOperacao()
+{
+    if(QMessageBox::question(this, tr("Cancelar"), QString("Deseja realmente cancelar a requisição?"), QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes) {
+        emit finishThread();
+        emit fecharCaixaDeMensagem();
+    }
 }
 
 QMap<int, ObjetoRetencao *> MetaRetencao::getMapRetencao() const

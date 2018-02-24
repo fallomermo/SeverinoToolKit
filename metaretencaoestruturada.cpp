@@ -2,13 +2,11 @@
 #include "ui_metaretencaoestruturada.h"
 #include "caixamensagemprogresso.h"
 #include "detalhesretencao.h"
+#include <qcustomplot.h>
 
-MetaRetencaoEstruturada::MetaRetencaoEstruturada(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MetaRetencaoEstruturada)
+MetaRetencaoEstruturada::MetaRetencaoEstruturada(QWidget *parent) : QWidget(parent), ui(new Ui::MetaRetencaoEstruturada)
 {
-    ui->setupUi(this);
-    definirParametrosIniciais();
+    ui->setupUi(this); this->definirParametrosIniciais();
 }
 
 MetaRetencaoEstruturada::~MetaRetencaoEstruturada()
@@ -22,23 +20,23 @@ void MetaRetencaoEstruturada::definirParametrosIniciais()
     ui->finalPeriodo->setToolTip(QString("Data final do período.\nIsso não pode ultrapassar 90 dias!"));
     ui->inicioPeriodo->setDate(QDateTime::currentDateTime().date().addMonths(-2));
     ui->finalPeriodo->setDate(QDateTime::currentDateTime().date());
+    ui->tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
 
     connect(ui->inicioPeriodo, SIGNAL(editingFinished()), this, SLOT(focusPeriodoInicial()));
     connect(ui->finalPeriodo, SIGNAL(editingFinished()), this, SLOT(focusPeriodoFinal()));
     connect(ui->botaoProcessar,SIGNAL(clicked(bool)), this, SLOT(getDatatable()));
-    connect(ui->botaoExportar, SIGNAL(clicked(bool)), this, SLOT(exportarParaExcel()));
+    connect(ui->botaoImprimir, SIGNAL(clicked(bool)), this, SLOT(imprimirPlotagemGrafico()));
     connect(ui->tableWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(detalhesRetencao(QModelIndex)));
-    connect(ui->tableWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicado(QModelIndex)));
+    connect(ui->tableWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(detalhesRetencao()));
     connect(ui->botaoDetalhes, SIGNAL(clicked(bool)), this, SLOT(detalhesRetencao()));
+    connect(ui->girarEtiquetas, SIGNAL(sliderMoved(int)), this, SLOT(girarEtiquetas(int)));
+    connect(ui->botaoSalvarScreenshot, SIGNAL(clicked(bool)), this, SLOT(salvarImagemGrafico()));
 
-    QStringList labels = QStringList() << "ANALISTAS"
-                                       << "ADMITIDOS"
-                                       << "DEMITIDOS"
-                                       << "%"
-                                       << "AÇÃO";
+    QStringList labels = (QStringList() << "ANALISTAS" << "ADMITIDOS" << "DEMITIDOS" << "% RETENÇÃO" << "AÇÃO");
     ui->tableWidget->setColumnCount(labels.count());
     ui->tableWidget->setHorizontalHeaderLabels(labels);
     ui->tableWidget->resizeColumnsToContents();
+    this->detalhesRetencao();
 }
 
 void MetaRetencaoEstruturada::filtroItemTabela(QString filter)
@@ -71,19 +69,14 @@ void MetaRetencaoEstruturada::getDatatable()
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
     caixaMensagem = new CaixaMensagemProgresso(this);
-    connect(this, SIGNAL(fecharCaixaDeMensagem()),
-            caixaMensagem, SLOT(fecharJanela()));
-    connect(this, SIGNAL(setProgressoValue(int)),
-            caixaMensagem, SLOT(setProgressValue(int)));
-    connect(this, SIGNAL(setMinimumValue(int)),
-            caixaMensagem, SLOT(setMinimumValue(int)));
-    connect(this, SIGNAL(setMaximumValue(int)),
-            caixaMensagem, SLOT(setMaximumValue(int)));
+    connect(this, SIGNAL(fecharCaixaDeMensagem()), caixaMensagem, SLOT(fecharJanela()));
+    connect(this, SIGNAL(setProgressoValue(int)), caixaMensagem, SLOT(setProgressValue(int)));
+    connect(this, SIGNAL(setMinimumValue(int)), caixaMensagem, SLOT(setMinimumValue(int)));
+    connect(this, SIGNAL(setMaximumValue(int)), caixaMensagem, SLOT(setMaximumValue(int)));
 
     caixaMensagem->setWindowFlag(Qt::Window);
     caixaMensagem->setWindowFlag(Qt::FramelessWindowHint);
     caixaMensagem->setWindowModality(Qt::ApplicationModal);
-    caixaMensagem->setWindowTitle(QString("Trabalhando em sua requisição..."));
     caixaMensagem->show();
     qApp->processEvents();
 
@@ -91,40 +84,15 @@ void MetaRetencaoEstruturada::getDatatable()
     QThread* threadDAO = new QThread(nullptr);
     controle->moveToThread(threadDAO);
 
-    QDate _tempDateIni = ui->inicioPeriodo->date();
-    QDate _tempDateFim = ui->finalPeriodo->date();
-    int _anoComIni = _tempDateIni.year();
-    int _mesComIni = _tempDateIni.month();
-    int _diaComIni = 1;
-    QDate __dataIni( _anoComIni, _mesComIni, _diaComIni );
-
-    int _anoComFim = _tempDateFim.year();
-    int _mesComFim = _tempDateFim.month();
-    int _diaComFim = 0;
-
-    if((_mesComFim%2) == 0)
-        _diaComFim = 30;
-    else
-        _diaComFim = 31;
-
-    QDate __dataFim( _anoComFim, _mesComFim, _diaComFim );
     qRegisterMetaType<QMap<int,ObjetoRetencao*>>("__mapDataRetencaoEstruturada");
-    connect(controle, SIGNAL(enviarMetaRetencao(QMap<int,ObjetoRetencao*>)),
-            this, SLOT(preencherTabela(QMap<int,ObjetoRetencao*>)));
-
-    connect(this, SIGNAL(obterMetaRetencao(QDate,QDate)),
-            controle, SLOT(obterMetaRetencao(QDate,QDate)));
-
-    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(terminate()));
-    connect(caixaMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(terminate()));
+    connect(controle, SIGNAL(enviarMetaRetencao(QMap<int,ObjetoRetencao*>)), this, SLOT(preencherTabela(QMap<int,ObjetoRetencao*>)));
+    connect(this, SIGNAL(obterMetaRetencao(QDate,QDate)), controle, SLOT(obterMetaRetencao(QDate,QDate)));
+    connect(this, SIGNAL(finishThread()), threadDAO, SLOT(quit()), Qt::DirectConnection);
+    connect(caixaMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(quit()), Qt::DirectConnection);
     connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
 
     threadDAO->start(QThread::NormalPriority);
-
-    QVariant variantDataIni = __dataIni;
-    QVariant variantDataFim = __dataFim;
-
-    emit obterMetaRetencao(variantDataIni.toDate(), variantDataFim.toDate());
+    emit obterMetaRetencao(ui->inicioPeriodo->date(), ui->finalPeriodo->date());
 }
 
 void MetaRetencaoEstruturada::inserirItemTabela(int r, int c, QString sValue)
@@ -151,39 +119,36 @@ void MetaRetencaoEstruturada::inserirItemTabela(int r, int c, int iValue)
     ui->tableWidget->setItem(r,c,item);
 }
 
-void MetaRetencaoEstruturada::inserirItemTabela(int r, int c, QWidget *btn)
+void MetaRetencaoEstruturada::inserirItemTabela(int r, int c, QWidget *w)
 {
-    ui->tableWidget->setCellWidget(r, c, (QWidget*)btn);
+    ui->tableWidget->setCellWidget(r, c, (QWidget*)w);
 }
 
 void MetaRetencaoEstruturada::inserirLinhaTabela(int linha, int nrColunas, ResponsavelSelecaoAgregado *objeto)
 {
     for (int coluna = 0; coluna < nrColunas; ++coluna) {
-        if(coluna == 0)
-            inserirItemTabela(linha, coluna, objeto->getReposavel() );
-        if(coluna == 1)
-            inserirItemTabela(linha, coluna, objeto->getNumeroAdmitidos() );
-        if(coluna == 2)
-            inserirItemTabela(linha, coluna, objeto->getNumeroDemitidos() );
-        if(coluna == 3) {
+        switch (coluna) {
+        case RECRUTA: inserirItemTabela(linha, coluna, objeto->getReposavel()); break;
+        case ADMITIDOS: inserirItemTabela(linha, coluna, objeto->getNumeroAdmitidos() ); break;
+        case DEMITIDOS: inserirItemTabela(linha, coluna, objeto->getNumeroDemitidos() ); break;
+        case RETENCAO: {
             double percentualRetido = 0.0;
             if(objeto->getNumeroDemitidos() <= objeto->getNumeroAdmitidos())
                 percentualRetido = ( static_cast<double>(objeto->getNumeroDemitidos()) / static_cast<double>(objeto->getNumeroAdmitidos()) ) * 100;
             inserirItemTabela(linha, coluna, percentualRetido );
-        }
-        if(coluna == 4) {
-            QWidget* pWidget = new QWidget();
-            QToolButton* btn_edit = new QToolButton();
-            connect(btn_edit, SIGNAL(clicked(bool)), this, SLOT(removerItemTabela()));
-            btn_edit->setIcon(QIcon(":/images/trash.png"));
-            btn_edit->setToolTip(QString("Remover item"));
-            QHBoxLayout* pLayout = new QHBoxLayout(pWidget);
-            pLayout->addWidget(btn_edit);
-            pLayout->setAlignment(Qt::AlignCenter);
-            pLayout->setContentsMargins(0, 0, 0, 0);
-            pLayout->setStretch(0, 0);
-            pWidget->setLayout(pLayout);
-            inserirItemTabela(linha, coluna, pWidget);
+        } break;
+        case ACOES: {
+            QWidget *w = new QWidget();
+            QPushButton *botaoRemove = new QPushButton(this);
+            botaoRemove->setIcon(QIcon(":/images/trash.png"));
+            QHBoxLayout* l = new QHBoxLayout(w);
+            connect(botaoRemove, &QPushButton::clicked, [=]() {removerItemTabela(w);});
+            l->addWidget(botaoRemove);
+            l->setAlignment(Qt::AlignCenter);
+            l->setContentsMargins(0, 0, 0, 0);
+            w->setLayout(l);
+            inserirItemTabela(linha, coluna, w);
+        } break;
         }
     }
 }
@@ -194,8 +159,8 @@ void MetaRetencaoEstruturada::preencherTabela(const QMap<int, ObjetoRetencao *> 
     emit setMinimumValue(0);
     emit setMaximumValue(__tempMap.count());
     if(__tempMap.isEmpty()) {
-        QMessageBox::information(this, tr("Meta de Retenção"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
         emit fecharCaixaDeMensagem();
+        QMessageBox::information(this, tr("Meta de Retenção"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
         return;
     }
 
@@ -214,17 +179,7 @@ void MetaRetencaoEstruturada::preencherTabela(const QMap<int, ObjetoRetencao *> 
     }
     ui->tableWidget->resizeColumnsToContents();
     emit fecharCaixaDeMensagem();
-}
-
-void MetaRetencaoEstruturada::exportarParaExcel()
-{
-    QString __nomeArquivo = "Listagem_Meta_Retencao_"
-            +ui->inicioPeriodo->text().replace('/','-')
-            +"_"
-            +ui->finalPeriodo->text().replace('/','-');
-    ExportarArquivo *exp = new ExportarArquivo(this, ui->tableWidget);
-    connect(exp, SIGNAL(mensagemRetorno(QString)), this, SLOT(caixaMensagemUsuario(QString)));
-    exp->exportar(__nomeArquivo,1);
+    this->updateDadosGrafico();
 }
 
 void MetaRetencaoEstruturada::caixaMensagemUsuario(QString msg)
@@ -247,40 +202,35 @@ void MetaRetencaoEstruturada::setRetencao(const QMap<int, ObjetoRetencao *> &val
 void MetaRetencaoEstruturada::removerItemTabela()
 {
     int linha = ui->tableWidget->currentRow();
-    if(QMessageBox::question(this, tr("Remover Item"), QString("Deseja realmente remover a linha selecionada?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    if(linha < 0) { linha = 0; }
+
+    QTableWidgetItem *item = ui->tableWidget->item(linha, 0);
+    QString item_sel = QString(item->text());
+    if(QMessageBox::question(this, QString("Remover ( %0 )").arg(item_sel),
+                             QString("Deseja realmente remover esse registro\n%0?").arg(item_sel),
+                             QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    {
         ui->tableWidget->removeRow(linha);
+        this->updateDadosGrafico();
+    }
+
 }
 
-void MetaRetencaoEstruturada::detalhesRetencao(QModelIndex i)
+void MetaRetencaoEstruturada::removerItemTabela(const QWidget *sw)
 {
-    QLocale local = this->locale();
-    QString __responsavel = ui->tableWidget->item(i.row(), 0)->text();
-    QString __admitidos = ui->tableWidget->item(i.row(), 1)->text();
-    QString __demitidos = ui->tableWidget->item(i.row(), 2)->text();
-    QString __percentual = ui->tableWidget->item(i.row(), 3)->text();
-    QString __periodosel = ui->inicioPeriodo->date().toString("dd/MM/yyyy")
-            +" a "+ui->finalPeriodo->date().toString("dd/MM/yyyy");
-    double __perRetencao = local.toDouble(__percentual);
-    QPixmap __imagemStatus;
+    for (int linha = 0; linha < ui->tableWidget->rowCount(); ++linha) {
 
-    if(__perRetencao > 10.0) {__imagemStatus = QPixmap(":/images/circle_ruim.png");}
-    if(__perRetencao >= 6.0 && __perRetencao <= 10.0) {__imagemStatus = QPixmap(":/images/circle_normal.png");}
-    if(__perRetencao < 6.0) {__imagemStatus = QPixmap(":/images/circle_otimo.png");}
-
-    detalhes = new DetalhesRetencao(this);
-    detalhes->setResponsavelSelecao(__responsavel);
-    detalhes->setNumeroAdmitidos(__admitidos);
-    detalhes->setNumeroDemitidos(__demitidos);
-    detalhes->setPercentualRetido(__percentual);
-    detalhes->setPeriodoSelecionado(__periodosel);
-
-    detalhes->setMapRetencao(getMapRetencao());
-    detalhes->setModelIndex(i);
-    detalhes->setImagemStatus(__imagemStatus);
-    detalhes->setWindowFlag(Qt::Window);
-    detalhes->setWindowModality(Qt::ApplicationModal);
-    detalhes->show();
-    qApp->processEvents();
+        if(ui->tableWidget->cellWidget(linha, 4) == sw) {
+            QString item_sel = QString(ui->tableWidget->item(linha, 0)->text());
+            if(QMessageBox::question(this, QString("Remover ( %0 )").arg(item_sel),
+                                     QString("Deseja realmente remover esse registro\n%0?").arg(item_sel),
+                                     QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+            {
+                ui->tableWidget->removeRow(linha);
+                this->updateDadosGrafico();
+            }
+        }
+    }
 }
 
 void MetaRetencaoEstruturada::detalhesRetencao()
@@ -291,32 +241,50 @@ void MetaRetencaoEstruturada::detalhesRetencao()
     if(ui->tableWidget->currentRow() < 0)
         return;
 
-    QLocale local = this->locale();
-    QString __responsavel = ui->tableWidget->item(ui->tableWidget->currentRow(), 0)->text();
-    QString __admitidos = ui->tableWidget->item(ui->tableWidget->currentRow(), 1)->text();
-    QString __demitidos = ui->tableWidget->item(ui->tableWidget->currentRow(), 2)->text();
-    QString __percentual = ui->tableWidget->item(ui->tableWidget->currentRow(), 3)->text();
-    QString __periodosel = ui->inicioPeriodo->date().toString("dd/MM/yyyy")
-            +" a "+ui->finalPeriodo->date().toString("dd/MM/yyyy");
-    QPixmap __imagemStatus;
-    double __perRetencao = local.toDouble(__percentual);
+    int linha = ui->tableWidget->currentRow();
 
-    if(__perRetencao > 10.0) {__imagemStatus = QPixmap(":/images/circle_ruim.png");}
-    if(__perRetencao >= 6.0 && __perRetencao <= 10.0) {__imagemStatus = QPixmap(":/images/circle_normal.png");}
-    if(__perRetencao < 6.0) {__imagemStatus = QPixmap(":/images/circle_otimo.png");}
+    QPalette pall = this->palette();
+    pall.setColor(QPalette::Window, QRgb(0xcee7f0));
+    pall.setColor(QPalette::WindowText, QRgb(0x404044));
 
-    detalhes = new DetalhesRetencao(this);
-    detalhes->setResponsavelSelecao(__responsavel);
-    detalhes->setNumeroAdmitidos(__admitidos);
-    detalhes->setNumeroDemitidos(__demitidos);
-    detalhes->setPercentualRetido(__percentual);
-    detalhes->setPeriodoSelecionado(__periodosel);
-    detalhes->setMapRetencao(this->getMapRetencao());
-    detalhes->setImagemStatus(__imagemStatus);
+    DonutBreakdownChart *donutBreakdown = new DonutBreakdownChart();
+    donutBreakdown->setAnimationOptions(QChart::AllAnimations);
+    donutBreakdown->setTitle(ui->tableWidget->item(linha, 0)->text());
+    donutBreakdown->legend()->setAlignment(Qt::AlignRight);
+
+    QPieSeries *series = new QPieSeries();
+    series->setName(ui->tableWidget->item(linha, 0)->text());
+    series->append("Admitidos", ui->tableWidget->item(linha, 1)->text().toFloat());
+    series->append("Demitidos", ui->tableWidget->item(linha, 2)->text().toFloat());
+    series->append("Retenção", ui->tableWidget->item(linha, 3)->text().toFloat());
+    donutBreakdown->addBreakdownSeries(series, Qt::darkBlue);
+
+    QGridLayout *gl = new QGridLayout();
+    QChartView *chartView = new QChartView(donutBreakdown);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    gl->addWidget(chartView);
+    ui->graphicsView->setLayout(gl);
+}
+
+void MetaRetencaoEstruturada::detalhesRetencao(QModelIndex index)
+{
+    if(ui->tableWidget->rowCount() <=0)
+        return;
+
+    if(ui->tableWidget->currentRow() < 0)
+        return;
+
+    QString __responsavel = ui->tableWidget->item(index.row(), 0)->text();
+    QString __admitidos = ui->tableWidget->item(index.row(), 1)->text();
+    QString __demitidos = ui->tableWidget->item(index.row(), 2)->text();
+    QString __percentual = ui->tableWidget->item(index.row(), 3)->text();
+    QString __periodosel = ui->inicioPeriodo->date().toString("dd/MM/yyyy")+" a "+ui->finalPeriodo->date().toString("dd/MM/yyyy");
+
+    detalhes = new DetalhesRetencao(this, __responsavel, __admitidos, __demitidos, __percentual, __periodosel);
     detalhes->setWindowFlag(Qt::Window);
     detalhes->setWindowModality(Qt::ApplicationModal);
+    detalhes->setVisible(true);
     detalhes->show();
-    qApp->processEvents();
 }
 
 QMap<QString, ResponsavelSelecaoAgregado *> MetaRetencaoEstruturada::agregarValores(const QMap<int, ObjetoRetencao *> mapFull)
@@ -342,16 +310,142 @@ QMap<QString, ResponsavelSelecaoAgregado *> MetaRetencaoEstruturada::agregarValo
     return __tempMap;
 }
 
-void MetaRetencaoEstruturada::itemClicado(QModelIndex index)
+void MetaRetencaoEstruturada::updateDadosGrafico()
 {
-    QTableWidgetItem *itemResponsavel = ui->tableWidget->item(index.row(), 0);
-    QTableWidgetItem *itemAdmitidos = ui->tableWidget->item(index.row(), 1);
-    QTableWidgetItem *itemDemitidos = ui->tableWidget->item(index.row(), 2);
-    QTableWidgetItem *itemPercentual = ui->tableWidget->item(index.row(), 3);
-    ui->campoResponsavelSelecao->setText(itemResponsavel->text().trimmed());
-    ui->campoNumeroAdmitidos->setText(itemAdmitidos->text().trimmed());
-    ui->campoNumeroDemitidos->setText(itemDemitidos->text().trimmed());
-    ui->campoPercentualRetido->setText(itemPercentual->text().trimmed());
+    // limpando plotagens antigas
+    ui->customPlot->clearPlottables();
+
+    // set dark background gradient:
+    QLinearGradient gradient(0, 0, 0, 400);
+    gradient.setColorAt(0, QColor(90, 90, 90));
+    gradient.setColorAt(0.38, QColor(105, 105, 105));
+    gradient.setColorAt(1, QColor(70, 70, 70));
+    ui->customPlot->setBackground(QBrush(gradient));
+    ui->customPlot->yAxis->setLabel(QString("Valores"));
+
+    // create empty bar chart objects:
+    QCPBars *regen = new QCPBars(ui->customPlot->xAxis, ui->customPlot->yAxis);
+    QCPBars *nuclear = new QCPBars(ui->customPlot->xAxis, ui->customPlot->yAxis);
+    QCPBars *fossil = new QCPBars(ui->customPlot->xAxis, ui->customPlot->yAxis);
+    regen->setAntialiased(false); // gives more crisp, pixel aligned bar borders
+    nuclear->setAntialiased(false);
+    fossil->setAntialiased(false);
+    regen->setStackingGap(1);
+    nuclear->setStackingGap(1);
+    fossil->setStackingGap(1);
+
+    // Definir Nomes e Cores para as Barras:
+    fossil->setName("Admitidos");
+    fossil->setPen(QPen(QColor(111, 9, 176).lighter(170)));
+    fossil->setBrush(QColor(111, 9, 176));
+
+    nuclear->setName("Demitidos");
+    nuclear->setPen(QPen(QColor(250, 170, 20).lighter(150)));
+    nuclear->setBrush(QColor(250, 170, 20));
+
+    regen->setName("Retenção");
+    regen->setPen(QPen(QColor(0, 168, 140).lighter(130)));
+    regen->setBrush(QColor(0, 168, 140));
+
+    // Barras de Pilha Uma Sobre a Outra:
+    nuclear->moveAbove(fossil);
+    regen->moveAbove(nuclear);
+
+    // Preparando o Eixo Y-Vertical:
+    ui->customPlot->yAxis->setRange(0, 12.1);
+    ui->customPlot->yAxis->setPadding(5); // a bit more space to the left border
+    ui->customPlot->yAxis->setLabel("Meta Retenção\nAno 2017");
+    ui->customPlot->yAxis->setBasePen(QPen(Qt::white));
+    ui->customPlot->yAxis->setTickPen(QPen(Qt::white));
+    ui->customPlot->yAxis->setSubTickPen(QPen(Qt::white));
+    ui->customPlot->yAxis->grid()->setSubGridVisible(true);
+    ui->customPlot->yAxis->setTickLabelColor(Qt::white);
+    ui->customPlot->yAxis->setLabelColor(Qt::white);
+    ui->customPlot->yAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
+    ui->customPlot->yAxis->grid()->setSubGridPen(QPen(QColor(130, 130, 130), 0, Qt::DotLine));
+
+    // Preparando o Eixo X-Horizontal com os labels Recrutadores:
+    QVector<double> ticks;
+    QVector<QString> labels;
+
+    // Adicionando Dados Obtidos Através da QTableWidget:
+    QVector<double> fossilData, nuclearData, regenData;
+    QLocale local = this->locale();
+    for (int linha = 0; linha < ui->tableWidget->rowCount(); ++linha) {
+        ticks << linha;
+        labels << ui->tableWidget->item(linha, 0)->text();
+        fossilData << local.toDouble(ui->tableWidget->item(linha, 1)->text());
+        nuclearData << local.toDouble(ui->tableWidget->item(linha, 2)->text());
+        regenData << local.toDouble(ui->tableWidget->item(linha, 3)->text());
+    }
+
+    fossil->setData(ticks, fossilData);
+    nuclear->setData(ticks, nuclearData);
+    regen->setData(ticks, regenData);
+
+    QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
+    textTicker->addTicks(ticks, labels);
+
+    ui->customPlot->xAxis->setTicker(textTicker);
+    if(ui->girarEtiquetas->value() == 0) {
+        ui->customPlot->xAxis->setTickLabelRotation(16);
+        ui->girarEtiquetas->setValue(16);
+        ui->customPlot->xAxis->setLabel(QString("Responsável pela Seleção\nRotação: %0 graus").arg(QString::number(ui->girarEtiquetas->value())));
+    } else {
+        ui->customPlot->xAxis->setTickLabelRotation(ui->girarEtiquetas->value());
+        ui->customPlot->xAxis->setLabel(QString("Responsável pela Seleção\nRotação: %0 graus").arg(QString::number(ui->girarEtiquetas->value())));
+    }
+    ui->customPlot->xAxis->setSubTicks(false);
+    ui->customPlot->xAxis->setTickLength(0, 4);
+    ui->customPlot->xAxis->setRange(0, 8);
+    ui->customPlot->xAxis->setBasePen(QPen(Qt::white));
+    ui->customPlot->xAxis->setTickPen(QPen(Qt::white));
+    ui->customPlot->xAxis->grid()->setVisible(true);
+    ui->customPlot->xAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::DotLine));
+    ui->customPlot->xAxis->setTickLabelColor(Qt::white);
+    ui->customPlot->xAxis->setLabelColor(Qt::white);
+
+    // Iniciando Legendas:
+    ui->customPlot->legend->setVisible(true);
+    ui->customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
+    ui->customPlot->legend->setBrush(QColor(255, 255, 255, 100));
+    ui->customPlot->legend->setBorderPen(Qt::NoPen);
+    QFont legendFont = font();
+    legendFont.setPointSize(10);
+    ui->customPlot->legend->setFont(legendFont);
+    ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    ui->customPlot->rescaleAxes(true);
+    ui->customPlot->replot();
+
+    this->detalhesRetencao();
+}
+
+void MetaRetencaoEstruturada::girarEtiquetas(int g)
+{
+    ui->customPlot->xAxis->setTickLabelRotation(g);
+    ui->customPlot->xAxis->setLabel(QString("Responsável pela Seleção\nRotação: %0 graus").arg(QString::number(ui->girarEtiquetas->value())));
+    ui->customPlot->replot();
+}
+
+void MetaRetencaoEstruturada::imprimirPlotagemGrafico()
+{
+    QMessageBox::information(this, tr("Impressão"), QString("Impressão realizada com sucesso!"), QMessageBox::Ok);
+    ui->botaoDetalhes->setFocus();
+}
+
+void MetaRetencaoEstruturada::salvarImagemGrafico()
+{
+    QString outputDir = QDir::homePath();
+    QString fileName = "graph.jpg" ;
+    QFile file(outputDir+"/"+fileName);
+
+    if (!file.open(QIODevice::WriteOnly|QFile::WriteOnly))
+    {
+        QMessageBox::warning(0,"Could not create Project File",
+                             QObject::tr( "\n Could not create Project File on disk"));
+    }
+
+    ui->customPlot->saveJpg( fileName,  0, 0, 1.0, -1  );
 }
 
 QMap<int, ObjetoRetencao *> MetaRetencaoEstruturada::getMapRetencao() const

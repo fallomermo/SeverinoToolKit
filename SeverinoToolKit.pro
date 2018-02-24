@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql network
+QT       += core gui sql network printsupport charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,7 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
+QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
 
 SOURCES += \
     bancodedados.cpp \
@@ -29,12 +29,10 @@ SOURCES += \
     cadastroempresa.cpp \
     cadastrofilial.cpp \
     controledao.cpp \
-    ecoclinicrepasses.cpp \
     eventos.cpp \
     guiainssfolha.cpp \
     pesquisar.cpp \
     planodecontas.cpp \
-    planosaude.cpp \
     principal.cpp \
     relacaocolaborador.cpp \
     main.cpp \
@@ -56,9 +54,26 @@ SOURCES += \
     blissbeneficios.cpp \
     validacao.cpp \
     updatedatatablecolumm.cpp \
-    atualizaritenstabelas.cpp \
     truncararquivostexto.cpp \
-    controlador.cpp
+    controlador.cpp \
+    login.cpp \
+    sobre.cpp \
+    downloadafd.cpp \
+    gerenciamentorep.cpp \
+    propriedadesusuario.cpp \
+    liquidofolha.cpp \
+    controledeponto.cpp \
+    parametros.cpp \
+    usuarios.cpp \
+    administracaogeral.cpp \
+    conversordearquivo.cpp \
+    eventosimportadosobj.cpp \
+    qcustomplot.cpp \
+    cpocorrenciasapuracao.cpp \
+    sqlitedatabase.cpp \
+    ocorrenciasapuracao.cpp \
+    donutbreakdownchart.cpp \
+    mainslice.cpp
 
 HEADERS += \
     bancodedados.h \
@@ -66,12 +81,10 @@ HEADERS += \
     cadastroempresa.h \
     cadastrofilial.h \
     controledao.h \
-    ecoclinicrepasses.h \
     eventos.h \
     guiainssfolha.h \
     pesquisar.h \
     planodecontas.h \
-    planosaude.h \
     principal.h \
     relacaocolaborador.h \
     exportararquivo.h \
@@ -92,15 +105,31 @@ HEADERS += \
     blissbeneficios.h \
     validacao.h \
     updatedatatablecolumm.h \
-    atualizaritenstabelas.h \
     truncararquivostexto.h \
-    controlador.h
+    controlador.h \
+    login.h \
+    sobre.h \
+    downloadafd.h \
+    gerenciamentorep.h \
+    propriedadesusuario.h \
+    liquidofolha.h \
+    controledeponto.h \
+    parametros.h \
+    usuarios.h \
+    administracaogeral.h \
+    conversordearquivo.h \
+    eventosimportadosobj.h \
+    qcustomplot.h \
+    cpocorrenciasapuracao.h \
+    sqlitedatabase.h \
+    ocorrenciasapuracao.h \
+    donutbreakdownchart.h \
+    mainslice.h
 
 FORMS += \
     guiainssfolha.ui \
     pesquisar.ui \
     planodecontas.ui \
-    planosaude.ui \
     principal.ui \
     relacaocolaborador.ui \
     metaretencao.ui \
@@ -111,7 +140,18 @@ FORMS += \
     detalhesretencao.ui \
     processararquivocrednosso.ui \
     blissbeneficios.ui \
-    truncararquivostexto.ui
+    truncararquivostexto.ui \
+    login.ui \
+    sobre.ui \
+    downloadafd.ui \
+    gerenciamentorep.ui \
+    propriedadesusuario.ui \
+    liquidofolha.ui \
+    controledeponto.ui \
+    administracaogeral.ui \
+    conversordearquivo.ui \
+    cpocorrenciasapuracao.ui \
+    ocorrenciasapuracao.ui
 
 RESOURCES += \
     thema.qrc

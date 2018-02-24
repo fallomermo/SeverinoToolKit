@@ -9,10 +9,10 @@ GuiaINSSFolha::GuiaINSSFolha(QWidget *parent) : QWidget(parent), ui(new Ui::Guia
     connect(ui->periodoInicial, SIGNAL(editingFinished()), this, SLOT(focusPeriodoInicial()));
     connect(ui->periodoFinal, SIGNAL(editingFinished()), this, SLOT(focusPeriodoFinal()));
     ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/filter.png"), QLineEdit::TrailingPosition);
-    ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar Itens na Tabela"));
+    ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar Itens..."));
     QAction *_act_emp = ui->campoID_Empresa->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
-    connect(_act_emp, SIGNAL(triggered(bool)), this, SLOT(pesquisarEmpresa()));
     QAction *_act_fil = ui->campoID_Filial->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
+    connect(_act_emp, SIGNAL(triggered(bool)), this, SLOT(pesquisarEmpresa()));
     connect(_act_fil, SIGNAL(triggered(bool)), this, SLOT(pesquisarFilial()));
     connect(ui->campoPesquisarObjetosTabela, SIGNAL(textChanged(QString)), this, SLOT(filtroItemTabela(QString)));
     connect(ui->campoID_Empresa, SIGNAL(returnPressed()), this, SLOT(retornaCadastroEmpresa()));
@@ -20,19 +20,7 @@ GuiaINSSFolha::GuiaINSSFolha(QWidget *parent) : QWidget(parent), ui(new Ui::Guia
     connect(ui->botaoProcessar, SIGNAL(clicked(bool)), this, SLOT(getDatatable()));
     connect(ui->botaoExportar, SIGNAL(clicked(bool)), this, SLOT(exportarParaExcel()));
 
-    QStringList labels = QStringList() << "ID Empresa"
-                                       << "Empresa"
-                                       << "ID Filial"
-                                       << "Filial"
-                                       << "CNPJ"
-                                       << "Cidade Região"
-                                       << "Cálculo"
-                                       << "Competência"
-                                       << "Setor"
-                                       << "Código do Evento"
-                                       << "Descrição do Evento"
-                                       << "Tipo Evento"
-                                       << "Valor";
+    QStringList labels{"ID Empresa", "Empresa", "ID Filial", "Filial", "CNPJ", "Cidade Região", "Cálculo", "Competência", "Setor", "Código do Evento", "Descrição do Evento", "Tipo Evento", "Valor"};
     ui->tableWidget->setColumnCount(labels.count());
     ui->tableWidget->setHorizontalHeaderLabels(labels);
     ui->tableWidget->resizeColumnsToContents();
@@ -50,7 +38,7 @@ GuiaINSSFolha::GuiaINSSFolha(QWidget *parent, QMap<int, CadastroEmpresa *> ce, Q
     connect(ui->periodoInicial, SIGNAL(editingFinished()), this, SLOT(focusPeriodoInicial()));
     connect(ui->periodoFinal, SIGNAL(editingFinished()), this, SLOT(focusPeriodoFinal()));
     ui->campoPesquisarObjetosTabela->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
-    ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar Itens na Tabela"));
+    ui->campoPesquisarObjetosTabela->setPlaceholderText(QString("Pesquisar..."));
     QAction *_act_emp = ui->campoID_Empresa->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
     connect(_act_emp, SIGNAL(triggered(bool)), this, SLOT(pesquisarEmpresa()));
     QAction *_act_fil = ui->campoID_Filial->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
@@ -111,7 +99,7 @@ void GuiaINSSFolha::focusPeriodoFinal()
 
 void GuiaINSSFolha::pesquisarEmpresa()
 {
-    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), "", 1);
+    Pesquisar * p = new Pesquisar(this, "", 1);
     p->setWindowModality(Qt::ApplicationModal);
     p->setWindowFlags(Qt::Window);
     p->setWindowTitle("Selecionar Empresa");
@@ -127,7 +115,7 @@ void GuiaINSSFolha::setEmpresa(QString e)
 
 void GuiaINSSFolha::pesquisarFilial()
 {
-    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), this->getCodigoEmpresaAtivo(), 2);
+    Pesquisar * p = new Pesquisar(this, this->getCodigoEmpresaAtivo(), 2);
     p->setWindowModality(Qt::ApplicationModal);
     p->setWindowFlags(Qt::Window);
     p->setWindowTitle("Selecionar Filial");
@@ -244,15 +232,6 @@ void GuiaINSSFolha::retornaCadastroFilial(QString _ID_Filial)
 
 void GuiaINSSFolha::getDatatable()
 {
-    if(!ui->campoFolhaNormal->isChecked() && !ui->campoFolhaDissidio->isChecked()) {
-        QMessageBox::critical(
-                    this,
-                    tr("Dados omtidos!"),
-                    QString("Você precisa informar um tipo de Cálculo Folha!"),
-                    QMessageBox::Ok);
-        return;
-    }
-
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
     CaixaMensagemProgresso *caixaMensagem = new CaixaMensagemProgresso(this);
@@ -269,11 +248,7 @@ void GuiaINSSFolha::getDatatable()
     caixaMensagem->setVisible(true);
     qApp->processEvents();
 
-    int __tipoCalculo = 0;
-    if(ui->campoFolhaNormal->isChecked())
-        __tipoCalculo = 11;
-    if(ui->campoFolhaDissidio->isChecked())
-        __tipoCalculo = 14;
+    int __tipoCalculo = ui->tipoFolhaComboBox->currentIndex()+1;
 
     QThread *threadDAO = new QThread(nullptr);
     controle = new ControleDAO(nullptr);
@@ -312,8 +287,8 @@ void GuiaINSSFolha::preencherTabela(QMap<int, Eventos *> __tempMap)
 {
     emit finishThread();
     if(__tempMap.isEmpty()) {
-        QMessageBox::information(this, tr("Eventos GUIA INSS"), QString("Nenhuma Informação encontrada!"), QMessageBox::Ok);
         emit fecharCaixaMensagem();
+        QMessageBox::information(this, tr("Eventos GUIA INSS"), QString("Nenhuma Informação Encontrada!"), QMessageBox::Ok);
         return;
     }
 

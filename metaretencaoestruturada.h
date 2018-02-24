@@ -4,22 +4,47 @@
 #include <QMap>
 #include <QDate>
 #include <QDebug>
-#include <QLocale>
-#include <QPixmap>
 #include <QMovie>
 #include <QWidget>
 #include <QThread>
-#include <QToolButton>
+#include <QPixmap>
+#include <QLocale>
+#include <QPainter>
+#include <QFileInfo>
+#include <QChartView>
+#include <QPieSeries>
 #include <QModelIndex>
-#include <QMapIterator>
+#include <QFileDialog>
 #include <QMessageBox>
+#include <QToolButton>
+#include <QMapIterator>
+#include <QHBoxLayout>
+#include <QGraphicsScene>
+#include <QGraphicsWidget>
+#include <QGraphicsEffect>
+#include <QGraphicsEllipseItem>
+#include <QStyleOptionGraphicsItem>
 
 
+#include "controledao.h"
+#include "qcustomplot.h"
 #include "objetoretencao.h"
 #include "exportararquivo.h"
-#include "controledao.h"
-#include "responsavelselecaoagregado.h"
 #include "detalhesretencao.h"
+#include "responsavelselecaoagregado.h"
+#include "donutbreakdownchart.h"
+
+class QCustomPlot;
+
+class QGraphicsRectWidget : public QGraphicsWidget
+{
+public:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *,
+               QWidget *) override
+    {
+        painter->fillRect(rect(), Qt::blue);
+    }
+};
 
 class DetalhesRetencao;
 
@@ -32,7 +57,6 @@ class MetaRetencaoEstruturada;
 class MetaRetencaoEstruturada : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit MetaRetencaoEstruturada(QWidget *parent = 0);
     ~MetaRetencaoEstruturada();
@@ -61,15 +85,18 @@ private slots:
     void inserirItemTabela(int, int, QWidget*);
     void inserirLinhaTabela(int, int, ResponsavelSelecaoAgregado *);
     void preencherTabela(const QMap<int, ObjetoRetencao *>);
-    void exportarParaExcel();
     void caixaMensagemUsuario(QString);
     void atualizarResultados(QModelIndex);
     void setRetencao(const QMap<int, ObjetoRetencao *> &value);
     void removerItemTabela();
-    void detalhesRetencao(QModelIndex);
+    void removerItemTabela(const QWidget *);
     void detalhesRetencao();
+    void detalhesRetencao(QModelIndex);
     QMap<QString, ResponsavelSelecaoAgregado*> agregarValores(const QMap<int, ObjetoRetencao*>);
-    void itemClicado(QModelIndex);
+    void updateDadosGrafico();
+    void girarEtiquetas(int);
+    void imprimirPlotagemGrafico();
+    void salvarImagemGrafico();
 
 private:
     Ui::MetaRetencaoEstruturada *ui;
@@ -78,6 +105,11 @@ private:
     ControleDAO *controle;
     QMap<int, ObjetoRetencao*> mapRetencao;
     CaixaMensagemProgresso *caixaMensagem;
+
+    enum {
+        RECRUTA, ADMITIDOS, DEMITIDOS, RETENCAO, ACOES
+    };
+
 };
 
 #endif // METARETENCAOESTRUTURADA_H

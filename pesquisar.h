@@ -9,6 +9,7 @@
 
 
 // Inlcuindo clases manuais do projeto
+#include "controledao.h"
 #include "cadastroempresa.h"
 #include "cadastrofilial.h"
 
@@ -23,7 +24,7 @@ class Pesquisar : public QWidget
 
 public:
     explicit Pesquisar(QWidget *parent = 0);
-    Pesquisar(QWidget *parent, QMap<int, CadastroEmpresa*>, QMap<int, CadastroFilial *>, QString, int);
+    Pesquisar(QWidget *parent, QString, int);
     ~Pesquisar();
 
     QMap<int, CadastroEmpresa *> getMapEmpresas() const;
@@ -32,15 +33,21 @@ public:
 
     QString getEmpresaSelecionada() const;
 
-    int getFlagTipoPesquisa() const;
+    int getTipoPesquisa() const;
 
 signals:
     void getData(QString);
     void getEmpresa(QString);
     void getFilial(QString);
 
+    void obterEmpresas();
+    void obterFiliais();
+
+    void finishThread();
+
 private slots:
-    void preencherTabela();
+    void preencherTabelaComEmpresas(QMap<int, CadastroEmpresa*>);
+    void preencherTabelaComFiliais(QMap<int, CadastroFilial*>);
     void setData(int, int);
     void setData();
     void setEmpresa(int,int);
@@ -51,10 +58,12 @@ private slots:
 
 private:
     Ui::Pesquisar *ui;
+    ControleDAO *controle;
+    BancoDeDados *db;
     QMap<int, CadastroEmpresa *> mapEmpresas;
     QMap<int, CadastroFilial *> mapFiliais;
     QString empresaSelecionada;
-    int flagTipoPesquisa;
+    int tipoPesquisa;
 };
 
 #endif // PESQUISAR_H

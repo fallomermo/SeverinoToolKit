@@ -6,33 +6,40 @@ Pesquisar::Pesquisar(QWidget *parent) : QWidget(parent), ui(new Ui::Pesquisar)
     ui->setupUi(this);
 }
 
-Pesquisar::Pesquisar(QWidget *parent, QMap<int, CadastroEmpresa *> ce, QMap<int, CadastroFilial *> cf, QString es, int fp):
+Pesquisar::Pesquisar(QWidget *parent, QString _empresaSelecionada, int _tipoPesquisa):
     QWidget(parent),
     ui(new Ui::Pesquisar),
-    mapEmpresas(ce),
-    mapFiliais(cf),
-    empresaSelecionada(es),
-    flagTipoPesquisa(fp)
+    empresaSelecionada(_empresaSelecionada),
+    tipoPesquisa(_tipoPesquisa)
 {
     ui->setupUi(this);
 
-    if(cf.isEmpty()) {
-        QMessageBox::critical(this, tr("Cadatro de Empresa e Filial"), QString("Nenhuma informação encontrada!"), QMessageBox::Ok);
-        this->close();
-    }
 
-    if(getFlagTipoPesquisa() == 1) {
+    QThread *thread = new QThread(Q_NULLPTR);
+    controle = new ControleDAO(nullptr);
+    controle->moveToThread(thread);
+    connect(this, SIGNAL(obterEmpresas()), controle, SLOT(enviarCadastroDeEmpresas()));
+    connect(controle, SIGNAL(retornarCadastroDeEmpresas(QMap<int,CadastroEmpresa*>)), this, SLOT(preencherTabelaComEmpresas(QMap<int,CadastroEmpresa*>)));
+    connect(this, SIGNAL(obterFiliais()), controle, SLOT(enviarCadastroDeFiliais()));
+    connect(controle, SIGNAL(retornarCadastroDeFiliais(QMap<int,CadastroFilial*>)), this, SLOT(preencherTabelaComFiliais(QMap<int,CadastroFilial*>)));
+    connect(this, SIGNAL(finishThread()), thread, SLOT(terminate()), Qt::DirectConnection);
+    connect(thread, SIGNAL(finished()), controle, SLOT(deleteLater()));
+    thread->start(QThread::NormalPriority);
+
+    if(this->getTipoPesquisa() == 1) {
         connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(setEmpresa(int,int)));
         connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(setEmpresa(int,int)));
         connect(ui->botaoOK, SIGNAL(clicked(bool)), this, SLOT(setEmpresa()));
+        emit obterEmpresas();
     } else {
         connect(ui->tableWidget, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(setFilial(int,int)));
         connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(setFilial(int,int)));
         connect(ui->botaoOK, SIGNAL(clicked(bool)), this, SLOT(setFilial()));
+        emit obterFiliais();
     }
 
     connect(ui->botaoCancelar,SIGNAL(clicked(bool)), this, SLOT(close()));
-    preencherTabela();
+
 }
 
 Pesquisar::~Pesquisar()
@@ -50,58 +57,60 @@ QMap<int, CadastroFilial *> Pesquisar::getMapFiliais() const
     return mapFiliais;
 }
 
-void Pesquisar::preencherTabela()
+void Pesquisar::preencherTabelaComEmpresas(QMap<int, CadastroEmpresa *> __tempMap)
 {
-    QStringList labels = QStringList() << "ID" << "Descrição";
-    ui->tableWidget->setColumnCount(labels.count());
-    ui->tableWidget->setHorizontalHeaderLabels(labels);
+    ui->tableWidget->clearContents();
 
-    if(getFlagTipoPesquisa() == 1) {
-        ui->tableWidget->clearContents();
-        QMap<int, CadastroEmpresa*> listMap = getMapEmpresas();
-        int linha = 0;
-        ui->tableWidget->setRowCount(listMap.count());
-        QMapIterator<int, CadastroEmpresa*> map(listMap);
-        while (map.hasNext()) {
-            map.next();
-            CadastroEmpresa *c = new CadastroEmpresa(this);
-            c = map.value();
-            for(int coluna = 0; coluna < 2; coluna++){
-                if(coluna == 0)
-                    ui->tableWidget->setItem(linha, coluna, new QTableWidgetItem(c->getID_Empresa()));
-                else
-                    ui->tableWidget->setItem(linha, coluna, new QTableWidgetItem(c->getEmpresa()));
-            }
-            linha++;
+    int linha = 0;
+    ui->tableWidget->setRowCount(__tempMap.count());
+    QMapIterator<int, CadastroEmpresa*> map(__tempMap);
+    while (map.hasNext()) {
+        map.next();
+        CadastroEmpresa *c = new CadastroEmpresa();
+        c = map.value();
+        for(int coluna = 0; coluna < 2; coluna++){
+            if(coluna == 0)
+                ui->tableWidget->setItem(linha, coluna, new QTableWidgetItem(c->getID_Empresa()));
+            else
+                ui->tableWidget->setItem(linha, coluna, new QTableWidgetItem(c->getEmpresa()));
         }
-    } else {
-        ui->tableWidget->clearContents();
-        QMap<int, CadastroFilial*> listMap = getMapFiliais();
-        QMap<QString, QString> _n;
-        QMapIterator<int, CadastroFilial*> map(listMap);
-        while (map.hasNext()) {
-            map.next();
-            CadastroFilial *c = new CadastroFilial(this);
-            c = map.value();
-            if(c->getID_Empresa() == getEmpresaSelecionada()) {
-                _n.insert(c->getID_Filial(), c->getFilial());
-            }
-        }
+        linha++;
+    }
 
-        ui->tableWidget->setRowCount(_n.count());
-        QMapIterator<QString, QString> _mi(_n);
-        int linha = 0;
-        while (_mi.hasNext()) {
-            _mi.next();
-            for(int coluna = 0; coluna < 2; coluna++) {
-                if(coluna == 0)
-                    ui->tableWidget->setItem(linha,coluna,new QTableWidgetItem(_mi.key()));
-                else
-                    ui->tableWidget->setItem(linha,coluna,new QTableWidgetItem(_mi.value()));
-            }
-            linha++;
+    emit finishThread();
+    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->sortByColumn(0,Qt::AscendingOrder);
+}
+
+void Pesquisar::preencherTabelaComFiliais(QMap<int, CadastroFilial *> __tempMap)
+{
+    ui->tableWidget->clearContents();
+    QMap<QString, QString> _n;
+    QMapIterator<int, CadastroFilial*> map(__tempMap);
+    while (map.hasNext()) {
+        map.next();
+        CadastroFilial *c = new CadastroFilial(this);
+        c = map.value();
+        if(c->getID_Empresa() == getEmpresaSelecionada()) {
+            _n.insert(c->getID_Filial(), c->getFilial());
         }
     }
+
+    ui->tableWidget->setRowCount(_n.count());
+    QMapIterator<QString, QString> _mi(_n);
+    int linha = 0;
+    while (_mi.hasNext()) {
+        _mi.next();
+        for(int coluna = 0; coluna < 2; coluna++) {
+            if(coluna == 0)
+                ui->tableWidget->setItem(linha,coluna,new QTableWidgetItem(_mi.key()));
+            else
+                ui->tableWidget->setItem(linha,coluna,new QTableWidgetItem(_mi.value()));
+        }
+        linha++;
+    }
+
+    emit finishThread();
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->sortByColumn(0,Qt::AscendingOrder);
 }
@@ -109,49 +118,74 @@ void Pesquisar::preencherTabela()
 void Pesquisar::setData(int r, int c)
 {
     c = 0;
-    QTableWidgetItem *item = ui->tableWidget->item(r,c);
-    emit getData(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        QTableWidgetItem *item = ui->tableWidget->item(r,c);
+        retorno = item->text().trimmed();
+    }
+
+    emit getData(retorno);
     this->close();
 }
 
 void Pesquisar::setData()
 {
-    QTableWidgetItem *item = ui->tableWidget->item(ui->tableWidget->currentRow(), 0);
-    emit getData(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        QTableWidgetItem *item = ui->tableWidget->item(ui->tableWidget->currentRow(), 0);
+        retorno = item->text();
+    }
+    emit getData(retorno);
     this->close();
 }
 
 void Pesquisar::setEmpresa(int r, int c)
 {
     c = 0;
-    QTableWidgetItem *item = ui->tableWidget->item(r,c);
-    emit getEmpresa(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        QTableWidgetItem *item = ui->tableWidget->item(r,c);
+        retorno = item->text();
+    }
+    emit getEmpresa(retorno);
     this->close();
 }
 
 void Pesquisar::setEmpresa()
 {
-    int c = 0;
-    int r = ui->tableWidget->currentRow();
-    QTableWidgetItem *item = ui->tableWidget->item(r,c);
-    emit getEmpresa(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        int c = 0;
+        int r = ui->tableWidget->currentRow();
+        QTableWidgetItem *item = ui->tableWidget->item(r, c);
+        retorno = item->text();
+    }
+    emit getEmpresa(retorno);
     this->close();
 }
 
 void Pesquisar::setFilial(int r, int c)
 {
     c = 0;
-    QTableWidgetItem *item = ui->tableWidget->item(r,c);
-    emit getFilial(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        QTableWidgetItem *item = ui->tableWidget->item(r, c);
+        retorno = item->text();
+    }
+    emit getFilial(retorno);
     this->close();
 }
 
 void Pesquisar::setFilial()
 {
-    int c = 0;
-    int r = ui->tableWidget->currentRow();
-    QTableWidgetItem *item = ui->tableWidget->item(r,c);
-    emit getFilial(item->text());
+    QString retorno = "";
+    if(ui->tableWidget->rowCount() > 0) {
+        int c = 0;
+        int r = ui->tableWidget->currentRow();
+        QTableWidgetItem *item = ui->tableWidget->item(r,c);
+        retorno = item->text();
+    }
+    emit getFilial(retorno);
     this->close();
 }
 
@@ -160,9 +194,9 @@ void Pesquisar::fecharPesquisa()
     this->close();
 }
 
-int Pesquisar::getFlagTipoPesquisa() const
+int Pesquisar::getTipoPesquisa() const
 {
-    return flagTipoPesquisa;
+    return tipoPesquisa;
 }
 
 QString Pesquisar::getEmpresaSelecionada() const

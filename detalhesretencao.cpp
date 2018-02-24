@@ -1,21 +1,29 @@
 #include "detalhesretencao.h"
 #include "ui_detalhesretencao.h"
 
-DetalhesRetencao::DetalhesRetencao(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DetalhesRetencao)
+DetalhesRetencao::DetalhesRetencao(
+        QWidget *parent,
+        QString responsavel,
+        QString admitidos,
+        QString demitidos,
+        QString percentual,
+        QString periodo)
+    :
+      QDialog(parent),
+      responsavelSelecao(responsavel),
+      numeroAdmitidos(admitidos),
+      numeroDemitidos(demitidos),
+      percentualRetido(percentual),
+      periodoSelecionado(periodo),
+      ui(new Ui::DetalhesRetencao)
 {
-    ui->setupUi(this);
-    this->setWindowTitle(QString("Detalhes de ").append(this->getResponsavelSelecao()));
-    this->periodoSelecionado = "";
-
-    ui->campoResponsavelSelecao->setText(this->getResponsavelSelecao());
-    ui->campoNumeroAdmitidos->setText(this->getNumeroAdmitidos());
-    ui->campoNumeroDemitidos->setText(this->getNumeroDemitidos());
-    ui->campoPercentualRetido->setText(this->getPercentualRetido());
-    ui->campoPeriodoApuracao->setText(this->getPeriodoSelecionado());
-    QPixmap __pixmap(this->getImagemStatus());
-    ui->statusRecrutador->setPixmap(__pixmap);
+    ui->setupUi(this); this->updateStatus();
+    QLocale local = this->locale();
+    double p = local.toDouble(this->getPercentualRetido());
+    if((p <= 5.0)) { ui->campoStatus->setPixmap(QPixmap(":/images/flag_otimo.png")); }
+    if((p > 5.0) && (p <= 10.0)) { ui->campoStatus->setPixmap(QPixmap(":/images/flag_bom.png")); }
+    if((p > 10.0)) { ui->campoStatus->setPixmap(QPixmap(":/images/flag_ruim.png")); }
+    ui->campoStatus->update();
 }
 
 DetalhesRetencao::~DetalhesRetencao()
@@ -101,4 +109,25 @@ QPixmap DetalhesRetencao::getImagemStatus() const
 void DetalhesRetencao::setImagemStatus(const QPixmap &value)
 {
     imagemStatus = value;
+}
+
+void DetalhesRetencao::updateStatus()
+{
+    this->setWindowTitle(QString("Detalhes de ").append(this->getResponsavelSelecao()));
+
+    QLocale local = this->locale();
+    QString responsavel = this->getResponsavelSelecao();
+    QString admitidos = this->getNumeroAdmitidos();
+    QString demitidos = this->getNumeroDemitidos();
+    QString percentual = this->getPercentualRetido();
+    QString periodo = this->getPeriodoSelecionado();
+    double p = local.toDouble(percentual);
+    if((p <= 5.0)) { ui->percentualRetido->setStyleSheet(QString("color: green;")); }
+    if((p > 10.0)) { ui->percentualRetido->setStyleSheet(QString("color: red;")); }
+    ui->campoStatus->update();
+    ui->campoResponsavelSelecao->setText(responsavel);
+    ui->campoNumeroAdmitidos->setText(admitidos);
+    ui->campoNumeroDemitidos->setText(demitidos);
+    ui->campoPeriodoApuracao->setText(periodo);
+    ui->percentualRetido->setText(percentual);
 }

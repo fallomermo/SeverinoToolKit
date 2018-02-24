@@ -41,27 +41,30 @@ signals:
     void maximumProgressValue(int);
     void fecharCaixaDeMensagem();
     void obterUpdateDadosColaborador(int, int, int, int, bool);
+    void obterUpdateDadosColaborador(UpdateDataTableColumm*);
+    void cancelarProcesso();
 
 private slots:
     void abrirArquivo();
     void converterArquivo();
     void converterArquivo(QString);
+    void converterArquivoLayoutBasico();
     void converterArquivoCorteFerias();
     void converterArquivoCorteFeriasDAT();
-    void converterArquivoGarantiaCredinosso();
-    void atualizarDadosCorteFeriasDATSenior();
     void converterArquivoCrednossoPlanoSaudeLinhas();
     void filtroItemTabela(QString);
     void exportarParaExcel();
     void caixaMensagemUsuario(QString);
+    void cancelarOperacao();
 
     //Slots de atualizacao dos dados na tabela
     void atualizarDados();
     void limparDadosTempTable();
+    void updateDadosArquivoLayoutBasico();
+    void updateDadosArquivoLayoutBasico(UpdateDataTableColumm *);
+    void updateDadosArquivoLayoutBasico(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoFerias(QMap<int, ObjetoCadastroUpdateFile *>);
     void updateDadosArquivoCrednossoRetorno(QMap<int, ObjetoCadastroUpdateFile *>);
-    void updateDadosArquivoCrednossoGarantia();
-    void updateDadosArquivoCrednossoGarantia(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoFeriasDAT(QMap<int, UpdateDataTableColumm *>);
     void updateDadosArquivoCrednossoMesCorte(QMap<int, ObjetoCadastroUpdateFile *>);
     void updateDadosArquivoCrednossoDemitidos(QMap<int, ObjetoCadastroUpdateFile *>);
@@ -69,6 +72,9 @@ private slots:
 
 private:
     Ui::ProcessarArquivoCrednosso *ui;
+    QThread *threadInstancia;
+    ControleDAO *controlador;
+    CaixaMensagemProgresso *msg;
 };
 
 #endif // PROCESSARARQUIVOCREDNOSSO_H

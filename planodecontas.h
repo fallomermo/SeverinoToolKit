@@ -44,6 +44,12 @@ public:
 
     QMap<int, CadastroFilial *> getMapFiliais() const;
 
+    QString getCodigoEmpresa() const;
+    void setCodigoEmpresa(const QString &value);
+
+    QString getCodigoFilial() const;
+    void setCodigoFilial(const QString &value);
+
 signals:
     void finishThread();
     void statusProgresso(bool);
@@ -57,19 +63,19 @@ private slots:
     void atualizarTabela();
     void empresaSelecionada();
     void filialSelecionada();
-    void filialSelecionada(QString);
+    void filialSelecionada(const QString);
     void competenciaSelecionada();
     void focusInicioPeriodo();
     void focusFinalPeriodo();
     void focusProcessar();
     void progressoRequisicao(bool);
-    void caixaMensagemUsuario(QString);
+    void caixaMensagemUsuario(const QString);
 
     QString pesquisarItem();
     void pesquisarEmpresa();
     void pesquisarFilial();
-    void setEmpresa(QString);
-    void setFilial(QString);
+    void setEmpresa(const QString);
+    void setFilial(const QString);
     void getDatatable();
     void inserirItemTabela(int, int, QString);
     void inserirItemTabela(int, int, QDate);
@@ -78,8 +84,8 @@ private slots:
     void inserirLinhaTabela(int, int, Eventos *);
     void exportarParaExcel();
     void atualizarResultados(QModelIndex);
-    void mensagemInfoUsuario(QString);
-    void filtroItemTabela(QString);
+    void mensagemInfoUsuario(const QString, const QString);
+    void filtroItemTabela(const QString);
     void preencherTabela(QMap<int, Eventos *>);
 
 private:
@@ -93,6 +99,10 @@ private:
 
     QString codigoEmpresa;
     QString codigoFilial;
+
+    enum {
+        ID_EMPRESA, EMPRESA, ID_FILIAL, FILIAL, CNPJ, CIDADE_REGIAO, CALCULO, COMPETENCIA, TIPO_CALCULO, SETOR, CODEVENTO, EVENTO, TIPOEVENTO, VALOR
+    };
 };
 
 #endif // PLANODECONTAS_H

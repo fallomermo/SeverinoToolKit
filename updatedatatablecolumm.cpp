@@ -1,7 +1,6 @@
 #include "updatedatatablecolumm.h"
 
-UpdateDataTableColumm::UpdateDataTableColumm(QObject *parent) : QObject(parent)
-{}
+UpdateDataTableColumm::UpdateDataTableColumm(QObject *parent) : QObject(parent) { ultimoRegistro = false; }
 
 int UpdateDataTableColumm::getLinha() const
 {
@@ -21,6 +20,21 @@ int UpdateDataTableColumm::getColuna() const
 void UpdateDataTableColumm::setColuna(int value)
 {
     coluna = value;
+}
+
+int UpdateDataTableColumm::getCodigoEmpresa() const
+{
+    return codigoEmpresa;
+}
+
+void UpdateDataTableColumm::setCodigoEmpresa(int value)
+{
+    codigoEmpresa = value;
+}
+
+void UpdateDataTableColumm::setMatricula(int value)
+{
+    matricula = value;
 }
 
 QString UpdateDataTableColumm::getNome() const
@@ -62,3 +76,9 @@ void UpdateDataTableColumm::setUltimoRegistro(bool value)
 {
     ultimoRegistro = value;
 }
+
+int UpdateDataTableColumm::getMatricula() const
+{
+    return matricula;
+}
+

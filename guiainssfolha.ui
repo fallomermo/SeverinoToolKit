@@ -81,21 +81,33 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="campoFolhaNormal">
-        <property name="text">
-         <string>Folha Normal</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QRadioButton" name="campoFolhaDissidio">
-        <property name="text">
-         <string>Folha Dissídio</string>
-        </property>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="tipoFolhaComboBox">
+        <item>
+         <property name="text">
+          <string>11 - Folha Normal</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>12 - Folha Complementar</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>14 - Folha Complementar de Dissídio</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>31 - Folha Adiantamento de 13º</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>32 - Folha 13º Integral</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
@@ -157,8 +169,7 @@
  <tabstops>
   <tabstop>periodoInicial</tabstop>
   <tabstop>periodoFinal</tabstop>
-  <tabstop>campoFolhaNormal</tabstop>
-  <tabstop>campoFolhaDissidio</tabstop>
+  <tabstop>tipoFolhaComboBox</tabstop>
   <tabstop>campoID_Empresa</tabstop>
   <tabstop>campoID_Filial</tabstop>
   <tabstop>botaoProcessar</tabstop>

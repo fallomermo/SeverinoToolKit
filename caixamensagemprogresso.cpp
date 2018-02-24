@@ -14,6 +14,8 @@ CaixaMensagemProgresso::CaixaMensagemProgresso(QWidget *parent) :
     this->setMovie(movie);
     this->ocultarBarraProgresso(true);
     this->ocultarBotaoCancelar(true);
+    ui->barraDeProgresso->setVisible(false);
+    ui->barraDeProgresso->hide();
 }
 
 CaixaMensagemProgresso::~CaixaMensagemProgresso()
@@ -28,12 +30,14 @@ void CaixaMensagemProgresso::setTituloJanela(const QString titulo)
 
 void CaixaMensagemProgresso::setMinimumValue(int value)
 {
+    ui->barraDeProgresso->setVisible(true);
+    ui->barraDeProgresso->show();
     ui->barraDeProgresso->setValue(value);
 }
 
 void CaixaMensagemProgresso::setMaximumValue(int value)
 {
-    ui->barraDeProgresso->setMinimum(value);
+    ui->barraDeProgresso->setMaximum(value);
 }
 
 void CaixaMensagemProgresso::cancelarProcessoAtual()
@@ -57,11 +61,13 @@ void CaixaMensagemProgresso::setMovie(QMovie *movie)
 void CaixaMensagemProgresso::ocultarBarraProgresso(bool ok)
 {
     ui->barraDeProgresso->setVisible(ok);
+    ui->barraDeProgresso->show();
 }
 
 void CaixaMensagemProgresso::ocultarBotaoCancelar(bool ok)
 {
     ui->botaoCancelar->setVisible(ok);
+    ui->barraDeProgresso->hide();
 }
 
 void CaixaMensagemProgresso::setProgressValue(int value)

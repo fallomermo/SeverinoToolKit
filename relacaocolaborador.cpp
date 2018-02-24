@@ -13,11 +13,7 @@ RelacaoColaborador::RelacaoColaborador(QWidget *parent, QMap<int, CadastroEmpres
     ui->setupUi(this);
     this->setMapEmpresas(ce);
     this->setMapFiliais(cf);
-    ui->campoID_Empresa->setPlaceholderText(QString("Código da Empresa..."));
-    ui->campoID_Filial->setPlaceholderText(QString("Código da Filial..."));
     ui->dataReferencia->setDate(QDate::currentDate());
-    QString __data = ui->dataReferencia->date().toString("d' de 'MMMM' de 'yyyy");
-    ui->campoDescricaoData->setText(__data);
     connect(ui->campoID_Empresa, SIGNAL(returnPressed()), this, SLOT(retornaCadastroEmpresa()));
     connect(ui->campoID_Filial, SIGNAL(returnPressed()), this, SLOT(retornaCadastroFilial()));
     QAction *_act_emp = ui->campoID_Empresa->addAction(QIcon(":/images/search.png"), QLineEdit::TrailingPosition);
@@ -31,8 +27,6 @@ RelacaoColaborador::RelacaoColaborador(QWidget *parent, QMap<int, CadastroEmpres
     connect(ui->botaoExportar, SIGNAL(clicked(bool)), this, SLOT(exportarParaExcel()));
     connect(ui->tableWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(exibirNumeroRegistros(QModelIndex)));
     connect(ui->tableWidget, SIGNAL(activated(QModelIndex)), this, SLOT(exibirNumeroRegistros(QModelIndex)));
-    connect(ui->dataReferencia, SIGNAL(editingFinished()), this, SLOT(exibirDataCompleta()));
-    connect(ui->dataReferencia, SIGNAL(dateChanged(QDate)), this, SLOT(exibirDataCompleta(QDate)));
     connect(ui->dataReferencia, SIGNAL(editingFinished()), this, SLOT(focusDataReferencia()));
 
     ui->campoID_Empresa->setToolTip(QString("Dica! \nPara que sejam exibidas as informações dos colaboradores \n"
@@ -113,7 +107,7 @@ void RelacaoColaborador::filtroItemTabela(QString filter)
 
 void RelacaoColaborador::pesquisarEmpresa()
 {
-    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), "", 1);
+    Pesquisar * p = new Pesquisar(this, "", 1);
     p->setWindowModality(Qt::ApplicationModal);
     p->setWindowFlags(Qt::Window);
     p->setWindowTitle("Selecionar Empresa");
@@ -121,78 +115,100 @@ void RelacaoColaborador::pesquisarEmpresa()
     p->show();
 }
 
-void RelacaoColaborador::setEmpresa(QString e)
+void RelacaoColaborador::setEmpresa(const QString e)
 {
-    ui->campoID_Empresa->setText(e);
-    retornaCadastroEmpresa();
+    if(!e.isEmpty()) {
+        this->setCodigoDaEmpresa(e);
+        this->retornaCadastroEmpresa();
+    } else {
+        ui->campoID_Empresa->clear();
+    }
 }
 
 void RelacaoColaborador::pesquisarFilial()
 {
-    Pesquisar * p = new Pesquisar(this, getMapEmpresas(), getMapFiliais(), ui->campoID_Empresa->text(), 2);
-    p->setWindowModality(Qt::ApplicationModal);
-    p->setWindowFlags(Qt::Window);
-    p->setWindowTitle("Selecionar Filial");
-    connect(p, SIGNAL(getFilial(QString)), this, SLOT(setFilial(QString)));
-    p->show();
+    if(this->getCodigoDaEmpresa().isEmpty()) {
+        QMessageBox::critical(this, tr("Selecionar Filial"), QString("Selecione uma empresa\npara pesquisar uma filial!"), QMessageBox::Ok);
+        ui->campoID_Empresa->setFocus();
+    } else {
+        Pesquisar * p = new Pesquisar(this, this->getCodigoDaEmpresa(), 2);
+        p->setWindowModality(Qt::ApplicationModal);
+        p->setWindowFlags(Qt::Window);
+        p->setWindowTitle("Selecionar Filial");
+        connect(p, SIGNAL(getFilial(QString)), this, SLOT(setFilial(QString)));
+        p->show();
+    }
 }
 
-void RelacaoColaborador::setFilial(QString f)
+void RelacaoColaborador::setFilial(const QString f)
 {
-    ui->campoID_Filial->setText(f);
-    retornaCadastroFilial(f);
+    if(f.isEmpty()) {
+        QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+        ui->campoID_Filial->clear();
+    } else {
+        this->setCodigoDaFilial(f);
+        this->retornaCadastroFilial();
+    }
 }
 
 void RelacaoColaborador::retornaCadastroEmpresa()
 {
-    QMapIterator<int, CadastroEmpresa*> mi(getMapEmpresas());
-    QString _nomeEmpresa;
+    if(this->getCodigoDaEmpresa().isEmpty())
+        return;
 
-    while (mi.hasNext()) {
+    QMapIterator<int, CadastroEmpresa*> mi(this->getMapEmpresas());
+    QString _nomeEmpresa = "";
+
+    bool ok = true;
+    while (mi.hasNext() && ok) {
         mi.next();
         CadastroEmpresa *_cemp = new CadastroEmpresa;
         _cemp = mi.value();
 
-        if(_cemp->getID_Empresa() == ui->campoID_Empresa->text()) {
-            _nomeEmpresa = _cemp->getEmpresa();
+        if(_cemp->getID_Empresa() == this->getCodigoDaEmpresa()) {
+            _nomeEmpresa = QString("%0 - %1").arg(_cemp->getID_Empresa()).arg(_cemp->getEmpresa());
+            ok = false;
         }
     }
 
     if(_nomeEmpresa.isEmpty()) {
-        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa não encontrada [!]"), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Cadastro Empresa [!]"), QString("Empresa Inválida [!]"), QMessageBox::Ok);
+        ui->campoID_Empresa->clear();
         ui->campoID_Empresa->setFocus();
     } else {
-        ui->campoDescricaoEmpresa->setText(_nomeEmpresa);
+        ui->campoID_Empresa->setText(_nomeEmpresa);
         ui->campoID_Filial->setFocus();
     }
 }
 
 void RelacaoColaborador::retornaCadastroFilial()
 {
-    QString _ID_Filial = ui->campoID_Filial->text();
-    if(ui->campoID_Empresa->text().isEmpty()) {
+    QString _ID_Filial = this->getCodigoDaFilial();
+    if(this->getCodigoDaEmpresa().isEmpty() || _ID_Filial.isEmpty()) {
         QMessageBox::critical(this, tr("Seleção de Filtro"), QString("Nenhuma Empresa Selecionada"), QMessageBox::Ok);
+        ui->campoID_Empresa->clear();
+        ui->campoID_Filial->clear();
         ui->campoID_Empresa->setFocus();
     } else {
-        QMapIterator<int, CadastroFilial*> mi(getMapFiliais());
-        QString _nomeFilial;
+        QMapIterator<int, CadastroFilial*> mi(this->getMapFiliais());
+        QString _nomeFilial = "";
 
         while (mi.hasNext()) {
             mi.next();
-            CadastroFilial *_cfil = new CadastroFilial;
+            CadastroFilial *_cfil = new CadastroFilial(Q_NULLPTR);
             _cfil = mi.value();
-            QString _ID_Empresa = ui->campoID_Empresa->text();
+            QString _ID_Empresa = this->getCodigoDaEmpresa();
             if(_cfil->getID_Empresa() == _ID_Empresa && _cfil->getID_Filial() == _ID_Filial) {
-                _nomeFilial = _cfil->getFilial();
+                _nomeFilial = QString("%0 - %1").arg(_ID_Filial).arg(_cfil->getFilial());
             }
         }
 
         if(_nomeFilial.isEmpty()) {
             QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
+            ui->campoID_Filial->clear();
             ui->campoID_Filial->setFocus();
         } else {
-            ui->campoID_Filial->setText(_ID_Filial);
-            ui->campoDescricaoFilial->setText(_nomeFilial);
+            ui->campoID_Filial->setText(_nomeFilial);
             ui->dataReferencia->setFocus();
         }
     }
@@ -221,8 +237,7 @@ void RelacaoColaborador::retornaCadastroFilial(QString _ID_Filial)
             QMessageBox::critical(this, tr("Cadastro Filial [!]"), QString("Filial Inválida [!]"), QMessageBox::Ok);
             ui->campoID_Filial->setFocus();
         } else {
-            ui->campoID_Filial->setText(_ID_Filial);
-            ui->campoDescricaoFilial->setText(_nomeFilial);
+            ui->campoID_Filial->setText(_nomeFilial);
             ui->dataReferencia->setFocus();
         }
     }
@@ -257,7 +272,7 @@ void RelacaoColaborador::getDatatable()
     connect(caixaDeMensagem, SIGNAL(cancelarProcesso()), threadDAO, SLOT(terminate()));
     connect(threadDAO, SIGNAL(finished()), controle, SLOT(deleteLater()));
     threadDAO->start(QThread::NormalPriority);
-    emit obterRelacaoColaboradores(ui->campoID_Empresa->text(), ui->campoID_Filial->text(), ui->dataReferencia->date());
+    emit obterRelacaoColaboradores(this->getCodigoDaEmpresa(), this->getCodigoDaFilial(), ui->dataReferencia->date());
 }
 
 void RelacaoColaborador::preencherTabela(QMap<int, CadastroColaborador *> __tempMap)
@@ -370,10 +385,10 @@ void RelacaoColaborador::inserirLinhaTabela(int linha, int nrColunas, CadastroCo
 void RelacaoColaborador::exportarParaExcel()
 {
     QString tituloArquivo = "";
-    if(ui->campoDescricaoEmpresa->text().isEmpty() || ui->campoDescricaoFilial->text().isEmpty())
-        tituloArquivo = "FullData";
+    if(ui->campoID_Empresa->text().isEmpty() || ui->campoID_Filial->text().isEmpty())
+        tituloArquivo = "FullData_Export";
     else
-        tituloArquivo = ui->campoDescricaoFilial->text().replace(' ','_');
+        tituloArquivo = ui->campoID_Filial->text().replace(' ','_');
 
     QString __nomeArquivo = "/"+tituloArquivo+"_"+ui->dataReferencia->text().replace('/','-');
 
@@ -402,17 +417,27 @@ void RelacaoColaborador::exibirNumeroRegistros(QModelIndex i)
     ui->campoTotalRegistros->setText(QString::number(iValue));
 }
 
-void RelacaoColaborador::exibirDataCompleta()
-{
-    ui->campoDescricaoData->setText(ui->dataReferencia->date().toString("d' de 'MMMM' de 'yyyy"));
-}
-
-void RelacaoColaborador::exibirDataCompleta(QDate d)
-{
-    ui->campoDescricaoData->setText(d.toString("d' de 'MMMM' de 'yyyy"));
-}
-
 void RelacaoColaborador::caixaMensagemUsuario(QString msg)
 {
     QMessageBox::information(this, tr("Exportação de Dados"), QString(msg), QMessageBox::Ok);
+}
+
+QString RelacaoColaborador::getCodigoDaFilial() const
+{
+    return codigoDaFilial;
+}
+
+void RelacaoColaborador::setCodigoDaFilial(const QString &value)
+{
+    codigoDaFilial = value;
+}
+
+QString RelacaoColaborador::getCodigoDaEmpresa() const
+{
+    return codigoDaEmpresa;
+}
+
+void RelacaoColaborador::setCodigoDaEmpresa(const QString &value)
+{
+    codigoDaEmpresa = value;
 }

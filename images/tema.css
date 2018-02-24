@@ -17,12 +17,29 @@
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE. 
+ * THE SOFTWARE.
  */
+
+#widgetPrincipal
+{
+    background-image: url(:/images/backgroundLogin.jpg);
+}
+
+#groupBox_LoginPanel
+{
+    background-image: url(:/images/backgroundLogin.png);
+}
 
 #framePanel
 {
     background-image: url(:/images/backgroundPanel.png);
+    border: none;
+}
+
+
+#framePanel_InfoUsuario
+{
+    border-top: none;
 }
 
 QToolTip
@@ -304,7 +321,8 @@ QMenu::right-arrow {
 
 QWidget:disabled
 {
-    color: #454545;
+    /* color: #454545; */
+    color: #ffffff;
     background-color: #31363b;
 }
 
@@ -805,7 +823,7 @@ QTabBar::tab:top:!selected
     border: 1px solid #76797C;
     border-bottom: 1px transparent black;
     border-top-left-radius: 2px;
-    border-top-right-radius: 2px;    
+    border-top-right-radius: 2px;
 }
 
 QTabBar::tab:top:!selected:hover {
@@ -1168,8 +1186,8 @@ QTableCornerButton::section {
 }
 
 QToolBox  {
-    padding: 5px;
-    border: 1px transparent black;
+    padding: 0px;
+    border: 0px transparent black;
 }
 
 QToolBox::tab {
@@ -1199,6 +1217,7 @@ QFrame[height="3"], QFrame[width="3"] {
 
 QSplitter::handle {
     border: 1px dashed #76797C;
+    image: url(:/images/splitter.png);
 }
 
 QSplitter::handle:hover {
@@ -1211,7 +1230,7 @@ QSplitter::handle:horizontal {
 }
 
 QSplitter::handle:vertical {
-    height: 1px;
+    height: 8px;
 }
 
 QProgressBar {
@@ -1230,7 +1249,7 @@ QDateEdit
     border-style: solid;
     border: 1px solid #3375A3;
     border-radius: 2px;
-    padding: 1px;
+    padding: 5px;
     min-width: 75px;
 }
 
@@ -1259,6 +1278,11 @@ QDateEdit::drop-down
     border-left-style: solid;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
+}
+
+QDateEdit::left-arrow
+{
+    image: url(:/images/left_arrow.png);
 }
 
 QDateEdit::down-arrow

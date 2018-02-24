@@ -11,17 +11,18 @@
 // Inlcuindo clases manuais do projeto
 #include "cadastroempresa.h"
 #include "cadastrofilial.h"
-#include "ecoclinicrepasses.h"
 #include "cadastrocolaborador.h"
 #include "objetoretencao.h"
 #include "eventos.h"
 #include "objetocrednossoretorno.h"
 #include "objetocadastroupdatefile.h"
 #include "updatedatatablecolumm.h"
+#include "bancodedados.h"
+#include "sqlitedatabase.h"
+#include "eventosimportadosobj.h"
+#include "usuarios.h"
 
-class BancoDeDados;
-
-class ControleDAO : public QThread
+class ControleDAO : public QObject
 {
     Q_OBJECT
 public:
@@ -31,39 +32,52 @@ public:
     void getCrednossoRetorno(QDate);
 
 signals:
-    void mensagemRetorno(QString);
+    void mensagemRetorno(QString, QString);
     void statusProgresso(int,int);
-    void enviarStatusConexao(bool);
+    void enviarStatusConexaoSenior(bool);
+    void enviarStatusConexaoLocal(bool);
+    void enviarUsuarios(QList<Usuarios*>);
     void retornarCadastroDeEmpresas(QMap<int, CadastroEmpresa*>);
     void retornarCadastroDeFiliais(QMap<int, CadastroFilial*>);
+    void retornaEventosImportados(QList<EventosImportadosOBJ*>);
     void enviarPlanoContas(QMap<int, Eventos *>);
     void enviarGuiaINSS(QMap<int, Eventos *>);
     void enviarMetaRetencao(QMap<int, ObjetoRetencao *>);
-    void enviarPlanoSaude(QMap<int, EcoclinicRepasses*>);
     void enviarCrednossoRetorno(QMap<int, ObjetoCrednossoRetorno*>);
     void enviarRelacaoColaboradores(QMap<int, CadastroColaborador*>);
+    void enviarUpdateDadosCadastroColaborador(UpdateDataTableColumm *);
     void enviarUpdateDadosCadastroColaborador(QMap<int, UpdateDataTableColumm *>);
-    void finishThread();
     void mensagemControle(QString, QString, int);
+    void checagemStmUsuario(bool);
+    void statusConexaoSenior(bool);
 
 private slots:
-    void abrirConexao();
+    void abrirConexaoSenior();
     void enviarCadastroDeEmpresas();
     void enviarCadastroDeFiliais();
     void retornaPlanoContas(QString,QString,QString,QString,int);
     void retornaGuiaINSS(QString,QString,QString,QString,int);
     void retornaRelacaoColaboradores(QString, QString, QDate);
-    void mensagemRetornoUsuario(QString);
+    void retornaUsuarios();
+    void mensagemRetornoUsuario(QString, QString);
     void statusProgressoAtual(int,int);
     void obterMetaRetencao(QDate, QDate);
-    void obterPlanoSaude(QString, QString, int);
     void obterCrednossoRetorno(QDate);
     void obterUpdateDadosCadastroColaborador(int, int, int, int, bool);
+    void obterUpdateDadosCadastroColaborador(UpdateDataTableColumm*);
+    void obterEventosImportados(QString, int);
     void mensagemControlador(QString, QString, int);
     void exitClass();
 
+    // slots para gerenciamento dos usuários
+    void inserirUsuario();
+    void removerUsuario();
+    void alterarUsuario();
+    void checagemStmUsuarioStatus(bool);
+
 private:
     BancoDeDados *db;
+    SQliteDatabase *sqlitedb;
 
 
 };

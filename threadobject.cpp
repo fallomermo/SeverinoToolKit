@@ -1,11 +1,12 @@
 #include "threadobject.h"
 
-ThreadObject::ThreadObject()
+ThreadObject::ThreadObject() {}
+
+void ThreadObject::finish()
 {
-    qDebug() << "Instanciando ThreadObject com sucesso!";
+    if(this->isRunning()) {
+        this->deleteLater();
+        this->quit();
+    }
 }
 
-void ThreadObject::run()
-{
-    this->exec();
-}

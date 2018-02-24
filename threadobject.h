@@ -3,15 +3,15 @@
 
 
 #include <QThread>
-#include <QDebug>
 
 class ThreadObject : public QThread
 {
 public:
     ThreadObject();
 
-protected:
-    virtual void run();
+private slots:
+    void finish();
+
 };
 
 #endif // THREADOBJECT_H

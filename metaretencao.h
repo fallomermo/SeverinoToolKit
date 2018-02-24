@@ -55,10 +55,11 @@ private slots:
     void inserirLinhaTabela(int, int, ObjetoRetencao *);
     void exportarParaExcel();
     void caixaMensagemUsuario(QString);
-    void atualizarResultados(QModelIndex);
+    void atualizarResultados();
     void setRetencao(const QMap<int, ObjetoRetencao *> &value);
     void preencherTabela(QMap<int, ObjetoRetencao *>);
     void removerItemTabela();
+    void cancelarOperacao();
 
 private:
     Ui::MetaRetencao *ui;

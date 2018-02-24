@@ -19,7 +19,12 @@ class DetalhesRetencao : public QDialog
     Q_OBJECT
 
 public:
-    explicit DetalhesRetencao(QWidget *parent = 0);
+    explicit DetalhesRetencao(QWidget *parent = 0,
+                              QString responsavel = nullptr,
+                              QString admitidos = nullptr,
+                              QString demitidos = nullptr,
+                              QString percentual = nullptr,
+                              QString periodo = nullptr);
     ~DetalhesRetencao();
 
     QMap<int, ObjetoRetencao *> getMapRetencao() const;
@@ -45,6 +50,9 @@ public:
 
     QPixmap getImagemStatus() const;
     void setImagemStatus(const QPixmap &value);
+
+private slots:
+    void updateStatus();
 
 private:
     Ui::DetalhesRetencao *ui;

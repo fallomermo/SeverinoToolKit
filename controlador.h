@@ -19,26 +19,12 @@
 class Controlador : public QObject
 {
     Q_OBJECT
-    QNetworkAccessManager manager;
-    QNetworkRequest request;
-
 public:
     explicit Controlador(QObject *parent = nullptr);
 
 signals:
-    void sinalReplyFinished(QNetworkReply*);
-    void sinalDownloadProgress(qint64,qint64);
-    void sinalSslErrors(QList<QSslError>);
-    void sinalSlotError(QNetworkReply::NetworkError);
-    void sinalLogRegistros(QString);
 
 private slots:
-    void executarDownload(QUrl);
-    void slotReplyFinished(QNetworkReply*);
-    void slotReadyRead();
-    void slotDownloadProgress(qint64, qint64);
-    void slotSslErrors(QList<QSslError>);
-    void slotError(QNetworkReply::NetworkError);
 
 };
 

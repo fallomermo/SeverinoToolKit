@@ -15,12 +15,12 @@ void ObjetoCrednossoRetorno::setCodigoDaEmpresa(int value)
     CodigoDaEmpresa = value;
 }
 
-int ObjetoCrednossoRetorno::getCPF() const
+QString ObjetoCrednossoRetorno::getCPF() const
 {
     return CPF;
 }
 
-void ObjetoCrednossoRetorno::setCPF(int value)
+void ObjetoCrednossoRetorno::setCPF(const QString value)
 {
     CPF = value;
 }
