@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MetaRetencaoEstruturada</class>
  <widget class="QWidget" name="MetaRetencaoEstruturada">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>695</width>
-    <height>461</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Meta Retenção Estruturada</string>
   </property>
@@ -146,9 +138,6 @@
           <bool>true</bool>
          </attribute>
         </widget>
-       </item>
-       <item>
-        <widget class="QGraphicsView" name="graphicsView"/>
        </item>
       </layout>
      </widget>

@@ -1,17 +1,14 @@
 #include "login.h"
 #include "ui_login.h"
 
-Login::Login(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Login)
+Login::Login(QWidget *parent) : QWidget(parent), ui(new Ui::Login)
 {
     ui->setupUi(this);
-    this->setWindowTitle(QString("Severino Tools :: Versão 2.02 "));
+    this->setWindowTitle(QString("Severino Tools :: Versão 2.0.12 "));
     local.setDefault(QLocale(QLocale::Portuguese, QLocale::Brazil));
     loadingImage = new QMovie(":/images/logotipo_animado.gif");
     connect(this, SIGNAL(stopLoadingImage()), this, SLOT(stopAnimacaoLogotipo()));
 
-    this->atualizarTema();
     this->animarLogotipo();
     this->setStatusSistema(false);
 
@@ -32,23 +29,6 @@ Login::Login(QWidget *parent) :
 Login::~Login()
 {
     delete ui;
-}
-
-void Login::atualizarTema()
-{
-    QFile file(QString(":/images/tema.css"));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    QTextStream in(&file);
-    QString tema;
-    while (!in.atEnd()) {
-        QString line = in.readLine();
-        tema.append(line);
-    }
-    file.close();
-    this->setStyleSheet(tema);
-    this->update();
 }
 
 void Login::focusCampoUsuario()
@@ -124,7 +104,6 @@ void Login::atualizarStatusConexaoBaseLocal(bool ok)
 void Login::atualizarStatusConexaoBaseSenior(bool ok)
 {
     this->setStatusConexaoBancoSenior(ok);
-    emit obterStatusConexaoParaSenior(this->getStatusConexaoBancoSenior());
     emit finishThreadPri();
 }
 

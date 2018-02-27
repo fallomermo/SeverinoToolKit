@@ -76,8 +76,6 @@ signals:
     void stopLoadingImage();
 
 private slots:
-    void atualizarTema();
-
     //Implementado navegação entre os campos QLinEdit
     void focusCampoUsuario();
     void focusCampoSenha();

@@ -21,6 +21,7 @@ void MetaRetencaoEstruturada::definirParametrosIniciais()
     ui->inicioPeriodo->setDate(QDateTime::currentDateTime().date().addMonths(-2));
     ui->finalPeriodo->setDate(QDateTime::currentDateTime().date());
     ui->tableWidget->setEditTriggers(QTableWidget::NoEditTriggers);
+    gridLayout = new QGridLayout();
 
     connect(ui->inicioPeriodo, SIGNAL(editingFinished()), this, SLOT(focusPeriodoInicial()));
     connect(ui->finalPeriodo, SIGNAL(editingFinished()), this, SLOT(focusPeriodoFinal()));
@@ -235,35 +236,10 @@ void MetaRetencaoEstruturada::removerItemTabela(const QWidget *sw)
 
 void MetaRetencaoEstruturada::detalhesRetencao()
 {
-    if(ui->tableWidget->rowCount() <=0)
+    if((ui->tableWidget->rowCount() <= 0) || (ui->tableWidget->currentRow() < 0))
         return;
 
-    if(ui->tableWidget->currentRow() < 0)
-        return;
-
-    int linha = ui->tableWidget->currentRow();
-
-    QPalette pall = this->palette();
-    pall.setColor(QPalette::Window, QRgb(0xcee7f0));
-    pall.setColor(QPalette::WindowText, QRgb(0x404044));
-
-    DonutBreakdownChart *donutBreakdown = new DonutBreakdownChart();
-    donutBreakdown->setAnimationOptions(QChart::AllAnimations);
-    donutBreakdown->setTitle(ui->tableWidget->item(linha, 0)->text());
-    donutBreakdown->legend()->setAlignment(Qt::AlignRight);
-
-    QPieSeries *series = new QPieSeries();
-    series->setName(ui->tableWidget->item(linha, 0)->text());
-    series->append("Admitidos", ui->tableWidget->item(linha, 1)->text().toFloat());
-    series->append("Demitidos", ui->tableWidget->item(linha, 2)->text().toFloat());
-    series->append("Retenção", ui->tableWidget->item(linha, 3)->text().toFloat());
-    donutBreakdown->addBreakdownSeries(series, Qt::darkBlue);
-
-    QGridLayout *gl = new QGridLayout();
-    QChartView *chartView = new QChartView(donutBreakdown);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    gl->addWidget(chartView);
-    ui->graphicsView->setLayout(gl);
+    qDebug() << "Clicado em: " << ui->tableWidget->item(ui->tableWidget->currentRow(), 0)->text();
 }
 
 void MetaRetencaoEstruturada::detalhesRetencao(QModelIndex index)

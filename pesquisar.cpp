@@ -15,7 +15,7 @@ Pesquisar::Pesquisar(QWidget *parent, QString _empresaSelecionada, int _tipoPesq
     ui->setupUi(this);
 
 
-    QThread *thread = new QThread(Q_NULLPTR);
+    QThread *thread = new QThread(parent);
     controle = new ControleDAO(nullptr);
     controle->moveToThread(thread);
     connect(this, SIGNAL(obterEmpresas()), controle, SLOT(enviarCadastroDeEmpresas()));

@@ -5,6 +5,13 @@
 #include <QDate>
 #include <QDebug>
 #include <QMovie>
+
+// Classes dos Graficos
+#include <QBarSet>
+#include <QBarSeries>
+#include <QBarCategoryAxis>
+
+// Classes da Interface
 #include <QWidget>
 #include <QThread>
 #include <QPixmap>
@@ -105,6 +112,7 @@ private:
     ControleDAO *controle;
     QMap<int, ObjetoRetencao*> mapRetencao;
     CaixaMensagemProgresso *caixaMensagem;
+    QGridLayout *gridLayout;
 
     enum {
         RECRUTA, ADMITIDOS, DEMITIDOS, RETENCAO, ACOES

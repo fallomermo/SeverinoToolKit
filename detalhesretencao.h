@@ -5,10 +5,13 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QMovie>
+#include <QChartView>
+#include <QPieSeries>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
 #include "objetoretencao.h"
+#include "donutbreakdownchart.h"
 
 namespace Ui {
 class DetalhesRetencao;
